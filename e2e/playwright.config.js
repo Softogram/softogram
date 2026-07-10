@@ -1,0 +1,83 @@
+// @ts-check
+const { defineConfig, devices } = require("@playwright/test");
+const fs = require("fs");
+const path = require("path");
+
+/**
+ * E2E stack (all started automatically by Playwright):
+ *   1. SendGrid mock   -> http://localhost:8025  (fixtures/sendgrid-mock.js)
+ *   2. FastAPI backend -> http://localhost:8001  (real server, emails go to the mock)
+ *   3. React frontend  -> http://localhost:3100  (real CRA dev server)
+ *
+ * Backend python: uses backend/.venv if present, otherwise python3 on PATH.
+ * See e2e/README.md for one-time setup.
+ */
+
+const ROOT = path.resolve(__dirname, "..");
+const VENV_PYTHON = path.join(ROOT, "backend", ".venv", "bin", "python");
+const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : "python3";
+
+const SENDGRID_MOCK_URL = "http://localhost:8025";
+const BACKEND_URL = "http://localhost:8001";
+const FRONTEND_URL = "http://localhost:3100";
+
+module.exports = defineConfig({
+  testDir: "./tests",
+  fullyParallel: false,
+  workers: 1,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 1 : 0,
+  reporter: [["list"], ["html", { open: "never" }]],
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
+  use: {
+    baseURL: FRONTEND_URL,
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+  ],
+  webServer: [
+    {
+      command: "node fixtures/sendgrid-mock.js",
+      url: `${SENDGRID_MOCK_URL}/health`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 15_000,
+    },
+    {
+      command: `${PYTHON} -m uvicorn server:app --port 8001`,
+      cwd: path.join(ROOT, "backend"),
+      url: `${BACKEND_URL}/api/`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 30_000,
+      env: {
+        SENDGRID_HOST: SENDGRID_MOCK_URL,
+        SENDGRID_API_KEY: "SG.e2e-test-key",
+        SENDER_EMAIL: "e2e-sender@softogram.test",
+        RECIPIENT_EMAIL: "e2e-inbox@softogram.test",
+        CORS_ORIGINS: FRONTEND_URL,
+        MONGO_URL: "mongodb://localhost:27017",
+        DB_NAME: "softogram_e2e",
+      },
+    },
+    {
+      command: "yarn start",
+      cwd: path.join(ROOT, "frontend"),
+      url: FRONTEND_URL,
+      reuseExistingServer: !process.env.CI,
+      timeout: 240_000,
+      env: {
+        PORT: "3100",
+        BROWSER: "none",
+        REACT_APP_BACKEND_URL: BACKEND_URL,
+        ENABLE_HEALTH_CHECK: "false",
+      },
+    },
+  ],
+});
+
+module.exports.urls = { SENDGRID_MOCK_URL, BACKEND_URL, FRONTEND_URL };

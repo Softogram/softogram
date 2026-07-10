@@ -1,0 +1,15 @@
+{
+  "name": "softogram-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "End-to-end tests for the Softogram site: Playwright drives a real browser against the real frontend and backend, with SendGrid mocked locally.",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

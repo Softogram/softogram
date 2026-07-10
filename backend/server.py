@@ -102,7 +102,11 @@ def send_contact_email(name: str, user_email: str, phone: str, service: str, mes
     mail.reply_to = user_email
 
     try:
+        # SENDGRID_HOST lets the e2e suite point sends at a local mock server
         sg = SendGridAPIClient(api_key)
+        sendgrid_host = os.getenv('SENDGRID_HOST')
+        if sendgrid_host:
+            sg.client.host = sendgrid_host
         response = sg.send(mail)
         return response.status_code == 202
     except Exception as e:

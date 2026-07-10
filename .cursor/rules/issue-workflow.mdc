@@ -1,0 +1,18 @@
+---
+description: How to pick up, implement, and close Softogram GitHub issues (backlog triage, "work on issue #N", audit findings)
+alwaysApply: false
+---
+
+# GitHub issue workflow
+
+Full playbook: `.cursor/skills/issue-workflow/SKILL.md`.
+Follow it whenever working on issues from nomotomo/softogram.
+
+Quick reference:
+
+- Backlog lives at https://github.com/nomotomo/softogram/issues; list with `gh issue list -R nomotomo/softogram`.
+- Priority order P0 > P1 > P2; prefer `agent-ready` labeled issues.
+- Each issue links its audit doc under `docs/audit/` or `docs/growth/` - read the linked section before coding.
+- Reproduce the bug first, branch as `fix/issue-<n>-<slug>`, keep diffs minimal, `data-testid` on new interactive elements.
+- Mandatory gate before PR: `cd e2e && npm test` (Playwright + mocked SendGrid) must pass; add a test for the acceptance criteria.
+- PR must say `Closes #<n>` and list remaining human-only steps (DNS, dashboards, certs).
