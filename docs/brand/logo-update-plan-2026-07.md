@@ -63,7 +63,7 @@ This keeps the "glassmorphism + glow" aesthetic; only the hue shifts.
 1. **Vector rebuild of the mark**: a clean `frontend/public/logo-mark.svg` reconstructing the chevron + slash geometry (not traced from the 3D render). Two color variants:
    - full-color (blue chevrons + cream slash) for dark backgrounds,
    - monochrome for edge cases (email, print, favicon fallback).
-2. **New `SoftogramLogo` component**: replace the brackets-and-waveform SVG in `App.js:88-159` with the new mark; update the wordmark to uppercase "SOFTOGRAM" in the new blue (keep the gradient treatment but in the new palette). Preserve the `size` and `showTagline` props and `data-testid="logo-link"` so nothing else breaks.
+2. **New `SoftogramLogo` component**: replace the brackets-and-waveform SVG in `App.js:88-159` with the new mark; keep the mixed-case "Softogram" wordmark and its gradient treatment on "gram", recolored to the new blue palette. Keep the mark an inline animated SVG (the glow stays). Preserve the `size` and `showTagline` props and `data-testid="logo-link"` so nothing else breaks.
 3. **Favicon + PWA icons**: regenerate `frontend/public/favicon.svg` from the new mark; add `favicon-32.png`, `apple-touch-icon.png` (180x180), and `icon-192/512.png` for a web manifest.
 4. **OG/social image**: refresh `frontend/public/og-banner.png` with the new logo; fix the JSON-LD `logo` reference to point at a real file (ties into SEO issue #13).
 5. **Palette migration**: update `index.css` variables, then sweep `App.js` Tailwind classes cyan->blue. Do this via the CSS variables first (cheap) and treat the Tailwind class sweep as a follow-up pass so the diff stays reviewable.
@@ -82,8 +82,14 @@ This keeps the "glassmorphism + glow" aesthetic; only the hue shifts.
 - Run the full E2E suite (`cd e2e && npm test`) after each PR.
 - Manual: favicon shows in the browser tab; OG image previews correctly in a share debugger.
 
-## Open questions for the owner
+## Owner decisions (resolved 2026-07-11)
 
-1. The provided wordmark is **uppercase "SOFTOGRAM"**; the current site uses mixed-case "Softogram". Adopt uppercase in the header, or keep mixed-case wordmark with the new mark? (Plan assumes uppercase to match the asset.)
-2. Do you have the **original vector** (AI/SVG/Figma) for the logo? If so we rebuild from that instead of reconstructing geometry from the raster, which is more faithful.
-3. Keep the subtle **glow/animation** on the mark (the current logo has an animated pulsing core), or present the new mark flat?
+1. **Wordmark stays mixed-case "Softogram"** (not uppercase), even though the asset renders it uppercase. Keep the existing wordmark casing; only the mark and colors change.
+2. **No vector source exists** - only the raster image. We reconstruct the mark as clean hand-authored SVG from the reference: two royal-blue chevron strokes with a cream diagonal slash. This is a from-scratch geometric rebuild, not an autotrace of the 3D render (autotrace of a beveled mockup produces messy paths). Budget a design pass to get the proportions and the slash angle faithful to `docs/brand/logo-2026-reference.png`.
+3. **Keep the animated glow.** Carry the current mark's subtle pulse/glow treatment onto the new mark, recolored to the blue/cream palette (e.g. animate the cream slash or a blue core glow rather than the old cyan dot).
+
+### Implications for the build
+
+- The wordmark keeps its gradient treatment on "gram" but in the new palette (blue -> lighter-blue or blue -> cream) instead of cyan -> violet.
+- Because we are reconstructing geometry by eye, PR 1 should include before/after screenshots at navbar, footer, and favicon sizes so the shape can be judged small (the mark must stay legible at 36px).
+- The animated glow means the mark stays an inline SVG component (not a flat `<img>`), consistent with today's `SoftogramLogo`.
