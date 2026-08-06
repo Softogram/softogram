@@ -5,6 +5,7 @@ import Layout from "@/components/redesign/Layout";
 import NotFound from "@/pages/NotFound";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import Home from "@/pages/Home";
+import Products from "@/pages/Products";
 import axios from "axios";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import CountUp from "react-countup";
@@ -2377,15 +2378,7 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route
-              path="/products"
-              element={
-                <PlaceholderPage
-                  title="Products"
-                  note="Shipped products catalog — content arrives in redesign Phase 5."
-                />
-              }
-            />
+            <Route path="/products" element={<Products />} />
             <Route
               path="/client-work"
               element={
