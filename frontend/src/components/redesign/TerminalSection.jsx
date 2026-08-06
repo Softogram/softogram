@@ -1,21 +1,23 @@
 import React from "react";
 import Badge from "./Badge";
 import Terminal from "./Terminal";
-import { G, BORDER, GutterRow, Section } from "./homePrimitives";
+import { G, GutterRow, Section } from "./homePrimitives";
 
+/**
+ * Interactive proof: heading + Terminal share one gutter column so they read
+ * as a single section (not a separate block under the header).
+ */
 export default function TerminalSection({ lineStart = 10 }) {
-  let ln = lineStart;
   return (
     <Section id="terminal" topRule bg="#0d1117" testId="terminal-section">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Static header — sticky top:52 was sliding over the Terminal and clipping the title bar */}
-        <div
-          className="pt-6 pb-4"
-          style={{ background: "#0d1117", borderBottom: `1px solid ${BORDER}` }}
-        >
-          <GutterRow lineNum={ln++}>
-            <div>
-              <div className="text-xs mb-1" style={{ color: G, fontFamily: "var(--font-mono)" }}>
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <GutterRow lineNum={lineStart}>
+          <div className="max-w-2xl">
+            <div className="mb-6">
+              <div
+                className="text-xs mb-2 uppercase tracking-widest"
+                style={{ color: G, fontFamily: "var(--font-mono)" }}
+              >
                 # interactive proof
               </div>
               <h2
@@ -34,16 +36,10 @@ export default function TerminalSection({ lineStart = 10 }) {
                 />
               </h2>
             </div>
-          </GutterRow>
-        </div>
 
-        <div className="py-8">
-          <GutterRow lineNum={ln++}>
-            <div className="max-w-2xl">
-              <Terminal />
-            </div>
-          </GutterRow>
-        </div>
+            <Terminal />
+          </div>
+        </GutterRow>
       </div>
     </Section>
   );
