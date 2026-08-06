@@ -121,11 +121,10 @@ test.describe("contact API", () => {
     expect(res.headers()["access-control-allow-origin"]).toBe(FRONTEND_URL);
   });
 
-  // Desired behavior per issue #4; enable once HTML escaping lands.
-  test.fixme("HTML in form fields arrives escaped in the notification email (issue #4)", async ({ request }) => {
+  test("HTML in form fields arrives escaped in the notification email (issue #4)", async ({ request }) => {
     await request.post(`${BACKEND_URL}/api/contact`, {
       data: {
-        name: '<img src=x onerror=alert(1)>',
+        name: '<img src=x onerror=alert(1)>\r\nBcc: evil@x.com',
         email: "xss@example.com",
         phone: "+91-9111111111",
         service: "AI-Powered Automation",
@@ -133,8 +132,12 @@ test.describe("contact API", () => {
       },
     });
     const emails = await waitForEmails(request, 1);
-    const html = emails[0].payload.content[0].value;
-    expect(html).not.toContain("<img src=x");
-    expect(html).toContain("&lt;img src=x");
+    const htmlBody = emails[0].payload.content[0].value;
+    const subject = emails[0].payload.subject || "";
+    expect(htmlBody).not.toContain("<img src=x");
+    expect(htmlBody).toContain("&lt;img src=x");
+    expect(htmlBody).not.toContain("<b>bold</b>");
+    expect(htmlBody).toContain("&lt;b&gt;bold&lt;/b&gt;");
+    expect(subject).not.toMatch(/[\r\n]/);
   });
 });

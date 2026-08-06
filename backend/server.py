@@ -3,6 +3,7 @@ import json
 import time
 import uuid
 import logging
+import html
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import List, Optional
@@ -120,19 +121,26 @@ def send_contact_email(name: str, user_email: str, phone: str, service: str, mes
         logging.warning("SendGrid API key or Verified Sender not configured.")
         return False
 
-    subject = f"New Project Inquiry from {name}"
+    # Escape all user fields for HTML body; strip CR/LF from subject (issue #4).
+    safe_name = html.escape(name or "", quote=True)
+    safe_email = html.escape(user_email or "", quote=True)
+    safe_phone = html.escape(phone or "", quote=True)
+    safe_service = html.escape(service or "", quote=True)
+    safe_message = html.escape(message or "", quote=True)
+    subject_name = (name or "").replace("\r", " ").replace("\n", " ").strip()
+    subject = f"New Project Inquiry from {subject_name}"
 
     html_content = f"""
     <html>
         <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333;">
             <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px;">
                 <h2 style="color: #2563eb; border-bottom: 1px solid #eee; padding-bottom: 10px;">New Contact Submission</h2>
-                <p><strong>Name:</strong> {name}</p>
-                <p><strong>Email:</strong> {user_email}</p>
-                <p><strong>Phone:</strong> {phone}</p>
-                <p><strong>Interested In:</strong> {service}</p>
+                <p><strong>Name:</strong> {safe_name}</p>
+                <p><strong>Email:</strong> {safe_email}</p>
+                <p><strong>Phone:</strong> {safe_phone}</p>
+                <p><strong>Interested In:</strong> {safe_service}</p>
                 <div style="background: #f9fafb; padding: 15px; border-radius: 5px; margin-top: 20px;">
-                    <p style="font-style: italic;">"{message}"</p>
+                    <p style="font-style: italic;">"{safe_message}"</p>
                 </div>
                 <p style="font-size: 12px; color: #9ca3af; margin-top: 25px;">Sent via Softogram Backend</p>
             </div>
