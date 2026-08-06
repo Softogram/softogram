@@ -1,10 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+    /* Legacy cyan/violet tokens — kept until redesign Phases replace App.js UI */
     --bg-primary: #000000;
     --bg-secondary: #0D0D0D;
     --surface-1: #111111;
@@ -16,6 +17,24 @@
     --border-color: #2A2A2A;
     --glow-cyan: rgba(0, 245, 255, 0.15);
     --glow-cyan-strong: rgba(0, 245, 255, 0.4);
+
+    /* Redesign tokens (Aug 2026) — green GitHub-dark; see docs/redesign/integration-plan-2026-08.md */
+    --rd-bg: #09090e;
+    --rd-fg: #e2e8f0;
+    --rd-card: #0d1117;
+    --rd-card-elevated: #161b22;
+    --rd-primary: #4ade80;
+    --rd-primary-fg: #09090e;
+    --rd-secondary: #fb923c;
+    --rd-muted: #8b949e;
+    --rd-muted-fg: #94a3b8;
+    --rd-border: rgba(255, 255, 255, 0.06);
+    --rd-danger: #f87171;
+    --rd-glow: rgba(74, 222, 128, 0.35);
+    --rd-radius: 4px;
+    --font-display: 'Fraunces', serif;
+    --font-rd-sans: 'Outfit', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 }
 
 html {
@@ -410,4 +429,25 @@ h1, h2, h3, h4, h5, h6 {
     [data-debug-wrapper="true"] {
         display: contents !important;
     }
+}
+
+
+/* Redesign primitives (Phase 0) */
+.font-display { font-family: var(--font-display); }
+.font-rd-sans { font-family: var(--font-rd-sans); }
+.font-mono-rd { font-family: var(--font-mono); }
+
+.rd-logo-glow {
+    filter: drop-shadow(0 0 6px var(--rd-glow));
+    animation: rd-logo-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes rd-logo-pulse {
+    0%, 100% { filter: drop-shadow(0 0 4px var(--rd-glow)); opacity: 1; }
+    50% { filter: drop-shadow(0 0 10px var(--rd-glow)); opacity: 0.92; }
+}
+
+.rd-gutter {
+    padding-left: 48px;
+    border-left: 1px solid var(--rd-border);
 }

@@ -33,11 +33,13 @@ They are agent tooling copied into the repo.
 
 ## Brand and design (canonical)
 
-Follow what ships in `frontend/src/App.js` and `design_guidelines.json`, not stale notes elsewhere.
+Follow `docs/redesign/integration-plan-2026-08.md` + `design_guidelines.json`. The Aug 2026 redesign (green GitHub-dark) is the target brand; cyan glassmorphism remains only until phased replacement finishes.
 
-- **Theme**: Dark glassmorphism, dot-pattern hero, neon glow on hover
-- **Colors**: Pure black background, cyan `#00F5FF`, violet `#7C3AED`
-- **Fonts**: Space Grotesk (headings), Inter (body) in the live site; `design_guidelines.json` also references Plus Jakarta Sans for headings when adding new sections
+- **Theme**: GitHub-dark / diff-PR honesty aesthetic (gutter, Confirmed/Reported badges, CLI proof)
+- **Colors**: Background `#09090e`, accent green `#4ADE80`, amber `#FB923C`, card `#0d1117`
+- **Fonts**: Fraunces (display), Outfit (body), JetBrains Mono (code/diff)
+- **Primitives**: `frontend/src/components/redesign/` (`LogoMono`, `Logo`, `Badge`, `ClaimBlock`)
+- **Do not** reintroduce cyan `#00F5FF` / violet `#7C3AED` in new work
 - **UI**: shadcn/ui components live in `frontend/src/components/ui/`
 - **Icons**: Lucide React only
 - **Motion**: Framer Motion for section reveals; `react-countup` for stats; `react-fast-marquee` for testimonials

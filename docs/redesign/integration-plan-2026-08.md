@@ -122,7 +122,7 @@ Prefer wiring in Phase 4 if Phase 2 is already large
 | #17 Content engine | Blog + case studies | Partially delivered by Phases 6–7 |
 | #18 E2E in CI | Phase 9 | Keep |
 | #19 Blank 404 | Fixed by porting redesign 404 | Schedule with Phase 1 / resolve |
-| #20 Royal blue logo | **Superseded** by green redesign palette | Comment + close once Phase 0 lands |
+| #20 Royal blue logo | **Superseded** by green redesign palette | Commented; close when Phase 0 (#21) merges |
 
 New issues: one per Phase 0–9 (see GitHub).
 
@@ -161,21 +161,21 @@ See also: `docs/redesign/phase-checklist.md` for a short implementer checklist.
 
 ---
 
-## Phase issue drafts (to publish on GitHub)
+## Phase GitHub issues (filed 2026-08-06)
 
-Bodies live at `docs/redesign/issues/phase-N.md`. Publish as GitHub issues labeled `redesign` + priority when filing is approved.
+Org: `Softogram/softogram` (issues #21–#30). Bodies also mirrored at `docs/redesign/issues/phase-N.md`.
 
-| Phase | Draft | Suggested title |
+| Phase | Issue | Title |
 |---|---|---|
-| 0 | `issues/phase-0.md` | [Redesign] Phase 0 — Foundations |
-| 1 | `issues/phase-1.md` | [Redesign] Phase 1 — Layout shell + 404 |
-| 2 | `issues/phase-2.md` | [Redesign] Phase 2 — Home Hero + Contact UI |
-| 3 | `issues/phase-3.md` | [Redesign] Phase 3 — Terminal + Build Log |
-| 4 | `issues/phase-4.md` | [Redesign] Phase 4 — Shipped + Services + Contact API |
-| 5 | `issues/phase-5.md` | [Redesign] Phase 5 — Products |
-| 6 | `issues/phase-6.md` | [Redesign] Phase 6 — Client Work |
-| 7 | `issues/phase-7.md` | [Redesign] Phase 7 — Blog (static) |
-| 8 | `issues/phase-8.md` | [Redesign] Phase 8 — SEO / policies / polish |
-| 9 | `issues/phase-9.md` | [Redesign] Phase 9 — E2E + CI |
+| 0 | [#21](https://github.com/Softogram/softogram/issues/21) | Foundations: tokens, fonts, primitives |
+| 1 | [#22](https://github.com/Softogram/softogram/issues/22) | Layout shell + routes + 404 |
+| 2 | [#23](https://github.com/Softogram/softogram/issues/23) | Home Hero + Contact UI |
+| 3 | [#24](https://github.com/Softogram/softogram/issues/24) | Terminal + Build Log |
+| 4 | [#25](https://github.com/Softogram/softogram/issues/25) | Shipped + Services + Contact API |
+| 5 | [#26](https://github.com/Softogram/softogram/issues/26) | Products page |
+| 6 | [#27](https://github.com/Softogram/softogram/issues/27) | Client Work page |
+| 7 | [#28](https://github.com/Softogram/softogram/issues/28) | Blog (static) |
+| 8 | [#29](https://github.com/Softogram/softogram/issues/29) | SEO / policies / polish |
+| 9 | [#30](https://github.com/Softogram/softogram/issues/30) | E2E + CI |
 
-Suggested first implementation issue after docs land: **Phase 0**.
+**Start here:** Phase 0 / #21. Issue #20 (royal blue logo) is superseded by this green redesign.

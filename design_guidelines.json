@@ -2,25 +2,44 @@
   "brand_identity": {
     "name": "Softogram",
     "tagline": "Your idea. Our code. Delivered.",
-    "tone": "Premium, Technical, Trustworthy, Modern",
+    "tone": "Honest, Technical, Builder-first, Dark terminal aesthetic",
     "theme_mode": "dark",
-    "primary_color": "#0A0F2C",
-    "accent_color": "#3B82F6",
-    "secondary_accent": "#7C3AED",
-    "surface_color": "#111827",
-    "text_primary": "#F8FAFC",
-    "text_secondary": "#94A3B8"
+    "primary_color": "#09090e",
+    "accent_color": "#4ADE80",
+    "secondary_accent": "#FB923C",
+    "surface_color": "#0d1117",
+    "text_primary": "#e2e8f0",
+    "text_secondary": "#94a3b8",
+    "notes": "Aug 2026 redesign: green GitHub-dark palette supersedes cyan/violet and royal-blue plans. See docs/redesign/integration-plan-2026-08.md"
   },
   "typography": {
     "headings": {
-      "font_family": "Plus Jakarta Sans, sans-serif",
-      "weights": ["600", "700", "800"],
+      "font_family": "Fraunces, serif",
+      "weights": [
+        "400",
+        "600",
+        "700",
+        "900"
+      ],
       "letter_spacing": "-0.02em"
     },
     "body": {
-      "font_family": "Inter, sans-serif",
-      "weights": ["400", "500"],
+      "font_family": "Outfit, sans-serif",
+      "weights": [
+        "300",
+        "400",
+        "500",
+        "600",
+        "700"
+      ],
       "letter_spacing": "0em"
+    },
+    "mono": {
+      "font_family": "JetBrains Mono, monospace",
+      "weights": [
+        "400",
+        "500"
+      ]
     }
   },
   "layout_strategy": {
@@ -59,10 +78,22 @@
     "services": {
       "layout": "Bento Grid (3 columns)",
       "cards": [
-        { "title": "Custom Web Apps", "span": "col-span-1 md:col-span-2" },
-        { "title": "Business Websites", "span": "col-span-1" },
-        { "title": "E-commerce", "span": "col-span-1" },
-        { "title": "API Development", "span": "col-span-1 md:col-span-2" }
+        {
+          "title": "Custom Web Apps",
+          "span": "col-span-1 md:col-span-2"
+        },
+        {
+          "title": "Business Websites",
+          "span": "col-span-1"
+        },
+        {
+          "title": "E-commerce",
+          "span": "col-span-1"
+        },
+        {
+          "title": "API Development",
+          "span": "col-span-1 md:col-span-2"
+        }
       ]
     },
     "projects": {
