@@ -144,8 +144,8 @@ export default function BuildLogSection({ lineStart = 20 }) {
     <Section id="build-log" topRule bg="#0d1117" testId="build-log-section">
       <div className="max-w-7xl mx-auto px-6">
         <div
-          className="sticky z-20 pt-6 pb-4"
-          style={{ top: 52, background: "#0d1117", borderBottom: `1px solid ${BORDER}` }}
+          className="pt-6 pb-4"
+          style={{ background: "#0d1117", borderBottom: `1px solid ${BORDER}` }}
         >
           <GutterRow lineNum={take()}>
             <div>

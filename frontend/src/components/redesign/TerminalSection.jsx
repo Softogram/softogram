@@ -8,9 +8,10 @@ export default function TerminalSection({ lineStart = 10 }) {
   return (
     <Section id="terminal" topRule bg="#0d1117" testId="terminal-section">
       <div className="max-w-7xl mx-auto px-6">
+        {/* Static header — sticky top:52 was sliding over the Terminal and clipping the title bar */}
         <div
-          className="sticky z-20 pt-6 pb-4"
-          style={{ top: 52, background: "#0d1117", borderBottom: `1px solid ${BORDER}` }}
+          className="pt-6 pb-4"
+          style={{ background: "#0d1117", borderBottom: `1px solid ${BORDER}` }}
         >
           <GutterRow lineNum={ln++}>
             <div>
@@ -36,20 +37,12 @@ export default function TerminalSection({ lineStart = 10 }) {
           </GutterRow>
         </div>
 
-        <div className="relative">
-          <div className="pane-scroll" style={{ height: 560, overflowY: "auto" }}>
-            <div className="py-6">
-              <GutterRow lineNum={ln++}>
-                <div className="max-w-2xl">
-                  <Terminal />
-                </div>
-              </GutterRow>
+        <div className="py-8">
+          <GutterRow lineNum={ln++}>
+            <div className="max-w-2xl">
+              <Terminal />
             </div>
-          </div>
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 right-0 h-12"
-            style={{ background: "linear-gradient(to top, #0d1117, transparent)" }}
-          />
+          </GutterRow>
         </div>
       </div>
     </Section>
