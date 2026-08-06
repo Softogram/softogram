@@ -169,12 +169,26 @@ async def get_status_checks():
 
 app.include_router(api_router)
 
+# CORS: fail closed. Never default to "*". Production should set
+# CORS_ORIGINS=https://softogram.in,https://www.softogram.in
+# E2E injects the Playwright frontend origin (see e2e/playwright.config.js).
+_DEFAULT_CORS_ORIGINS = "https://softogram.in,https://www.softogram.in"
+
+
+def _parse_cors_origins(raw):
+    origins = [o.strip() for o in raw.split(",") if o.strip()]
+    # Guard: a lone "*" with credentials was the old production footgun.
+    if not origins or origins == ["*"]:
+        return [o.strip() for o in _DEFAULT_CORS_ORIGINS.split(",")]
+    return origins
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_parse_cors_origins(os.environ.get("CORS_ORIGINS", _DEFAULT_CORS_ORIGINS)),
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 logging.basicConfig(level=logging.INFO)

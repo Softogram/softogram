@@ -1,6 +1,6 @@
 // API-level e2e: real backend, real HTTP, SendGrid mocked.
 const { test, expect } = require("@playwright/test");
-const { BACKEND_URL, resetEmails, waitForEmails, forceSendFailure } = require("../fixtures/helpers");
+const { BACKEND_URL, FRONTEND_URL, resetEmails, waitForEmails, forceSendFailure } = require("../fixtures/helpers");
 
 test.describe("contact API", () => {
   test.beforeEach(async ({ request }) => {
@@ -74,16 +74,31 @@ test.describe("contact API", () => {
     expect((await res.json()).status).toBe("success");
   });
 
-  // Desired behavior per issue #2; enable once CORS is locked down.
-  test.fixme("preflight from a foreign origin is not reflected (issue #2)", async ({ request }) => {
+  // Issue #2 — foreign origins must not be reflected.
+  test("preflight from a foreign origin is not reflected (issue #2)", async ({ request }) => {
     const res = await request.fetch(`${BACKEND_URL}/api/contact`, {
       method: "OPTIONS",
       headers: {
         Origin: "https://evil.example.com",
         "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Headers": "content-type",
       },
     });
-    expect(res.headers()["access-control-allow-origin"]).not.toBe("https://evil.example.com");
+    const acao = res.headers()["access-control-allow-origin"];
+    expect(acao).not.toBe("https://evil.example.com");
+    expect(acao).not.toBe("*");
+  });
+
+  test("preflight from the allowed frontend origin is accepted (issue #2)", async ({ request }) => {
+    const res = await request.fetch(`${BACKEND_URL}/api/contact`, {
+      method: "OPTIONS",
+      headers: {
+        Origin: FRONTEND_URL,
+        "Access-Control-Request-Method": "POST",
+        "Access-Control-Request-Headers": "content-type",
+      },
+    });
+    expect(res.headers()["access-control-allow-origin"]).toBe(FRONTEND_URL);
   });
 
   // Desired behavior per issue #4; enable once HTML escaping lands.

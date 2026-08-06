@@ -1,5 +1,6 @@
 const SENDGRID_MOCK_URL = "http://localhost:8025";
 const BACKEND_URL = "http://localhost:8001";
+const FRONTEND_URL = "http://localhost:3100";
 
 /** Clear captured emails on the SendGrid mock. */
 async function resetEmails(request) {
@@ -26,4 +27,11 @@ async function forceSendFailure(request, status = 500, times = 1) {
   await request.post(`${SENDGRID_MOCK_URL}/behavior`, { data: { status, times } });
 }
 
-module.exports = { SENDGRID_MOCK_URL, BACKEND_URL, resetEmails, waitForEmails, forceSendFailure };
+module.exports = {
+  SENDGRID_MOCK_URL,
+  BACKEND_URL,
+  FRONTEND_URL,
+  resetEmails,
+  waitForEmails,
+  forceSendFailure,
+};

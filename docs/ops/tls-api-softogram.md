@@ -85,10 +85,17 @@ Also add a **certificate expiry** check (UptimeRobot “SSL certificate” keywo
 
 Note: production contact may still fail after TLS if **#2 CORS** is misconfigured for the live origin. Fix TLS first, then verify CORS.
 
-## Out of scope for this doc
+## Ops note: production `CORS_ORIGINS`
 
-- Cloudflare proxy / moving API behind the same Amazon cert as the marketing site (longer migration)
-- CORS allowlist (#2), lead persistence (#3)
+After deploy, set on the API host (never `*`):
+
+```bash
+CORS_ORIGINS=https://softogram.in,https://www.softogram.in
+```
+
+Code defaults to these origins if the env var is missing or set to `*`.
+Credentials are off; methods `GET,POST`; header `Content-Type` only.
+See issue #2.
 
 ## Acceptance (issue #1)
 
