@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Badge from "./Badge";
-import { G, A, DIM, BORDER, GutterRow, Section } from "./homePrimitives";
+import { G, A, DIM, GutterRow, Section } from "./homePrimitives";
 
 export const BUILD_LOG = [
   {
@@ -156,10 +156,10 @@ export default function BuildLogSection({ lineStart = 20 }) {
   return (
     <Section id="build-log" topRule bg="#0d1117" testId="build-log-section">
       <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col" style={{ maxHeight: 720 }}>
-        {/* Fixed header — does not scroll with the logs */}
+        {/* Fixed header — does not scroll with the logs (no divider — same section) */}
         <div
-          className="shrink-0 pb-4 mb-1"
-          style={{ borderBottom: `1px solid ${BORDER}`, background: "#0d1117" }}
+          className="shrink-0 pb-2"
+          style={{ background: "#0d1117" }}
           data-testid="build-log-header"
         >
           <GutterRow lineNum={take()}>

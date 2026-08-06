@@ -1,7 +1,7 @@
 import React from "react";
 import Badge from "./Badge";
 import Terminal from "./Terminal";
-import { G, A, DIM, BORDER, GutterRow, Section } from "./homePrimitives";
+import { G, A, DIM, GutterRow, Section } from "./homePrimitives";
 
 /** Dummy tool card — placeholder so horizontal scroll is demonstrable. */
 function DummyToolCard({ title, subtitle, accent, lines, badge }) {
@@ -122,10 +122,10 @@ export default function TerminalSection({ lineStart = 10 }) {
   return (
     <Section id="terminal" topRule bg="#0d1117" testId="terminal-section">
       <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-0">
-        {/* Fixed header — stays put while tools scroll horizontally */}
+        {/* Fixed header — stays put while tools scroll horizontally (no divider — same section) */}
         <div
-          className="shrink-0 pb-4 mb-1"
-          style={{ borderBottom: `1px solid ${BORDER}`, background: "#0d1117" }}
+          className="shrink-0 pb-2"
+          style={{ background: "#0d1117" }}
           data-testid="terminal-header"
         >
           <GutterRow lineNum={lineStart}>
