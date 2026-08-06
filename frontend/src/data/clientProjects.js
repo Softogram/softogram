@@ -1,0 +1,62 @@
+/** Static client-work seeds (Phase 6). No localStorage / admin. */
+
+export const INDUSTRIES = [
+  "All",
+  "Healthcare",
+  "Finance",
+  "Retail",
+  "Operations",
+  "Logistics",
+  "Education",
+];
+
+export const CLIENT_PROJECTS = [
+  {
+    id: "1",
+    client: "Meridian Health",
+    title: "Patient Portal & Scheduling Platform",
+    desc: "A HIPAA-compliant patient portal with AI-powered scheduling, lab result interpretation, and care plan tracking for 200,000+ patients.",
+    industry: "Healthcare",
+    services: ["Custom Development", "AI Integration", "Cloud Infrastructure"],
+    outcome: "62% reduction in scheduling call volume. 4.8/5 patient satisfaction score.",
+    img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop&auto=format",
+    year: "2024",
+    published: true,
+  },
+  {
+    id: "2",
+    client: "Fieldworks AI",
+    title: "Field Service Management & AI Dispatch",
+    desc: "Real-time dispatch platform with ML-based route optimization and a mobile app for 800+ field technicians across 12 cities.",
+    industry: "Operations",
+    services: ["Mobile App", "AI/ML", "Real-time Systems"],
+    outcome: "31% fuel cost reduction. 94% on-time arrival rate.",
+    img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=500&fit=crop&auto=format",
+    year: "2024",
+    published: true,
+  },
+  {
+    id: "3",
+    client: "Corvo Capital",
+    title: "Portfolio Intelligence Dashboard",
+    desc: "Real-time portfolio analytics with natural language querying, risk modeling, and automated regulatory reporting for a $2.4B fund.",
+    industry: "Finance",
+    services: ["Data Engineering", "Analytics", "AI"],
+    outcome: "8x faster reporting cycle. $400k annual compliance cost savings.",
+    img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=500&fit=crop&auto=format",
+    year: "2025",
+    published: true,
+  },
+  {
+    id: "4",
+    client: "Arko Retail",
+    title: "Omnichannel Commerce Platform",
+    desc: "Unified inventory, POS, and e-commerce platform connecting 40 physical stores with an online marketplace — built in 14 weeks.",
+    industry: "Retail",
+    services: ["E-commerce", "POS Integration", "Custom Development"],
+    outcome: "22% inventory shrinkage reduction. $1.8M revenue recovered in first quarter.",
+    img: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&h=500&fit=crop&auto=format",
+    year: "2024",
+    published: true,
+  },
+];

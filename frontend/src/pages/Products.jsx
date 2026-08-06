@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { PRODUCTS, PRODUCT_REVIEWS } from "@/data/products";
 import { G, A, DIM, BORDER, CARD, Reveal } from "@/components/redesign/homePrimitives";
+import SeoHead from "@/components/redesign/SeoHead";
 
 const BETA = "#38bdf8";
 
@@ -226,6 +227,10 @@ export default function Products() {
 
   return (
     <>
+      <SeoHead
+        title="Products | Softogram"
+        description="Softogram in-house products — FlowDesk, AgentKit, and DataPulse. SaaS and AI tools you can adopt directly."
+      />
       {selected && <ProductModal product={selected} onClose={() => setSelected(null)} />}
 
       <div style={{ paddingTop: 80 }} data-testid="products-page">

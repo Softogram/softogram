@@ -2,9 +2,9 @@
 const { test, expect } = require("@playwright/test");
 
 const routes = [
-  { path: "/client-work", expectText: /client work/i },
-  { path: "/products", expectText: /products/i },
-  { path: "/blog", expectText: /blog/i },
+  { path: "/client-work", expectText: /real organizations/i },
+  { path: "/products", expectText: /build and sell/i },
+  { path: "/blog", expectText: /insights/i },
   { path: "/privacy-policy", expectText: /privacy policy/i },
   { path: "/terms-and-conditions", expectText: /terms/i },
   { path: "/refund-policy", expectText: /refund/i },
@@ -29,6 +29,6 @@ test.describe("routes", () => {
   test("case-studies redirects to client-work", async ({ page }) => {
     await page.goto("/case-studies");
     await expect(page).toHaveURL(/\/client-work$/);
-    await expect(page.getByTestId("placeholder-title")).toHaveText("Client Work");
+    await expect(page.getByTestId("client-work-page")).toBeVisible();
   });
 });

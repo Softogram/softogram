@@ -20,6 +20,7 @@ import {
   Section,
   Reveal,
 } from "@/components/redesign/homePrimitives";
+import SeoHead from "@/components/redesign/SeoHead";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -385,6 +386,10 @@ export default function Home() {
 
   return (
     <>
+      <SeoHead
+        title="Softogram | Software that actually ships"
+        description="Softogram builds real tools and client software — Go binaries, changelogs, and production systems. No roadmap theater."
+      />
       <Section id="hero" bg="#0d1117" testId="hero-section">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div

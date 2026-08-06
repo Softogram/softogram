@@ -3,9 +3,12 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
 import Layout from "@/components/redesign/Layout";
 import NotFound from "@/pages/NotFound";
-import PlaceholderPage from "@/pages/PlaceholderPage";
 import Home from "@/pages/Home";
 import Products from "@/pages/Products";
+import ClientWork from "@/pages/ClientWork";
+import Blog from "@/pages/Blog";
+import BlogPost from "@/pages/BlogPost";
+import SeoHead from "@/components/redesign/SeoHead";
 import axios from "axios";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import CountUp from "react-countup";
@@ -1648,7 +1651,11 @@ const PolicyLayout = ({ title, lastUpdated, children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen" style={{ background: "#0d1117" }}>
+    <div className="min-h-screen" style={{ background: "#0d1117" }} data-testid="policy-page">
+      <SeoHead
+        title={`${title} | Softogram`}
+        description={`${title} for Softogram — custom software and website solutions.`}
+      />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -1656,13 +1663,16 @@ const PolicyLayout = ({ title, lastUpdated, children }) => {
         className="pt-32 pb-20"
       >
         <div className="max-w-3xl mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 font-['Space_Grotesk']">
-            <span className="gradient-text">{title}</span>
+          <h1
+            className="text-3xl md:text-4xl font-bold mb-4"
+            style={{ fontFamily: "var(--font-display)", color: "#e2e8f0" }}
+          >
+            <span style={{ color: "#4ade80" }}>{title}</span>
           </h1>
-          <p className="text-gray-500 text-sm mb-12">Last updated: {lastUpdated}</p>
-          <div className="space-y-8">
-            {children}
-          </div>
+          <p className="text-sm mb-12" style={{ color: "#8b949e", fontFamily: "var(--font-mono)" }}>
+            Last updated: {lastUpdated}
+          </p>
+          <div className="space-y-8">{children}</div>
         </div>
       </motion.div>
     </div>
@@ -1672,10 +1682,17 @@ const PolicyLayout = ({ title, lastUpdated, children }) => {
 // Policy Section Component
 const PolicySection = ({ title, children }) => (
   <div className="policy-section">
-    <h2 className="text-xl font-semibold text-white mb-4 pl-4 border-l-4 border-cyan-400 font-['Space_Grotesk']">
+    <h2
+      className="text-xl font-semibold mb-4 pl-4 border-l-4"
+      style={{
+        borderColor: "#4ade80",
+        color: "#e2e8f0",
+        fontFamily: "var(--font-display)",
+      }}
+    >
       {title}
     </h2>
-    <div className="text-gray-400 leading-relaxed space-y-4">
+    <div className="leading-relaxed space-y-4" style={{ color: "#8b949e" }}>
       {children}
     </div>
   </div>
@@ -2379,26 +2396,10 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
-            <Route
-              path="/client-work"
-              element={
-                <PlaceholderPage
-                  title="Client Work"
-                  note="Case studies move here in redesign Phase 6. Meanwhile use the home shipped section."
-                />
-              }
-            />
+            <Route path="/client-work" element={<ClientWork />} />
             <Route path="/case-studies" element={<Navigate to="/client-work" replace />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route
-              path="/blog/:slug"
-              element={
-                <PlaceholderPage
-                  title="Blog post"
-                  note="Individual posts land in redesign Phase 7."
-                />
-              }
-            />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/refund-policy" element={<RefundPolicy />} />
