@@ -1,10 +1,12 @@
 /**
- * Redesign home — Phase 2: Hero + Contact UI.
- * Terminal / Build Log / Shipped / Services arrive in Phases 3–4.
+ * Redesign home — Phase 2 Hero/Contact + Phase 3 Terminal/Build Log.
+ * Shipped / Services arrive in Phase 4.
  */
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ClaimBlock from "@/components/redesign/ClaimBlock";
+import TerminalSection from "@/components/redesign/TerminalSection";
+import BuildLogSection from "@/components/redesign/BuildLog";
 import {
   G,
   A,
@@ -495,29 +497,19 @@ export default function Home() {
         </div>
       </Section>
 
-      <ComingSoonPane
-        id="terminal"
-        title="Live terminal proof"
-        note="Interactive Terminal demo lands in redesign Phase 3."
-        lineNum={ln++}
-      />
-      <ComingSoonPane
-        id="build-log"
-        title="Build log"
-        note="Expandable changelog lands in redesign Phase 3."
-        lineNum={ln++}
-      />
+      <TerminalSection lineStart={ln} />
+      <BuildLogSection lineStart={ln + 5} />
       <ComingSoonPane
         id="shipped"
         title="What we've shipped"
         note="Product cards land in redesign Phase 4 — browse /products for the scaffold."
-        lineNum={ln++}
+        lineNum={ln + 20}
       />
       <ComingSoonPane
         id="services"
         title="Services"
         note="Service rows land in redesign Phase 4."
-        lineNum={ln++}
+        lineNum={ln + 21}
       />
 
       <ContactSection lineStart={ln} />

@@ -11,12 +11,38 @@ test.describe("landing page", () => {
     await expect(page.getByTestId("hero-cta-quote")).toBeVisible();
     await expect(page.getByTestId("hero-headline")).toContainText(/ships/i);
 
-    // Mid-page placeholders until Phases 3–4
-    for (const section of ["terminal-section", "build-log-section", "shipped-section", "services-section"]) {
+    // Phase 3 live sections
+    await expect(page.getByTestId("terminal-section")).toBeVisible();
+    await expect(page.getByTestId("terminal-widget")).toBeVisible();
+    await expect(page.getByTestId("terminal-run")).toBeVisible();
+    await expect(page.getByTestId("build-log-section")).toBeVisible();
+    await expect(page.getByTestId("build-log-row").first()).toBeVisible();
+
+    // Phase 4 still placeholders
+    for (const section of ["shipped-section", "services-section"]) {
       await expect(page.getByTestId(section)).toBeAttached();
     }
 
     await expect(page.getByTestId("contact-section")).toBeAttached();
+  });
+
+  test("terminal run reveals demo output", async ({ page }) => {
+    await page.goto("/");
+    await page.getByTestId("terminal-section").scrollIntoViewIfNeeded();
+    await page.getByTestId("terminal-run").click();
+    await expect(page.getByText("exit 0")).toBeVisible({ timeout: 15000 });
+  });
+
+  test("build log row expands detail", async ({ page }) => {
+    await page.goto("/");
+    const section = page.getByTestId("build-log-section");
+    await section.scrollIntoViewIfNeeded();
+    const row = page.getByTestId("build-log-row").first();
+    await row.evaluate((el) => {
+      el.scrollIntoView({ block: "center", inline: "nearest" });
+      el.click();
+    });
+    await expect(page.getByTestId("build-log-detail").first()).toBeVisible();
   });
 
   // WhatsApp float was part of the old home; redesign home omits it for now.

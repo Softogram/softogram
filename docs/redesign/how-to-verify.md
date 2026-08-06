@@ -43,8 +43,8 @@ cd e2e && npm test
 
 ## Phase status
 
-- **Done on screen:** Phase 0 tokens, Phase 1 Layout/routes/404, **Phase 2 Hero + Contact UI** (contact is a UI stub until Phase 4 wires SendGrid).
-- Mid-home Terminal / Build Log / Shipped / Services are “pending” placeholders until Phases 3–4.
+- **Done on screen:** Phases 0–3 (tokens, Layout, Hero/Contact, **Terminal + Build Log**).
+- Contact submit is still a UI stub until Phase 4. Shipped / Services are still placeholders.
 
 ---
 
