@@ -1,0 +1,41 @@
+---
+description: React frontend conventions for Softogram
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Frontend rules
+
+## Structure
+
+- Pages and sections live in `src/App.js` (monolith)
+- shadcn primitives: `src/components/ui/`
+- `@/` alias → `src/` (CRACO webpack)
+- API base: `process.env.REACT_APP_BACKEND_URL` + `/api`
+
+## Patterns
+
+```jsx
+// Class merging
+import { cn } from "@/lib/utils";
+
+// Toasts
+import { toast } from "sonner";
+
+// Motion sections — match existing AnimatedSection / fadeInUp variants
+```
+
+## UI checklist for new work
+
+- Match dark theme and cyan/violet accents
+- Use existing shadcn components before adding deps
+- Framer Motion for scroll reveals; avoid jarring animation
+- Responsive: mobile-first Tailwind (`sm:`, `md:`, `lg:`)
+- `data-testid="kebab-case-name"` on buttons, links, inputs, selects
+
+## Avoid
+
+- Introducing TypeScript files into this CRA setup
+- Light theme unless explicitly requested
+- New global state libraries (keep local `useState` / hooks)
+- Breaking `@emergentbase/visual-edits` CRACO wrapper in dev

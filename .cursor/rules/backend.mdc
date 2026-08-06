@@ -1,0 +1,36 @@
+---
+description: FastAPI backend conventions for Softogram
+globs: backend/**/*
+alwaysApply: false
+---
+
+# Backend rules
+
+## App entry
+
+`backend/server.py` — FastAPI with `/api` router prefix.
+
+## Endpoints
+
+- `GET /api/` — liveness
+- `POST /api/contact` — lead form (Pydantic `ContactFormRequest`)
+- `GET /api/status` — MongoDB status checks (legacy)
+
+## Contact + email
+
+- Validate with Pydantic (`EmailStr` for email)
+- Send email via `background_tasks.add_task(send_contact_email, ...)`
+- Never block HTTP response on SendGrid latency
+- `reply_to` = submitter email
+- Env: `SENDGRID_API_KEY`, `SENDER_EMAIL`, `RECIPIENT_EMAIL`
+
+## Style
+
+- Async route handlers
+- Log errors with `logging`; return generic 500 messages to clients
+- Do not re-enable MongoDB contact persistence without approval
+- CORS from `CORS_ORIGINS` env (comma-separated)
+
+## Testing
+
+After API changes, run `python backend_test.py` from repo root.

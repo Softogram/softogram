@@ -1,0 +1,36 @@
+---
+description: Core Softogram project context and agent priorities
+alwaysApply: true
+---
+
+# Softogram project rules
+
+Marketing site for Softogram (software dev company).
+Tagline: "Your idea. Our code. Delivered."
+
+## Stack
+
+- Frontend: React 19 + JS/JSX, Tailwind, shadcn/ui, Framer Motion, CRACO (`frontend/`)
+- Backend: FastAPI + SendGrid (`backend/server.py`)
+- Nearly all UI is in `frontend/src/App.js` — extend in place unless asked to refactor
+
+## Brand (do not drift)
+
+- Dark glassmorphism, cyan `#00F5FF`, violet `#7C3AED`, black backgrounds
+- Space Grotesk headings, Inter body, Lucide icons
+- Glass cards: `bg-white/5 border border-white/10 backdrop-blur-md`
+- Add `data-testid` on new interactive elements
+
+## Contact flow
+
+`POST /api/contact` → background SendGrid email.
+Budget is appended to `message` on the client.
+MongoDB lead save is disabled.
+
+## Constraints
+
+- Minimal diffs; no drive-by refactors of `App.js`
+- No TypeScript/Next.js without explicit approval
+- Canonical email in code: `support@softogram.com`
+- Ignore `.cursor/skills/`, `.claude/skills/` for app changes
+- Use `graphify query` for codebase questions when `graphify-out/graph.json` exists

@@ -1,5 +1,8 @@
 # Softogram Website - PRD
 
+> Technical architecture, file map, and agent memory: see [`memory/PROJECT.md`](./PROJECT.md).
+> Agent briefing: see [`CLAUDE.md`](../CLAUDE.md) at repo root.
+
 ## Original Problem Statement
 Build a premium, dark-themed website for Softogram software company with:
 - Brand Identity: Pure black (#000000), cyan (#00F5FF), violet (#7C3AED) accents
@@ -83,7 +86,7 @@ RECIPIENT_EMAIL=support@softogram.com
 
 ### P2 - Nice to Have
 - [ ] Add loading states/skeleton screens
-- [ ] Implement blog section
+- [ ] Implement blog section (route exists with static placeholder cards; needs CMS or MD pipeline)
 - [ ] Add cookie consent banner
 - [ ] Add live chat widget (Intercom/Drift)
 - [ ] Implement dark/light mode toggle
