@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
+import Layout from "@/components/redesign/Layout";
+import NotFound from "@/pages/NotFound";
+import PlaceholderPage from "@/pages/PlaceholderPage";
 import axios from "axios";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import CountUp from "react-countup";
@@ -1643,8 +1646,7 @@ const PolicyLayout = ({ title, lastUpdated, children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black">
-      <Navbar />
+    <div className="min-h-screen" style={{ background: "#0d1117" }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -1661,8 +1663,6 @@ const PolicyLayout = ({ title, lastUpdated, children }) => {
           </div>
         </div>
       </motion.div>
-      <Footer />
-      <WhatsAppButton />
     </div>
   );
 };
@@ -2015,7 +2015,6 @@ const CaseStudiesPage = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      <Navbar />
       
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4">
@@ -2147,8 +2146,6 @@ const CaseStudiesPage = () => {
         </div>
       </section>
 
-      <Footer />
-      <WhatsAppButton />
     </div>
   );
 };
@@ -2225,7 +2222,6 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      <Navbar />
       
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4">
@@ -2332,8 +2328,6 @@ const BlogPage = () => {
         </div>
       </section>
 
-      <Footer />
-      <WhatsAppButton />
     </div>
   );
 };
@@ -2342,7 +2336,6 @@ const BlogPage = () => {
 const Home = () => {
   return (
     <div className="min-h-screen bg-black">
-      <Navbar />
       <HeroSection />
       <StatsSection />
       <ServicesSection />
@@ -2351,7 +2344,6 @@ const Home = () => {
       <TestimonialsSection />
       <WhyChooseUsSection />
       <ContactSection />
-      <Footer />
       <WhatsAppButton />
     </div>
   );
@@ -2382,13 +2374,43 @@ function App() {
         <ScrollToHash />
         <Toaster position="top-center" richColors theme="dark" />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/case-studies" element={<CaseStudiesPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-          <Route path="/refund-policy" element={<RefundPolicy />} />
-          <Route path="/cookie-policy" element={<CookiePolicy />} />
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/products"
+              element={
+                <PlaceholderPage
+                  title="Products"
+                  note="Shipped products catalog — content arrives in redesign Phase 5."
+                />
+              }
+            />
+            <Route
+              path="/client-work"
+              element={
+                <PlaceholderPage
+                  title="Client Work"
+                  note="Case studies move here in redesign Phase 6. Meanwhile use the home shipped section."
+                />
+              }
+            />
+            <Route path="/case-studies" element={<Navigate to="/client-work" replace />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route
+              path="/blog/:slug"
+              element={
+                <PlaceholderPage
+                  title="Blog post"
+                  note="Individual posts land in redesign Phase 7."
+                />
+              }
+            />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>
