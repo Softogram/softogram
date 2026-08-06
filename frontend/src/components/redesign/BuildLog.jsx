@@ -141,8 +141,8 @@ function BuildLogRow({ entry, lineNum }) {
 }
 
 /**
- * Build log: fixed header + vertically scrollable rows (same section).
- * Header stays pinned inside the section; only the log list scrolls.
+ * Build log: heading + rows in ONE scroll pane.
+ * Sticky header (no divider) pins while logs scroll underneath — same section.
  */
 export default function BuildLogSection({ lineStart = 20 }) {
   let ln = lineStart;
@@ -155,99 +155,96 @@ export default function BuildLogSection({ lineStart = 20 }) {
 
   return (
     <Section id="build-log" topRule bg="#0d1117" testId="build-log-section">
-      <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col" style={{ maxHeight: 720 }}>
-        {/* Fixed header — does not scroll with the logs (no divider — same section) */}
-        <div
-          className="shrink-0 pb-2"
-          style={{ background: "#0d1117" }}
-          data-testid="build-log-header"
-        >
-          <GutterRow lineNum={take()}>
-            <div>
-              <div className="text-xs mb-1" style={{ color: G, fontFamily: "var(--font-mono)" }}>
-                # git log --oneline --all
-              </div>
-              <div className="flex items-baseline justify-between flex-wrap gap-3">
-                <h2
-                  className="leading-tight"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontWeight: 700,
-                    fontSize: "clamp(1.4rem, 2.5vw, 2rem)",
-                    color: "#e2e8f0",
-                  }}
-                >
-                  What shipped,{" "}
-                  <span className="italic" style={{ color: G }}>
-                    and what didn&apos;t — yet.
-                  </span>
-                </h2>
-                <span className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
-                  includes failures · click to expand · scroll ↓
-                </span>
-              </div>
-            </div>
-          </GutterRow>
-        </div>
-
-        {/* Vertically scrollable log rows */}
-        <div className="relative min-h-0 flex-1">
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="relative">
           <div
             className="pane-scroll"
-            style={{ height: 320, overflowY: "auto", overflowX: "hidden" }}
+            style={{ height: 420, overflowY: "auto", overflowX: "hidden" }}
             data-testid="build-log-scroll"
           >
-            <div className="py-2">
-              <div id="week-2" />
-              {BUILD_LOG.filter((e) => e.week === "week-2").map((entry, i) => (
-                <BuildLogRow key={`w2-${i}`} entry={entry} lineNum={take()} />
-              ))}
-
-              <GutterRow lineNum={take()} dimmed>
-                <div
-                  className="py-1 text-xs"
-                  style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-mono)" }}
-                >
-                  ── week-1 ──────────────────────────────────
-                </div>
-              </GutterRow>
-
-              <div id="week-1" />
-              {BUILD_LOG.filter((e) => e.week === "week-1").map((entry, i) => (
-                <BuildLogRow key={`w1-${i}`} entry={entry} lineNum={take()} />
-              ))}
-
-              <GutterRow lineNum={take()} dimmed>
-                <div
-                  className="py-1 text-xs"
-                  style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-mono)" }}
-                >
-                  ── pre-project ─────────────────────────────
-                </div>
-              </GutterRow>
-
-              {BUILD_LOG.filter((e) => e.week === "pre").map((entry, i) => (
-                <BuildLogRow key={`pre-${i}`} entry={entry} lineNum={take()} />
-              ))}
-
+            {/* Sticky header — same scroll root as rows, no border */}
+            <div
+              className="sticky top-0 z-10 pb-3"
+              style={{ background: "#0d1117" }}
+              data-testid="build-log-header"
+            >
               <GutterRow lineNum={take()}>
-                <div className="pt-3 pb-6">
-                  <Link
-                    to="/blog"
-                    className="text-xs transition-colors duration-150"
-                    style={{ color: DIM, fontFamily: "var(--font-mono)" }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = G;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = DIM;
-                    }}
-                  >
-                    → full engineering notes in blog
-                  </Link>
+                <div>
+                  <div className="text-xs mb-1" style={{ color: G, fontFamily: "var(--font-mono)" }}>
+                    # git log --oneline --all
+                  </div>
+                  <div className="flex items-baseline justify-between flex-wrap gap-3">
+                    <h2
+                      className="leading-tight"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 700,
+                        fontSize: "clamp(1.4rem, 2.5vw, 2rem)",
+                        color: "#e2e8f0",
+                      }}
+                    >
+                      What shipped,{" "}
+                      <span className="italic" style={{ color: G }}>
+                        and what didn&apos;t — yet.
+                      </span>
+                    </h2>
+                    <span className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+                      includes failures · click to expand · scroll ↓
+                    </span>
+                  </div>
                 </div>
               </GutterRow>
             </div>
+
+            <div id="week-2" />
+            {BUILD_LOG.filter((e) => e.week === "week-2").map((entry, i) => (
+              <BuildLogRow key={`w2-${i}`} entry={entry} lineNum={take()} />
+            ))}
+
+            <GutterRow lineNum={take()} dimmed>
+              <div
+                className="py-1 text-xs"
+                style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-mono)" }}
+              >
+                ── week-1 ──────────────────────────────────
+              </div>
+            </GutterRow>
+
+            <div id="week-1" />
+            {BUILD_LOG.filter((e) => e.week === "week-1").map((entry, i) => (
+              <BuildLogRow key={`w1-${i}`} entry={entry} lineNum={take()} />
+            ))}
+
+            <GutterRow lineNum={take()} dimmed>
+              <div
+                className="py-1 text-xs"
+                style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-mono)" }}
+              >
+                ── pre-project ─────────────────────────────
+              </div>
+            </GutterRow>
+
+            {BUILD_LOG.filter((e) => e.week === "pre").map((entry, i) => (
+              <BuildLogRow key={`pre-${i}`} entry={entry} lineNum={take()} />
+            ))}
+
+            <GutterRow lineNum={take()}>
+              <div className="pt-3 pb-6">
+                <Link
+                  to="/blog"
+                  className="text-xs transition-colors duration-150"
+                  style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = G;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = DIM;
+                  }}
+                >
+                  → full engineering notes in blog
+                </Link>
+              </div>
+            </GutterRow>
           </div>
           <div
             className="pointer-events-none absolute bottom-0 left-0 right-0 h-14"
@@ -258,3 +255,4 @@ export default function BuildLogSection({ lineStart = 20 }) {
     </Section>
   );
 }
+
