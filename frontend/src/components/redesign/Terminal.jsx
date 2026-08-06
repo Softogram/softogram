@@ -94,37 +94,49 @@ export default function Terminal() {
           lineHeight: 1.7,
         }}
       >
-        {/* Title bar */}
+        {/* Title bar — absolute-centered label so lights/reset never shove or wrap the title */}
         <div
-          className="flex items-center gap-2 px-4 py-2.5"
-          style={{ background: '#161b22', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+          className="relative flex items-center px-4"
+          style={{
+            background: '#161b22',
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
+            height: 36,
+            overflow: 'hidden',
+            flexShrink: 0,
+          }}
         >
-          <div className="flex gap-1.5">
+          <div className="relative z-10 flex gap-1.5 shrink-0">
             <div className="w-3 h-3 rounded-full" style={{ background: '#ff5f57' }} />
             <div className="w-3 h-3 rounded-full" style={{ background: '#febc2e' }} />
             <div className="w-3 h-3 rounded-full" style={{ background: '#28c840' }} />
           </div>
-          <span className="ml-2 flex-1 text-center text-xs" style={{ color: '#8b949e' }}>
+          <span
+            className="pointer-events-none absolute inset-0 flex items-center justify-center text-xs px-16"
+            style={{ color: '#8b949e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+          >
             mcp-migration-checker — bash
           </span>
-          {state !== 'idle' && (
-            <button
-              onClick={reset}
-              className="text-xs transition-colors duration-150"
-              style={{ color: '#8b949e' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#e2e8f0')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#8b949e')}
-            >
-              reset
-            </button>
-          )}
+          <div className="relative z-10 ml-auto shrink-0" style={{ minWidth: 40, textAlign: 'right' }}>
+            {state !== 'idle' && (
+              <button
+                onClick={reset}
+                className="text-xs transition-colors duration-150"
+                style={{ color: '#8b949e' }}
+                data-testid="terminal-reset"
+                onMouseEnter={e => (e.currentTarget.style.color = '#e2e8f0')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#8b949e')}
+              >
+                reset
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Content */}
         <div
           ref={outputRef}
-          className="p-4 overflow-y-auto"
-          style={{ minHeight: 220, maxHeight: 280 }}
+          className="p-4 overflow-auto"
+          style={{ minHeight: 220, maxHeight: 280, overflowX: 'auto', overflowY: 'auto' }}
         >
           {/* ── Idle ── */}
           {state === 'idle' && (
@@ -164,12 +176,12 @@ export default function Terminal() {
           {state === 'output' && (
             <div>
               {DEMO_OUTPUT.slice(0, visibleLines).map((line, i) => (
-                <div key={i} className="flex justify-between gap-4">
-                  <span style={{ color: line.color || 'transparent' }}>
+                <div key={i} className="flex justify-between gap-4 min-w-0">
+                  <span className="min-w-0 break-words" style={{ color: line.color || 'transparent' }}>
                     {line.text || ' '}
                   </span>
                   {line.file && (
-                    <span style={{ color: '#8b949e', flexShrink: 0 }}>{line.file}</span>
+                    <span className="shrink-0" style={{ color: '#8b949e' }}>{line.file}</span>
                   )}
                 </div>
               ))}

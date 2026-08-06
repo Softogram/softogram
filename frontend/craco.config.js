@@ -96,8 +96,10 @@ webpackConfig.devServer = (devServerConfig) => {
   return devServerConfig;
 };
 
-// Wrap with visual edits (automatically adds babel plugin, dev server, and overlay in dev mode)
-if (isDevServer) {
+// Emergent visual-edits overlay (source labels / x-id decorations).
+// OFF by default — those labels clipped the Terminal title bar in the interactive-proof section.
+// Opt in with: ENABLE_VISUAL_EDITS=true yarn start
+if (isDevServer && process.env.ENABLE_VISUAL_EDITS === "true") {
   try {
     const { withVisualEdits } = require("@emergentbase/visual-edits/craco");
     webpackConfig = withVisualEdits(webpackConfig);
