@@ -1,4 +1,6 @@
 import os
+import json
+import time
 import uuid
 import logging
 from pathlib import Path
@@ -15,16 +17,22 @@ from sendgrid.helpers.mail import Mail
 
 # --- Configuration & Setup ---
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+load_dotenv(ROOT_DIR / ".env")
 
-# MongoDB connection (Kept for reference, but usage is commented out below)
-mongo_url = os.getenv('MONGO_URL', 'mongodb://localhost:27017')
-db_name = os.getenv('DB_NAME', 'softogram_db')
-client = AsyncIOMotorClient(mongo_url)
+DATA_DIR = Path(os.getenv("LEADS_DATA_DIR", str(ROOT_DIR / "data")))
+LEADS_JSONL = DATA_DIR / "contact_leads.jsonl"
+EMAIL_FAILURES_JSONL = DATA_DIR / "contact_email_failures.jsonl"
+
+mongo_url = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+db_name = os.getenv("DB_NAME", "softogram_db")
+# Short timeout so a down Mongo cannot hang contact submissions.
+client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=2000)
 db = client[db_name]
 
 app = FastAPI(title="Softogram API")
 api_router = APIRouter(prefix="/api")
+
+logger = logging.getLogger("softogram")
 
 # --- Pydantic Models ---
 
@@ -57,21 +65,62 @@ class ContactSubmission(BaseModel):
     service: str
     message: str
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    storage: str = "pending"  # jsonl | mongo+jsonl | mongo | failed
+
+
+# --- Persistence (issue #3) ---
+
+def _ensure_data_dir() -> None:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _append_jsonl(path: Path, record: dict) -> None:
+    _ensure_data_dir()
+    with path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+        f.flush()
+        os.fsync(f.fileno())
+
+
+async def persist_contact_submission(submission: ContactSubmission) -> dict:
+    """
+    Durably store the lead before returning HTTP success.
+    Always write JSONL; also try Mongo (best effort, short timeout).
+    """
+    doc = submission.model_dump()
+    doc["timestamp"] = doc["timestamp"].isoformat()
+    mongo_ok = False
+
+    try:
+        await db.contact_submissions.insert_one({**doc})
+        mongo_ok = True
+    except Exception as e:
+        logger.warning("Mongo contact persist skipped: %s", e)
+
+    doc["storage"] = "mongo+jsonl" if mongo_ok else "jsonl"
+
+    try:
+        _append_jsonl(LEADS_JSONL, doc)
+    except Exception as e:
+        logger.error("Failed to append contact lead JSONL: %s", e)
+        raise
+
+    return doc
+
 
 # --- Helper Functions ---
 
-def send_contact_email(name: str, user_email: str, phone: str, service: str, message: str):
-    """Send contact form submission via SendGrid"""
-    # Use your verified email (e.g., your personal Gmail) as the 'from' address
-    sender_email = os.getenv('SENDER_EMAIL')
-    recipient_email = os.getenv('RECIPIENT_EMAIL')
-    api_key = os.getenv('SENDGRID_API_KEY')
+def send_contact_email(name: str, user_email: str, phone: str, service: str, message: str) -> bool:
+    """Send contact form submission via SendGrid (single attempt)."""
+    sender_email = os.getenv("SENDER_EMAIL")
+    recipient_email = os.getenv("RECIPIENT_EMAIL")
+    api_key = os.getenv("SENDGRID_API_KEY")
 
     if not api_key or not sender_email:
         logging.warning("SendGrid API key or Verified Sender not configured.")
         return False
 
-    subject = f"🚀 New Project Inquiry from {name}"
+    subject = f"New Project Inquiry from {name}"
 
     html_content = f"""
     <html>
@@ -95,23 +144,64 @@ def send_contact_email(name: str, user_email: str, phone: str, service: str, mes
         from_email=sender_email,
         to_emails=recipient_email,
         subject=subject,
-        html_content=html_content
+        html_content=html_content,
     )
-
-    # Allows you to click 'Reply' and respond directly to the lead
     mail.reply_to = user_email
 
     try:
-        # SENDGRID_HOST lets the e2e suite point sends at a local mock server
         sg = SendGridAPIClient(api_key)
-        sendgrid_host = os.getenv('SENDGRID_HOST')
+        sendgrid_host = os.getenv("SENDGRID_HOST")
         if sendgrid_host:
             sg.client.host = sendgrid_host
         response = sg.send(mail)
         return response.status_code == 202
     except Exception as e:
-        logging.error(f"SendGrid Error: {str(e)}")
+        logging.error("SendGrid Error: %s", e)
         return False
+
+
+def send_contact_email_with_retries(
+    lead_id: str,
+    name: str,
+    user_email: str,
+    phone: str,
+    service: str,
+    message: str,
+    attempts: int = 3,
+) -> bool:
+    """Retry SendGrid with exponential backoff; alert on final failure."""
+    for i in range(attempts):
+        ok = send_contact_email(name, user_email, phone, service, message)
+        if ok:
+            logger.info("Contact email sent lead_id=%s attempt=%s", lead_id, i + 1)
+            return True
+        if i < attempts - 1:
+            time.sleep(0.4 * (2**i))
+
+    failure = {
+        "id": lead_id,
+        "email": user_email,
+        "name": name,
+        "service": service,
+        "phone": phone,
+        "message": message,
+        "failed_at": datetime.now(timezone.utc).isoformat(),
+        "attempts": attempts,
+        "alert": "contact_email_final_failure",
+    }
+    try:
+        _append_jsonl(EMAIL_FAILURES_JSONL, failure)
+    except Exception as e:
+        logger.error("Could not write email failure log: %s", e)
+
+    logger.error(
+        "ALERT contact_email_final_failure lead_id=%s email=%s service=%s attempts=%s",
+        lead_id,
+        user_email,
+        service,
+        attempts,
+    )
+    return False
 
 # --- API Routes ---
 
@@ -121,39 +211,33 @@ async def root():
 
 @api_router.post("/contact", response_model=ContactFormResponse)
 async def submit_contact_form(request: ContactFormRequest, background_tasks: BackgroundTasks):
-    """Handles contact form submissions and triggers background email"""
+    """Persist the lead first, then email in the background (with retries)."""
     try:
-        # --- MONGODB SAVING COMMENTED OUT AS REQUESTED ---
-        """
         submission = ContactSubmission(
             name=request.name,
-            email=request.email,
+            email=str(request.email),
             phone=request.phone,
             service=request.service,
-            message=request.message
+            message=request.message,
         )
-        doc = submission.model_dump()
-        doc['timestamp'] = doc['timestamp'].isoformat()
-        await db.contact_submissions.insert_one(doc)
-        """
-        # --------------------------------------------------
+        doc = await persist_contact_submission(submission)
 
-        # Trigger background email task
         background_tasks.add_task(
-            send_contact_email,
+            send_contact_email_with_retries,
+            doc["id"],
             request.name,
-            request.email,
+            str(request.email),
             request.phone,
             request.service,
-            request.message
+            request.message,
         )
 
         return ContactFormResponse(
             status="success",
-            message="Thank you! We'll get back to you shortly."
+            message="Thank you! We'll get back to you shortly.",
         )
     except Exception as e:
-        logging.error(f"Contact Form Error: {str(e)}")
+        logging.error("Contact Form Error: %s", e)
         raise HTTPException(status_code=500, detail="Failed to process request")
 
 # (Other status routes kept for your reference)

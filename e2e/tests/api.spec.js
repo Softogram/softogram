@@ -57,21 +57,41 @@ test.describe("contact API", () => {
     expect(emails).toHaveLength(0);
   });
 
-  test("visitor still gets success when SendGrid is down (documents silent-loss behavior, issue #3)", async ({ request }) => {
-    await forceSendFailure(request, 500, 1);
+  test("visitor still gets success when SendGrid is down and lead is persisted (issue #3)", async ({
+    request,
+  }) => {
+    const fs = require("fs");
+    const path = require("path");
+    const leadsFile = path.join(__dirname, "../../backend/data/contact_leads.jsonl");
+    const before = fs.existsSync(leadsFile) ? fs.readFileSync(leadsFile, "utf8") : "";
+
+    await forceSendFailure(request, 500, 5);
+    const email = `persist-${Date.now()}@example.com`;
     const res = await request.post(`${BACKEND_URL}/api/contact`, {
       data: {
-        name: "Unlucky Lead",
-        email: "unlucky@example.com",
+        name: "Persist Test",
+        email,
         phone: "+91-9000000000",
-        service: "E-commerce Platform",
-        message: "hello?",
+        service: "Custom Software",
+        message: "Please keep this lead even if email fails.",
       },
     });
-    // The API intentionally does not surface email failure to the visitor.
-    // Issue #3 adds persistence + alerting behind this same behavior.
+    // Visitor still sees success; lead must already be durable on disk.
     expect(res.status()).toBe(200);
     expect((await res.json()).status).toBe("success");
+
+    await expect
+      .poll(() => (fs.existsSync(leadsFile) ? fs.readFileSync(leadsFile, "utf8") : ""), {
+        timeout: 5000,
+      })
+      .toContain(email);
+
+    const after = fs.readFileSync(leadsFile, "utf8");
+    expect(after.length).toBeGreaterThan(before.length);
+    const lastLine = after.trim().split("\n").pop();
+    const record = JSON.parse(lastLine);
+    expect(record.email).toBe(email);
+    expect(record.storage).toMatch(/jsonl/);
   });
 
   // Issue #2 — foreign origins must not be reflected.

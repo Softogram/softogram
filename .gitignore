@@ -93,3 +93,6 @@ Redesign-Softogram-Website/
 
 # Local graph / analysis cache
 graphify-out/
+
+# Contact lead stores (issue #3) — never commit PII
+backend/data/
