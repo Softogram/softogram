@@ -143,3 +143,10 @@ See `memory/PRD.md` for full PRD and prioritized backlog.
 3. Prefer extending `App.js` patterns over new abstractions
 4. Use `memory/PROJECT.md` for file-level map and known tech debt
 5. Query graphify before large exploratory reads of the codebase
+
+## Redesign (August 2026)
+
+- Porting `Redesign-Softogram-Website/` into `frontend/` (CRA), not replacing with Vite
+- Brand: green `#4ADE80` + amber on GitHub-dark (supersedes royal-blue #20 plan)
+- Plan: `docs/redesign/integration-plan-2026-08.md`
+- Implement one phase at a time (Phase 0 foundations first); skip `/admin` until later
