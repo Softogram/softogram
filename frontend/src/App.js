@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from "react
 import Layout from "@/components/redesign/Layout";
 import NotFound from "@/pages/NotFound";
 import PlaceholderPage from "@/pages/PlaceholderPage";
+import Home from "@/pages/Home";
 import axios from "axios";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import CountUp from "react-countup";
@@ -2333,7 +2334,7 @@ const BlogPage = () => {
 };
 
 // Home Page
-const Home = () => {
+const LegacyHome = () => {
   return (
     <div className="min-h-screen bg-black">
       <HeroSection />

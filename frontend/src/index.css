@@ -451,3 +451,21 @@ h1, h2, h3, h4, h5, h6 {
     padding-left: 48px;
     border-left: 1px solid var(--rd-border);
 }
+
+
+/* Redesign home motion */
+@keyframes aurora1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(5%, -8%) scale(1.08); }
+  100% { transform: translate(2%, -4%) scale(1.03); }
+}
+@keyframes aurora2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-6%, 7%) scale(1.12); }
+  100% { transform: translate(-3%, 3%) scale(0.97); }
+}
+.pane-scroll { scrollbar-width: thin; scrollbar-color: rgba(74,222,128,0.3) rgba(255,255,255,0.03); }
+.pane-scroll::-webkit-scrollbar { width: 3px; }
+.pane-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 2px; }
+.pane-scroll::-webkit-scrollbar-thumb { background: rgba(74,222,128,0.3); border-radius: 2px; }
+.pane-scroll::-webkit-scrollbar-thumb:hover { background: rgba(74,222,128,0.55); }
