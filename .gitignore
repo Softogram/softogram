@@ -93,3 +93,6 @@ frontend/node_modules/.cache/default-development/2.pack
 *.env.*
 
 Redesign-Softogram-Website/
+
+# Local graph / analysis cache
+graphify-out/
