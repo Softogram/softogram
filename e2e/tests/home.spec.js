@@ -1,8 +1,8 @@
-// Landing page smoke: redesign Phase 2 chrome + hero + contact.
+// Landing page smoke: redesign Home (Phases 2–4).
 const { test, expect } = require("@playwright/test");
 
 test.describe("landing page", () => {
-  test("redesign hero, placeholders, and contact render", async ({ page }) => {
+  test("redesign hero, mid sections, and contact render", async ({ page }) => {
     await page.goto("/");
 
     await expect(page.getByTestId("navbar")).toBeVisible();
@@ -11,17 +11,18 @@ test.describe("landing page", () => {
     await expect(page.getByTestId("hero-cta-quote")).toBeVisible();
     await expect(page.getByTestId("hero-headline")).toContainText(/ships/i);
 
-    // Phase 3 live sections
+    // Phase 3
     await expect(page.getByTestId("terminal-section")).toBeVisible();
     await expect(page.getByTestId("terminal-widget")).toBeVisible();
     await expect(page.getByTestId("terminal-run")).toBeVisible();
     await expect(page.getByTestId("build-log-section")).toBeVisible();
     await expect(page.getByTestId("build-log-row").first()).toBeVisible();
 
-    // Phase 4 still placeholders
-    for (const section of ["shipped-section", "services-section"]) {
-      await expect(page.getByTestId(section)).toBeAttached();
-    }
+    // Phase 4
+    await expect(page.getByTestId("shipped-section")).toBeVisible();
+    await expect(page.getByTestId("shipped-card").first()).toBeVisible();
+    await expect(page.getByTestId("services-section")).toBeVisible();
+    await expect(page.getByTestId("service-row").first()).toBeVisible();
 
     await expect(page.getByTestId("contact-section")).toBeAttached();
   });
@@ -29,8 +30,9 @@ test.describe("landing page", () => {
   test("terminal run reveals demo output", async ({ page }) => {
     await page.goto("/");
     await page.getByTestId("terminal-section").scrollIntoViewIfNeeded();
-    await page.getByTestId("terminal-run").click();
-    await expect(page.getByText("exit 0")).toBeVisible({ timeout: 15000 });
+    const widget = page.getByTestId("terminal-widget");
+    await widget.getByTestId("terminal-run").click();
+    await expect(widget.getByText("exit 0", { exact: true })).toBeVisible({ timeout: 15000 });
   });
 
   test("build log row expands detail", async ({ page }) => {

@@ -1,12 +1,15 @@
 /**
- * Redesign home — Phase 2 Hero/Contact + Phase 3 Terminal/Build Log.
- * Shipped / Services arrive in Phase 4.
+ * Redesign home — Hero, Terminal, Build Log, Shipped, Services, Contact (Phase 4 wired).
  */
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
 import ClaimBlock from "@/components/redesign/ClaimBlock";
 import TerminalSection from "@/components/redesign/TerminalSection";
 import BuildLogSection from "@/components/redesign/BuildLog";
+import ShippedSection from "@/components/redesign/ShippedSection";
+import ServicesSection from "@/components/redesign/ServicesSection";
 import {
   G,
   A,
@@ -17,6 +20,15 @@ import {
   Section,
   Reveal,
 } from "@/components/redesign/homePrimitives";
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+const SERVICE_BY_TYPE = {
+  custom: "Custom Software",
+  saas: "SaaS Platforms",
+  ai: "AI Agent Systems",
+  tooling: "CLI & Dev Tooling",
+};
 
 function useRepoStats(repo) {
   const [stats, setStats] = useState(null);
@@ -100,43 +112,18 @@ function AnimatedHeadline({ active }) {
   );
 }
 
-function ComingSoonPane({ id, title, note, lineNum }) {
-  return (
-    <Section id={id} topRule bg="#0d1117">
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <GutterRow lineNum={lineNum}>
-          <div className="text-xs mb-2" style={{ color: A, fontFamily: "var(--font-mono)" }}>
-            # pending · redesign phase later
-          </div>
-          <h2
-            className="leading-tight mb-2"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 700,
-              fontSize: "clamp(1.4rem, 2.5vw, 2rem)",
-              color: "#e2e8f0",
-            }}
-          >
-            {title}
-          </h2>
-          <p className="text-sm" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
-            {note}
-          </p>
-        </GutterRow>
-      </div>
-    </Section>
-  );
-}
-
 function ContactSection({ lineStart }) {
-  const [form, setForm] = useState({
+  const emptyForm = {
     name: "",
     email: "",
     phone: "",
     message: "",
     type: "custom",
-  });
+  };
+  const [form, setForm] = useState(emptyForm);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   let ln = lineStart;
 
   const inputBase = {
@@ -148,10 +135,38 @@ function ContactSection({ lineStart }) {
     outline: "none",
   };
 
-  // Phase 2: UI-only success state. Phase 4 wires POST /api/contact.
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError("");
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API}/contact`, {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        service: SERVICE_BY_TYPE[form.type] || form.type,
+        message: form.message,
+      });
+      if (response.data?.status === "success") {
+        toast.success(response.data.message || "Thank you! We'll be in touch.");
+        setForm(emptyForm);
+        setSubmitted(true);
+      } else {
+        const msg = "Failed to submit. Please try again.";
+        setError(msg);
+        toast.error(msg);
+      }
+    } catch (err) {
+      const msg =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        "Failed to submit. Please try again.";
+      const text = typeof msg === "string" ? msg : "Failed to submit. Please try again.";
+      setError(text);
+      toast.error(text);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -200,9 +215,15 @@ function ContactSection({ lineStart }) {
                   <p className="text-sm" style={{ color: "#e2e8f0", fontFamily: "var(--font-mono)" }}>
                     received. back to you within 24 hours.
                   </p>
-                  <p className="text-xs mt-3" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
-                    (UI stub — API wiring lands in redesign Phase 4)
-                  </p>
+                  <button
+                    type="button"
+                    className="mt-5 text-xs underline"
+                    style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                    onClick={() => setSubmitted(false)}
+                    data-testid="contact-send-another"
+                  >
+                    send another →
+                  </button>
                 </div>
               ) : (
                 <form
@@ -222,6 +243,7 @@ function ContactSection({ lineStart }) {
                       className="w-full px-3 py-2 text-sm rounded-sm"
                       style={inputBase}
                       data-testid="contact-name-input"
+                      disabled={loading}
                       onFocus={(e) => {
                         e.target.style.borderColor = `${G}55`;
                       }}
@@ -243,6 +265,7 @@ function ContactSection({ lineStart }) {
                       className="w-full px-3 py-2 text-sm rounded-sm"
                       style={inputBase}
                       data-testid="contact-email-input"
+                      disabled={loading}
                       onFocus={(e) => {
                         e.target.style.borderColor = `${G}55`;
                       }}
@@ -264,6 +287,7 @@ function ContactSection({ lineStart }) {
                       className="w-full px-3 py-2 text-sm rounded-sm"
                       style={inputBase}
                       data-testid="contact-phone-input"
+                      disabled={loading}
                       onFocus={(e) => {
                         e.target.style.borderColor = `${G}55`;
                       }}
@@ -295,6 +319,7 @@ function ContactSection({ lineStart }) {
                             fontFamily: "var(--font-mono)",
                           }}
                           data-testid={`contact-type-${o.v}`}
+                          disabled={loading}
                         >
                           {o.l}
                         </button>
@@ -309,6 +334,7 @@ function ContactSection({ lineStart }) {
                       className="w-full px-3 py-2 text-sm rounded-sm resize-none"
                       style={{ ...inputBase, resize: "none" }}
                       data-testid="contact-message-textarea"
+                      disabled={loading}
                       onFocus={(e) => {
                         e.target.style.borderColor = `${G}55`;
                       }}
@@ -317,14 +343,24 @@ function ContactSection({ lineStart }) {
                       }}
                     />
                   </div>
+                  {error && (
+                    <div
+                      className="md:col-span-2 text-xs"
+                      style={{ color: A, fontFamily: "var(--font-mono)" }}
+                      data-testid="contact-error"
+                    >
+                      {error}
+                    </div>
+                  )}
                   <div className="md:col-span-2 flex justify-end">
                     <button
                       type="submit"
-                      className="px-6 py-2 text-sm font-semibold rounded-sm transition-all duration-150 hover:opacity-90"
+                      disabled={loading}
+                      className="px-6 py-2 text-sm font-semibold rounded-sm transition-all duration-150 hover:opacity-90 disabled:opacity-60"
                       style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
                       data-testid="contact-submit-button"
                     >
-                      send →
+                      {loading ? "sending…" : "send →"}
                     </button>
                   </div>
                 </form>
@@ -499,20 +535,9 @@ export default function Home() {
 
       <TerminalSection lineStart={ln} />
       <BuildLogSection lineStart={ln + 5} />
-      <ComingSoonPane
-        id="shipped"
-        title="What we've shipped"
-        note="Product cards land in redesign Phase 4 — browse /products for the scaffold."
-        lineNum={ln + 20}
-      />
-      <ComingSoonPane
-        id="services"
-        title="Services"
-        note="Service rows land in redesign Phase 4."
-        lineNum={ln + 21}
-      />
-
-      <ContactSection lineStart={ln} />
+      <ShippedSection lineStart={ln + 20} />
+      <ServicesSection lineStart={ln + 30} />
+      <ContactSection lineStart={ln + 40} />
     </>
   );
 }
