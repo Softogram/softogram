@@ -94,29 +94,38 @@ export default function Terminal() {
           lineHeight: 1.7,
         }}
       >
-        {/* Title bar — absolute-centered label so lights/reset never shove or wrap the title */}
+        {/* Title bar — CSS grid keeps lights / label / reset in separate columns */}
         <div
-          className="relative flex items-center px-4"
           style={{
+            display: 'grid',
+            gridTemplateColumns: '64px 1fr 64px',
+            alignItems: 'center',
             background: '#161b22',
             borderBottom: '1px solid rgba(255,255,255,0.07)',
             height: 36,
+            padding: '0 12px',
             overflow: 'hidden',
             flexShrink: 0,
           }}
         >
-          <div className="relative z-10 flex gap-1.5 shrink-0">
+          <div className="flex gap-1.5">
             <div className="w-3 h-3 rounded-full" style={{ background: '#ff5f57' }} />
             <div className="w-3 h-3 rounded-full" style={{ background: '#febc2e' }} />
             <div className="w-3 h-3 rounded-full" style={{ background: '#28c840' }} />
           </div>
-          <span
-            className="pointer-events-none absolute inset-0 flex items-center justify-center text-xs px-16"
-            style={{ color: '#8b949e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+          <div
+            style={{
+              color: '#8b949e',
+              fontSize: 12,
+              textAlign: 'center',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
             mcp-migration-checker — bash
-          </span>
-          <div className="relative z-10 ml-auto shrink-0" style={{ minWidth: 40, textAlign: 'right' }}>
+          </div>
+          <div style={{ textAlign: 'right' }}>
             {state !== 'idle' && (
               <button
                 onClick={reset}
@@ -234,15 +243,15 @@ export default function Terminal() {
       >
         <span style={{ color: '#fb923c', flexShrink: 0 }}>⚠</span>
         <span>
-          This component executes real CLI output in production code — this is the static design spec.
-          The real implementation shells out to the{' '}
+          Animated demo of the CLI — click run to replay sample output.
+          Live binary:{' '}
           <a
             href="https://github.com/Softogram/softogram-mcp-spec-migration-checker"
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: '#4ade80', textDecoration: 'underline' }}
           >
-            mcp-migration-checker binary
+            mcp-migration-checker
           </a>
           .
         </span>
