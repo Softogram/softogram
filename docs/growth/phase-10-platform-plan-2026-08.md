@@ -126,10 +126,12 @@ Work through them in order; later phases depend on earlier ones being done first
 
 ### Phase 10 - Postgres foundations
 
-- [ ] [#31 Docker Compose Postgres + SQLAlchemy async engine](https://github.com/Softogram/softogram/issues/31)
-- [ ] [#32 Alembic migrations + initial schema](https://github.com/Softogram/softogram/issues/32)
-- [ ] [#33 Backfill leads and CMS content into Postgres](https://github.com/Softogram/softogram/issues/33)
-- [ ] [#34 Remove MongoDB and Motor from the codebase](https://github.com/Softogram/softogram/issues/34)
+Implemented in [PR #54](https://github.com/Softogram/softogram/pull/54) - pending review/merge.
+
+- [x] [#31 Docker Compose Postgres + SQLAlchemy async engine](https://github.com/Softogram/softogram/issues/31)
+- [x] [#32 Alembic migrations + initial schema](https://github.com/Softogram/softogram/issues/32)
+- [x] [#33 Backfill leads and CMS content into Postgres](https://github.com/Softogram/softogram/issues/33) - scope grew to include the actual read/write cutover, not just a one-time copy
+- [x] [#34 Remove MongoDB and Motor from the codebase](https://github.com/Softogram/softogram/issues/34)
 
 ### Phase 11 - Admin auth hardening
 
