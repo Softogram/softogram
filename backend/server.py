@@ -6,19 +6,23 @@ import time
 import uuid
 import logging
 import html
+import shutil
 from collections import defaultdict, deque
 from pathlib import Path
-from datetime import datetime, timezone
-from typing import List
+from datetime import datetime, timezone, timedelta
+from typing import List, Optional
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request
+from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
 from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from sqlalchemy import select, func
+import httpx
 from database import AsyncSessionLocal, engine
-from models import Lead
+from models import Lead, BlogPost
 import cms as content_cms
 
 # --- Configuration & Setup ---
@@ -27,6 +31,12 @@ load_dotenv(ROOT_DIR / ".env")
 
 DATA_DIR = Path(os.getenv("LEADS_DATA_DIR", str(ROOT_DIR / "data")))
 EMAIL_FAILURES_JSONL = DATA_DIR / "contact_email_failures.jsonl"
+UPLOADS_DIR = DATA_DIR / "uploads"
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+
+POSTHOG_API_KEY = os.getenv("POSTHOG_API_KEY")
+POSTHOG_PROJECT_ID = os.getenv("POSTHOG_PROJECT_ID")
+POSTHOG_HOST = os.getenv("POSTHOG_HOST", "https://us.posthog.com")
 
 
 def _run_migrations() -> None:
@@ -475,9 +485,176 @@ async def admin_replace_projects(request: Request, items: List[ProjectModel]):
     return await content_cms.save_projects([i.model_dump() for i in items])
 
 
+# --- Leads pipeline (issue #38) ---
+
+LEAD_STATUSES = {"new", "contacted", "won", "lost"}
+
+
+class LeadStatusUpdate(BaseModel):
+    status: str = Field(min_length=1, max_length=20)
+
+    @field_validator("status")
+    @classmethod
+    def status_valid(cls, v: str) -> str:
+        if v not in LEAD_STATUSES:
+            raise ValueError(f"status must be one of {sorted(LEAD_STATUSES)}")
+        return v
+
+
+def _lead_to_dict(row: Lead) -> dict:
+    return {
+        "id": row.id,
+        "name": row.name,
+        "email": row.email,
+        "phone": row.phone,
+        "service": row.service,
+        "message": row.message,
+        "status": row.status,
+        "storage": row.storage,
+        "createdAt": row.created_at.isoformat() if row.created_at else None,
+    }
+
+
+@api_router.get("/admin/leads")
+async def admin_list_leads(request: Request):
+    _require_admin(request)
+    async with AsyncSessionLocal() as session:
+        rows = (await session.execute(select(Lead).order_by(Lead.created_at.desc()))).scalars().all()
+        return [_lead_to_dict(r) for r in rows]
+
+
+@api_router.patch("/admin/leads/{lead_id}")
+async def admin_update_lead_status(lead_id: str, body: LeadStatusUpdate, request: Request):
+    _require_admin(request)
+    async with AsyncSessionLocal() as session:
+        lead = await session.get(Lead, lead_id)
+        if lead is None:
+            raise HTTPException(status_code=404, detail="Lead not found")
+        lead.status = body.status
+        await session.commit()
+        return _lead_to_dict(lead)
+
+
+# --- Image upload (issue #39) ---
+
+ALLOWED_UPLOAD_TYPES = {
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+}
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5MB
+
+
+@api_router.post("/admin/upload")
+async def admin_upload_image(request: Request, file: UploadFile = File(...)):
+    _require_admin(request)
+
+    ext = ALLOWED_UPLOAD_TYPES.get(file.content_type)
+    if ext is None:
+        raise HTTPException(status_code=415, detail="Unsupported image type. Use PNG, JPEG, WEBP, or GIF.")
+
+    contents = await file.read()
+    if len(contents) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="Image too large (max 5MB).")
+
+    filename = f"{uuid.uuid4()}{ext}"
+    dest = UPLOADS_DIR / filename
+    with dest.open("wb") as f:
+        f.write(contents)
+
+    return {"url": f"/uploads/{filename}"}
+
+
+# --- Analytics (issue #40) ---
+
+async def _posthog_summary() -> Optional[dict]:
+    """Best-effort PostHog trend query. Returns None if not configured or unreachable -
+    the analytics endpoint degrades gracefully rather than failing the whole response."""
+    if not POSTHOG_API_KEY or not POSTHOG_PROJECT_ID:
+        return None
+
+    events = ["$pageview", "contact_form_viewed", "contact_form_submitted", "whatsapp_clicked"]
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                f"{POSTHOG_HOST}/api/projects/{POSTHOG_PROJECT_ID}/insights/trend/",
+                headers={"Authorization": f"Bearer {POSTHOG_API_KEY}"},
+                params={
+                    "events": json.dumps([{"id": e} for e in events]),
+                    "date_from": "-30d",
+                },
+            )
+            resp.raise_for_status()
+            data = resp.json()
+    except Exception as e:
+        logger.warning("PostHog query failed: %s", e)
+        return None
+
+    series = {}
+    pageviews_by_day = []
+    for result in data.get("result", []):
+        event_id = result.get("action", {}).get("name") or result.get("label")
+        total = sum(result.get("data", []))
+        series[event_id] = total
+        if event_id == "$pageview":
+            pageviews_by_day = [
+                {"date": label, "count": count}
+                for label, count in zip(result.get("labels", []), result.get("data", []))
+            ]
+
+    viewed = series.get("contact_form_viewed", 0)
+    submitted = series.get("contact_form_submitted", 0)
+    conversion_rate = round((submitted / viewed) * 100, 1) if viewed else None
+
+    return {
+        "pageviews_total": series.get("$pageview", 0),
+        "pageviews_by_day": pageviews_by_day,
+        "contact_form_viewed": viewed,
+        "contact_form_submitted": submitted,
+        "contact_form_conversion_rate": conversion_rate,
+        "whatsapp_clicked": series.get("whatsapp_clicked", 0),
+    }
+
+
+@api_router.get("/admin/analytics")
+async def admin_analytics(request: Request):
+    _require_admin(request)
+
+    since = datetime.now(timezone.utc) - timedelta(days=30)
+    async with AsyncSessionLocal() as session:
+        day = func.date_trunc("day", Lead.created_at).label("day")
+        leads_by_day_rows = (
+            await session.execute(
+                select(day, func.count()).where(Lead.created_at >= since).group_by(day).order_by(day)
+            )
+        ).all()
+        leads_by_status_rows = (
+            await session.execute(select(Lead.status, func.count()).group_by(Lead.status))
+        ).all()
+        top_posts_rows = (
+            await session.execute(
+                select(BlogPost.title, BlogPost.slug, BlogPost.view_count)
+                .order_by(BlogPost.view_count.desc())
+                .limit(5)
+            )
+        ).all()
+
+    posthog = await _posthog_summary()
+
+    return {
+        "leadsOverTime": [{"date": d.date().isoformat(), "count": c} for d, c in leads_by_day_rows],
+        "leadsByStatus": [{"status": s, "count": c} for s, c in leads_by_status_rows],
+        "topPosts": [{"title": t, "slug": s, "viewCount": v} for t, s, v in top_posts_rows],
+        "posthogConnected": posthog is not None,
+        "posthog": posthog,
+    }
+
+
 # --- App Initialization ---
 
 app.include_router(api_router)
+app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 # CORS: fail closed. Never default to "*". Production should set
 # CORS_ORIGINS=https://softogram.in,https://www.softogram.in
@@ -515,7 +692,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_parse_cors_origins(os.environ.get("CORS_ORIGINS", _DEFAULT_CORS_ORIGINS)),
     allow_credentials=False,
-    allow_methods=["GET", "POST", "PUT", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
 )
 

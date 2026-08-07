@@ -83,3 +83,25 @@ export async function adminSaveProjects(items) {
   const { data } = await axios.put(`${API}/admin/projects`, items, { headers: adminHeaders() });
   return data;
 }
+
+export async function adminFetchLeads() {
+  const { data } = await axios.get(`${API}/admin/leads`, { headers: adminHeaders() });
+  return data;
+}
+
+export async function adminUpdateLeadStatus(id, status) {
+  const { data } = await axios.patch(`${API}/admin/leads/${id}`, { status }, { headers: adminHeaders() });
+  return data;
+}
+
+export async function adminUploadImage(file) {
+  const form = new FormData();
+  form.append("file", file);
+  const { data } = await axios.post(`${API}/admin/upload`, form, { headers: adminHeaders() });
+  return `${process.env.REACT_APP_BACKEND_URL}${data.url}`;
+}
+
+export async function adminFetchAnalytics() {
+  const { data } = await axios.get(`${API}/admin/analytics`, { headers: adminHeaders() });
+  return data;
+}
