@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import LogoMono from './LogoMono'
 import Logo from './Logo'
+import WhatsAppButton from './WhatsAppButton'
 
 const G      = '#4ade80'
 const DIM    = '#8b949e'
@@ -341,6 +342,8 @@ export default function Layout() {
 
       {/* ── Page ── */}
       <Outlet />
+
+      <WhatsAppButton />
 
       {/* ── Footer ── */}
       <footer data-testid="footer" className="py-12" style={{ borderTop: `1px solid ${BORDER}`, background: '#0d1117' }}>

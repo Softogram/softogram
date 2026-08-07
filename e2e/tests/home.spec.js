@@ -47,16 +47,18 @@ test.describe("landing page", () => {
     await expect(page.getByTestId("build-log-detail").first()).toBeVisible();
   });
 
-  // WhatsApp float was part of the old home; redesign home omits it for now.
-  test.fixme("WhatsApp floating button is present and links to WhatsApp (deferred)", async ({ page }) => {
+  test("WhatsApp floating button is present and links to WhatsApp", async ({ page }) => {
     await page.goto("/");
     const btn = page.getByTestId("whatsapp-button");
     await expect(btn).toBeVisible();
     await expect(btn).toHaveAttribute("href", /wa\.me/);
   });
 
-  test.fixme("WhatsApp link uses full international number (issue #12)", async ({ page }) => {
+  test("WhatsApp link uses full international number (issue #12)", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByTestId("whatsapp-button")).toHaveAttribute("href", /wa\.me\/91\d{10}/);
+    await expect(page.getByTestId("whatsapp-button")).toHaveAttribute(
+      "href",
+      /wa\.me\/916393783010(\?|$)/,
+    );
   });
 });
