@@ -144,41 +144,14 @@ class SoftogramAPITester:
         return success
 
     def test_status_endpoint(self):
-        """Test status endpoint"""
-        # Test GET status
-        success, response = self.run_test(
-            "Get Status Checks",
+        """Legacy /api/status was removed (issue #6); expect 404."""
+        success, _ = self.run_test(
+            "Get Status Checks Gone",
             "GET",
             "status",
-            200
+            404,
         )
-        
-        if success:
-            if isinstance(response, list):
-                self.log_result("Status Checks Format", True, f"Received {len(response)} status checks")
-            else:
-                self.log_result("Status Checks Format", False, f"Expected list, got: {type(response)}")
-
-        # Test POST status
-        status_data = {
-            "client_name": f"test_client_{datetime.now().strftime('%H%M%S')}"
-        }
-        
-        post_success, post_response = self.run_test(
-            "Create Status Check",
-            "POST",
-            "status",
-            200,
-            data=status_data
-        )
-        
-        if post_success and post_response:
-            if "id" in post_response and "client_name" in post_response:
-                self.log_result("Status Check Creation", True, f"Created with ID: {post_response['id']}")
-            else:
-                self.log_result("Status Check Creation", False, "Missing required fields in response")
-
-        return success and post_success
+        return success
 
     def run_all_tests(self):
         """Run all API tests"""

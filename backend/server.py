@@ -7,11 +7,9 @@ import html
 from collections import defaultdict, deque
 from pathlib import Path
 from datetime import datetime, timezone
-from typing import List, Optional
-
 from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
 from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 from sendgrid import SendGridAPIClient
@@ -38,23 +36,23 @@ logger = logging.getLogger("softogram")
 
 # --- Pydantic Models ---
 
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
 class ContactFormRequest(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
     email: EmailStr
-    phone: str
-    service: str
-    message: str
+    phone: str = Field(
+        min_length=5,
+        max_length=20,
+        pattern=r"^[+\d][\d\s\-()]{4,19}$",
+    )
+    service: str = Field(min_length=1, max_length=100)
+    message: str = Field(min_length=1, max_length=5000)
     # Honeypot (issue #5) — bots fill this; humans leave empty. Do not email/persist if set.
-    company_website: str = ""
+    company_website: str = Field(default="", max_length=200)
+
+    @field_validator("name", "service", "message", "phone", mode="before")
+    @classmethod
+    def strip_whitespace(cls, v: str) -> str:
+        return v.strip() if isinstance(v, str) else v
 
 class ContactFormResponse(BaseModel):
     status: str
@@ -323,14 +321,8 @@ async def submit_contact_form(
         logging.error("Contact Form Error: %s", e)
         raise HTTPException(status_code=500, detail="Failed to process request")
 
-# (Other status routes kept for your reference)
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    return status_checks
+# Legacy template /api/status removed (issue #6) — it hung when Mongo was down
+# and exposed DB documents without auth. Use GET /api/ for liveness.
 
 # --- App Initialization ---
 

@@ -54,7 +54,7 @@ Routes: `/`, `/case-studies`, `/blog`, `/privacy-policy`, `/terms-and-conditions
 **Backend** (`backend/server.py`):
 - `GET /api/` — health message
 - `POST /api/contact` — contact form; sends email via SendGrid in a background task
-- `GET /api/status` — MongoDB status checks (legacy; contact submissions are not persisted)
+- `GET /api/status` — removed (issue #6); use `GET /api/` for liveness
 
 Contact form posts `{ name, email, phone, service, message }`.
 Budget range is appended to `message` on the client before POST.

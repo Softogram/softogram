@@ -36,7 +36,7 @@ npm run test:ui     # Playwright UI mode
 npm run report      # open the last HTML report
 ```
 
-No MongoDB is required: the contact flow does not persist to Mongo (see issue #3), and the suite avoids the legacy `/api/status` endpoint.
+No MongoDB is required for the contact happy path (JSONL + optional Mongo), and the suite asserts legacy `/api/status` is gone (issue #6).
 
 ## Suite layout
 

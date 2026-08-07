@@ -57,7 +57,7 @@ test.describe("contact API", () => {
       data: {
         name: "Bad Email",
         email: "not-an-email",
-        phone: "123",
+        phone: "+91-9876543210",
         service: "Game Development",
         message: "hi",
       },
@@ -67,6 +67,46 @@ test.describe("contact API", () => {
     await new Promise((r) => setTimeout(r, 1000));
     const emails = await (await request.get("http://localhost:8025/emails")).json();
     expect(emails).toHaveLength(0);
+  });
+
+  test("oversized and malformed contact payloads get 422 and send nothing (issue #8)", async ({
+    request,
+  }) => {
+    const base = {
+      name: "Valid Name",
+      email: "valid@example.com",
+      phone: "+91-9876543210",
+      service: "Custom Software",
+      message: "hello",
+    };
+
+    const cases = [
+      { ...base, name: "x".repeat(101) },
+      { ...base, phone: "abc" },
+      { ...base, phone: "123" },
+      { ...base, phone: "+91-" + "9".repeat(30) },
+      { ...base, service: "s".repeat(101) },
+      { ...base, message: "m".repeat(5001) },
+    ];
+
+    for (let i = 0; i < cases.length; i++) {
+      const res = await request.post(`${BACKEND_URL}/api/contact`, {
+        headers: e2eHeaders(`api-validate-${i}`),
+        data: cases[i],
+      });
+      expect(res.status(), `case ${i}`).toBe(422);
+    }
+
+    await new Promise((r) => setTimeout(r, 1000));
+    const emails = await (await request.get("http://localhost:8025/emails")).json();
+    expect(emails).toHaveLength(0);
+  });
+
+  test("legacy /api/status is gone and does not hang (issue #6)", async ({ request }) => {
+    const started = Date.now();
+    const res = await request.get(`${BACKEND_URL}/api/status`);
+    expect(res.status()).toBe(404);
+    expect(Date.now() - started).toBeLessThan(3000);
   });
 
   test("visitor still gets success when SendGrid is down and lead is persisted (issue #3)", async ({
