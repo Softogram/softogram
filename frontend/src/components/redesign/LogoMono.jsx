@@ -39,10 +39,10 @@ export default function LogoMono({
         fill="none"
       />
       <line
-        x1="62"
-        y1="16"
-        x2="38"
-        y2="84"
+        x1="66"
+        y1="20"
+        x2="34"
+        y2="80"
         stroke={color}
         strokeWidth="10"
         strokeLinecap="round"

@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import LogoMono from './LogoMono'
-import Logo from './Logo'
 import WhatsAppButton from './WhatsAppButton'
 import { BOOKING_URL, TRUST_BADGES, SUPPORT_EMAIL, PHONE_TEL, PHONE_DISPLAY } from '@/data/site'
 import { capture } from '@/lib/analytics'
@@ -391,8 +390,7 @@ export default function Layout() {
             </div>
             <div className="flex-1 pl-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div>
-                {/* Footer keeps the full-color logo — social/print context */}
-                <Logo size={32} />
+                <LogoMono size={32} color={G} />
                 <p className="mt-3 text-xs max-w-xs" style={{ color: DIM, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.7 }}>
                   Custom software, AI agent tooling, SaaS platforms.
                   <br />

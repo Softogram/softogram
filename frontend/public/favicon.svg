@@ -1,27 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <rect width="100" height="100" fill="#0d1117"/>
   <polyline
-    points="35,20 18,50 35,80"
+    points="34,20 12,50 34,80"
     fill="none"
     stroke="#4ade80"
-    stroke-width="7"
+    stroke-width="11"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
   <polyline
-    points="65,20 82,50 65,80"
+    points="66,20 88,50 66,80"
     fill="none"
     stroke="#4ade80"
-    stroke-width="7"
+    stroke-width="11"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
-  <polyline
-    points="28,50 36,50 40,38 44,62 48,42 52,58 56,44 60,50 68,50"
-    fill="none"
+  <line
+    x1="66"
+    y1="20"
+    x2="34"
+    y2="80"
     stroke="#4ade80"
-    stroke-width="5"
+    stroke-width="10"
     stroke-linecap="round"
-    stroke-linejoin="round"
   />
 </svg>
