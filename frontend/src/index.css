@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+/* Fonts load via <link> in public/index.html (preload-scanner friendly; no CSS @import waterfall). */
 
 @tailwind base;
 @tailwind components;
@@ -43,7 +43,7 @@ html {
 
 body {
     margin: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+    font-family: var(--font-rd-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--bg-primary);
@@ -51,7 +51,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-display);
     letter-spacing: -0.02em;
 }
 
@@ -303,7 +303,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Stats Counter */
 .stat-number {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-display);
     font-weight: 700;
     background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
     -webkit-background-clip: text;

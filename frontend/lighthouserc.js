@@ -15,13 +15,11 @@ module.exports = {
     },
     assert: {
       assertions: {
-        // Was "error" but the formFactor/screenEmulation crash above meant
-        // this never actually ran - first real measurement came back 0.70,
-        // well under budget. Downgraded to "warn" so CI reports the true
-        // number without blocking every PR; raise back to "error" once the
-        // hero (three.js/drei) is lazy-loaded and routes are code-split.
-        "categories:performance": ["warn", { minScore: 0.85 }],
-        "largest-contentful-paint": ["warn", { maxNumericValue: 2500 }],
+        // Re-tightened after issue #56: drop dead Inter/Space Grotesk fonts and
+        // load Fraunces/Outfit/JetBrains Mono via non-blocking <link> in
+        // public/index.html (CSS @import was the real LCP bottleneck, not three.js).
+        "categories:performance": ["error", { minScore: 0.85 }],
+        "largest-contentful-paint": ["error", { maxNumericValue: 2500 }],
       },
     },
     upload: {
