@@ -22,6 +22,19 @@ async function waitForEmails(request, count = 1, timeoutMs = 10_000) {
   throw new Error(`sendgrid mock did not capture ${count} email(s) within ${timeoutMs}ms`);
 }
 
+/** Poll until an email whose reply_to matches `email` appears. */
+async function waitForEmailFrom(request, email, timeoutMs = 10_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const res = await request.get(`${SENDGRID_MOCK_URL}/emails`);
+    const emails = await res.json();
+    const match = emails.find((e) => e?.payload?.reply_to?.email === email);
+    if (match) return match;
+    await new Promise((r) => setTimeout(r, 250));
+  }
+  throw new Error(`sendgrid mock did not capture email from ${email} within ${timeoutMs}ms`);
+}
+
 /** Force the next N mail sends to fail with the given status. */
 async function forceSendFailure(request, status = 500, times = 1) {
   await request.post(`${SENDGRID_MOCK_URL}/behavior`, { data: { status, times } });
@@ -33,5 +46,6 @@ module.exports = {
   FRONTEND_URL,
   resetEmails,
   waitForEmails,
+  waitForEmailFrom,
   forceSendFailure,
 };

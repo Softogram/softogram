@@ -1,6 +1,17 @@
 // API-level e2e: real backend, real HTTP, SendGrid mocked.
 const { test, expect } = require("@playwright/test");
-const { BACKEND_URL, FRONTEND_URL, resetEmails, waitForEmails, forceSendFailure } = require("../fixtures/helpers");
+const {
+  BACKEND_URL,
+  FRONTEND_URL,
+  resetEmails,
+  waitForEmails,
+  forceSendFailure,
+  waitForEmailFrom,
+} = require("../fixtures/helpers");
+
+function e2eHeaders(id, extra = {}) {
+  return { "X-E2E-Client-Id": id, ...extra };
+}
 
 test.describe("contact API", () => {
   test.beforeEach(async ({ request }) => {
@@ -15,6 +26,7 @@ test.describe("contact API", () => {
 
   test("valid submission returns success and dispatches the notification email", async ({ request }) => {
     const res = await request.post(`${BACKEND_URL}/api/contact`, {
+      headers: e2eHeaders("api-valid"),
       data: {
         name: "API Test User",
         email: "lead@example.com",
@@ -41,6 +53,7 @@ test.describe("contact API", () => {
 
   test("invalid email address is rejected with 422 and sends nothing", async ({ request }) => {
     const res = await request.post(`${BACKEND_URL}/api/contact`, {
+      headers: e2eHeaders("api-invalid"),
       data: {
         name: "Bad Email",
         email: "not-an-email",
@@ -51,7 +64,6 @@ test.describe("contact API", () => {
     });
     expect(res.status()).toBe(422);
 
-    // give a background task a moment; nothing should arrive
     await new Promise((r) => setTimeout(r, 1000));
     const emails = await (await request.get("http://localhost:8025/emails")).json();
     expect(emails).toHaveLength(0);
@@ -68,6 +80,7 @@ test.describe("contact API", () => {
     await forceSendFailure(request, 500, 5);
     const email = `persist-${Date.now()}@example.com`;
     const res = await request.post(`${BACKEND_URL}/api/contact`, {
+      headers: e2eHeaders("api-persist"),
       data: {
         name: "Persist Test",
         email,
@@ -76,7 +89,6 @@ test.describe("contact API", () => {
         message: "Please keep this lead even if email fails.",
       },
     });
-    // Visitor still sees success; lead must already be durable on disk.
     expect(res.status()).toBe(200);
     expect((await res.json()).status).toBe("success");
 
@@ -94,7 +106,6 @@ test.describe("contact API", () => {
     expect(record.storage).toMatch(/jsonl/);
   });
 
-  // Issue #2 — foreign origins must not be reflected.
   test("preflight from a foreign origin is not reflected (issue #2)", async ({ request }) => {
     const res = await request.fetch(`${BACKEND_URL}/api/contact`, {
       method: "OPTIONS",
@@ -123,6 +134,7 @@ test.describe("contact API", () => {
 
   test("HTML in form fields arrives escaped in the notification email (issue #4)", async ({ request }) => {
     await request.post(`${BACKEND_URL}/api/contact`, {
+      headers: e2eHeaders("api-xss"),
       data: {
         name: '<img src=x onerror=alert(1)>\r\nBcc: evil@x.com',
         email: "xss@example.com",
@@ -139,5 +151,46 @@ test.describe("contact API", () => {
     expect(htmlBody).not.toContain("<b>bold</b>");
     expect(htmlBody).toContain("&lt;b&gt;bold&lt;/b&gt;");
     expect(subject).not.toMatch(/[\r\n]/);
+  });
+
+  test("honeypot submissions return success but send no email (issue #5)", async ({ request }) => {
+    const res = await request.post(`${BACKEND_URL}/api/contact`, {
+      headers: e2eHeaders("api-honeypot"),
+      data: {
+        name: "Bot",
+        email: "bot@example.com",
+        phone: "+91-9111111111",
+        service: "Spam",
+        message: "spam",
+        company_website: "https://spam.example",
+      },
+    });
+    expect(res.status()).toBe(200);
+    expect((await res.json()).status).toBe("success");
+    await new Promise((r) => setTimeout(r, 1200));
+    const emails = await (await request.get("http://localhost:8025/emails")).json();
+    expect(emails).toHaveLength(0);
+  });
+
+  test("3rd rapid submission from same client is rate-limited (issue #5)", async ({ request }) => {
+    // Avoid polluting the SendGrid mock with burst traffic emails.
+    await forceSendFailure(request, 500, 10);
+    const id = `api-rate-${Date.now()}`;
+    const payload = {
+      name: "Rate Limit",
+      email: "rate@example.com",
+      phone: "+91-9000000001",
+      service: "Custom Software",
+      message: "burst",
+    };
+    const headers = e2eHeaders(id, { "X-E2E-Strict-Limit": "1" });
+
+    for (let i = 0; i < 2; i++) {
+      const res = await request.post(`${BACKEND_URL}/api/contact`, { headers, data: payload });
+      expect(res.status()).toBe(200);
+    }
+    const blocked = await request.post(`${BACKEND_URL}/api/contact`, { headers, data: payload });
+    expect(blocked.status()).toBe(429);
+    expect((await blocked.json()).detail).toMatch(/too many/i);
   });
 });

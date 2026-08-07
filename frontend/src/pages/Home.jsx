@@ -120,6 +120,7 @@ function ContactSection({ lineStart }) {
     phone: "",
     message: "",
     type: "custom",
+    company_website: "",
   };
   const [form, setForm] = useState(emptyForm);
   const [submitted, setSubmitted] = useState(false);
@@ -147,6 +148,7 @@ function ContactSection({ lineStart }) {
         phone: form.phone,
         service: SERVICE_BY_TYPE[form.type] || form.type,
         message: form.message,
+        company_website: form.company_website || "",
       });
       if (response.data?.status === "success") {
         toast.success(response.data.message || "Thank you! We'll be in touch.");
@@ -158,10 +160,12 @@ function ContactSection({ lineStart }) {
         toast.error(msg);
       }
     } catch (err) {
+      const status = err.response?.status;
+      const detail = err.response?.data?.detail;
       const msg =
-        err.response?.data?.detail ||
-        err.response?.data?.message ||
-        "Failed to submit. Please try again.";
+        status === 429
+          ? "Too many requests. Please try again later."
+          : detail || err.response?.data?.message || "Failed to submit. Please try again.";
       const text = typeof msg === "string" ? msg : "Failed to submit. Please try again.";
       setError(text);
       toast.error(text);
@@ -231,6 +235,30 @@ function ContactSection({ lineStart }) {
                   onSubmit={handleSubmit}
                   className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 >
+                  {/* Honeypot — hidden from humans (issue #5) */}
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      left: "-10000px",
+                      top: "auto",
+                      width: 1,
+                      height: 1,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <label htmlFor="company_website">Company website</label>
+                    <input
+                      id="company_website"
+                      type="text"
+                      name="company_website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={form.company_website}
+                      onChange={(e) => setForm({ ...form, company_website: e.target.value })}
+                      data-testid="contact-honeypot"
+                    />
+                  </div>
                   <div>
                     <label className="block text-xs mb-1" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
                       name

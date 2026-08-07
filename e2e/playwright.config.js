@@ -62,6 +62,9 @@ module.exports = defineConfig({
         CORS_ORIGINS: FRONTEND_URL,
         MONGO_URL: "mongodb://localhost:27017",
         DB_NAME: "softogram_e2e",
+        ALLOW_E2E_CLIENT_ID: "1",
+        CONTACT_RATE_LIMIT_PER_MINUTE: "30",
+        CONTACT_RATE_LIMIT_PER_HOUR: "200",
       },
     },
     {

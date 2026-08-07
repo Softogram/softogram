@@ -4,11 +4,12 @@ import time
 import uuid
 import logging
 import html
+from collections import defaultdict, deque
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import List, Optional
 
-from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks
+from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from dotenv import load_dotenv
@@ -52,6 +53,8 @@ class ContactFormRequest(BaseModel):
     phone: str
     service: str
     message: str
+    # Honeypot (issue #5) — bots fill this; humans leave empty. Do not email/persist if set.
+    company_website: str = ""
 
 class ContactFormResponse(BaseModel):
     status: str
@@ -211,6 +214,59 @@ def send_contact_email_with_retries(
     )
     return False
 
+# --- Rate limiting (issue #5) ---
+
+class ContactRateLimiter:
+    """Simple sliding-window limiter: N/minute and M/hour per client key."""
+
+    def __init__(self, per_minute: int, per_hour: int):
+        self.per_minute = per_minute
+        self.per_hour = per_hour
+        self._hits = defaultdict(deque)
+
+    def allow(self, key: str) -> bool:
+        now = time.time()
+        q = self._hits[key]
+        while q and now - q[0] > 3600:
+            q.popleft()
+        minute_hits = sum(1 for t in q if now - t <= 60)
+        if minute_hits >= self.per_minute or len(q) >= self.per_hour:
+            return False
+        q.append(now)
+        return True
+
+
+_contact_limiter = ContactRateLimiter(
+    per_minute=int(os.getenv("CONTACT_RATE_LIMIT_PER_MINUTE", "2")),
+    per_hour=int(os.getenv("CONTACT_RATE_LIMIT_PER_HOUR", "5")),
+)
+# Separate bucket for E2E burst tests (never used in production).
+_e2e_strict_limiter = ContactRateLimiter(per_minute=2, per_hour=5)
+
+
+def _client_key(request: Request) -> str:
+    # E2E isolation: optional client id (only when explicitly enabled).
+    if os.getenv("ALLOW_E2E_CLIENT_ID") == "1":
+        e2e_id = request.headers.get("x-e2e-client-id")
+        if e2e_id:
+            return f"e2e:{e2e_id}"
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    if request.client and request.client.host:
+        return request.client.host
+    return "unknown"
+
+
+def _limiter_for(request: Request) -> ContactRateLimiter:
+    if (
+        os.getenv("ALLOW_E2E_CLIENT_ID") == "1"
+        and request.headers.get("x-e2e-strict-limit") == "1"
+    ):
+        return _e2e_strict_limiter
+    return _contact_limiter
+
+
 # --- API Routes ---
 
 @api_router.get("/")
@@ -218,26 +274,45 @@ async def root():
     return {"message": "Softogram API is Live"}
 
 @api_router.post("/contact", response_model=ContactFormResponse)
-async def submit_contact_form(request: ContactFormRequest, background_tasks: BackgroundTasks):
+async def submit_contact_form(
+    body: ContactFormRequest,
+    background_tasks: BackgroundTasks,
+    request: Request,
+):
     """Persist the lead first, then email in the background (with retries)."""
+    key = _client_key(request)
+    if not _limiter_for(request).allow(key):
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please try again later.",
+        )
+
+    # Honeypot: pretend success, drop silently (issue #5).
+    if (body.company_website or "").strip():
+        logger.info("Honeypot tripped; dropping submission key=%s", key)
+        return ContactFormResponse(
+            status="success",
+            message="Thank you! We'll get back to you shortly.",
+        )
+
     try:
         submission = ContactSubmission(
-            name=request.name,
-            email=str(request.email),
-            phone=request.phone,
-            service=request.service,
-            message=request.message,
+            name=body.name,
+            email=str(body.email),
+            phone=body.phone,
+            service=body.service,
+            message=body.message,
         )
         doc = await persist_contact_submission(submission)
 
         background_tasks.add_task(
             send_contact_email_with_retries,
             doc["id"],
-            request.name,
-            str(request.email),
-            request.phone,
-            request.service,
-            request.message,
+            body.name,
+            str(body.email),
+            body.phone,
+            body.service,
+            body.message,
         )
 
         return ContactFormResponse(

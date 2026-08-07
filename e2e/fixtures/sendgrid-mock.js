@@ -61,6 +61,7 @@ const server = http.createServer(async (req, res) => {
 
   if (method === "DELETE" && url === "/emails") {
     emails = [];
+    forced = { status: null, times: 0 };
     res.writeHead(204);
     return res.end();
   }
