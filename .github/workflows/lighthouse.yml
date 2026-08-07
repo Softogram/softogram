@@ -1,0 +1,35 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: yarn
+          cache-dependency-path: frontend/yarn.lock
+
+      - name: Install & build frontend
+        working-directory: frontend
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+        env:
+          CI: true
+          REACT_APP_BACKEND_URL: https://api.softogram.in
+
+      - name: Serve build and run Lighthouse
+        working-directory: frontend
+        run: |
+          npx --yes serve -s build -l 4173 &
+          npx --yes wait-on http://127.0.0.1:4173
+          npx --yes @lhci/cli@0.14.x autorun --config=./lighthouserc.js

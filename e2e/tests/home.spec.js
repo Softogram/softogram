@@ -51,14 +51,21 @@ test.describe("landing page", () => {
     await page.goto("/");
     const btn = page.getByTestId("whatsapp-button");
     await expect(btn).toBeVisible();
-    await expect(btn).toHaveAttribute("href", /wa\.me/);
+    await expect(btn).toHaveAttribute("href", /wa\.me\/916360158761(\?|$)/);
   });
 
-  test("WhatsApp link uses full international number (issue #12)", async ({ page }) => {
+  test("booking CTA and named testimonials are present (issue #16)", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByTestId("whatsapp-button")).toHaveAttribute(
-      "href",
-      /wa\.me\/916360158761(\?|$)/,
-    );
+    await expect(page.getByTestId("booking-cta")).toBeVisible();
+    await expect(page.getByTestId("booking-cta")).toHaveAttribute("href", /cal\.com/);
+    await expect(page.getByTestId("testimonial-card").first()).toBeVisible();
+    await expect(page.getByTestId("trust-badges")).toBeVisible();
+  });
+
+  test("consent banner can be accepted (issue #15)", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByTestId("consent-banner")).toBeVisible();
+    await page.getByTestId("consent-accept").click();
+    await expect(page.getByTestId("consent-banner")).toHaveCount(0);
   });
 });

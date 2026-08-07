@@ -63,7 +63,7 @@ Budget range is appended to `message` on the client before POST.
 `reply_to` is set to the submitter's email.
 MongoDB save for contact submissions is intentionally commented out.
 
-**Canonical contact email in code**: `support@softogram.com`
+**Canonical contact email in code**: `support@softogram.in`
 
 ## Environment variables
 
@@ -75,8 +75,8 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 **Backend** (`backend/.env`):
 ```
 SENDGRID_API_KEY=
-SENDER_EMAIL=support@softogram.com
-RECIPIENT_EMAIL=support@softogram.com
+SENDER_EMAIL=admin@softogram.in
+RECIPIENT_EMAIL=support@softogram.in
 CORS_ORIGINS=http://localhost:3000
 MONGO_URL=mongodb://localhost:27017
 DB_NAME=softogram_db

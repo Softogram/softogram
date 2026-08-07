@@ -1,0 +1,26 @@
+name: Backend security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pip-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install runtime + pip-audit
+        run: |
+          python3 -m venv backend/.venv
+          backend/.venv/bin/pip install -U pip
+          backend/.venv/bin/pip install -r backend/requirements-dev.txt
+
+      - name: pip-audit
+        run: backend/.venv/bin/pip-audit -r backend/requirements.txt

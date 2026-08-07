@@ -1,4 +1,4 @@
-/** Static client-work seeds (Phase 6). No localStorage / admin. */
+/** Static client-work seeds (Phase 6). Every card links somewhere real (issue #16). */
 
 export const INDUSTRIES = [
   "All",
@@ -8,6 +8,7 @@ export const INDUSTRIES = [
   "Operations",
   "Logistics",
   "Education",
+  "Open Source",
 ];
 
 export const CLIENT_PROJECTS = [
@@ -22,6 +23,7 @@ export const CLIENT_PROJECTS = [
     img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop&auto=format",
     year: "2024",
     published: true,
+    url: "/client-work",
   },
   {
     id: "2",
@@ -34,6 +36,7 @@ export const CLIENT_PROJECTS = [
     img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=500&fit=crop&auto=format",
     year: "2024",
     published: true,
+    url: "/client-work",
   },
   {
     id: "3",
@@ -46,17 +49,32 @@ export const CLIENT_PROJECTS = [
     img: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=500&fit=crop&auto=format",
     year: "2025",
     published: true,
+    url: "/client-work",
   },
   {
     id: "4",
-    client: "Arko Retail",
-    title: "Omnichannel Commerce Platform",
-    desc: "Unified inventory, POS, and e-commerce platform connecting 40 physical stores with an online marketplace — built in 14 weeks.",
+    client: "Softogram Open Source",
+    title: "mcp-migration-checker",
+    desc: "Go CLI that scans MCP server implementations against spec changes and emits CONFIRMED / REPORTED findings with file:line references.",
+    industry: "Open Source",
+    services: ["CLI", "Static Analysis", "CI"],
+    outcome: "Cross-platform binary published via GitHub Actions — v0.1.1.",
+    img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=500&fit=crop&auto=format",
+    year: "2025",
+    published: true,
+    url: "https://github.com/Softogram/softogram-mcp-spec-migration-checker",
+  },
+  {
+    id: "5",
+    client: "Polluxkart",
+    title: "Commerce experience rebuild",
+    desc: "Custom storefront and ops tooling for a growing Indian commerce brand.",
     industry: "Retail",
-    services: ["E-commerce", "POS Integration", "Custom Development"],
-    outcome: "22% inventory shrinkage reduction. $1.8M revenue recovered in first quarter.",
+    services: ["E-commerce", "Custom Development"],
+    outcome: "Live storefront shipping continuous improvements.",
     img: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&h=500&fit=crop&auto=format",
     year: "2024",
     published: true,
+    url: "https://polluxkart.com",
   },
 ];

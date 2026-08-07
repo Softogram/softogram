@@ -39,9 +39,11 @@ test.describe("contact API", () => {
     const body = await res.json();
     expect(body.status).toBe("success");
 
-    const emails = await waitForEmails(request, 1);
-    const payload = emails[0].payload;
-    expect(payload.subject).toContain("API Test User");
+    const emails = await waitForEmails(request, 2);
+    const payload = emails.find((e) =>
+      (e.payload.subject || "").includes("API Test User"),
+    )?.payload;
+    expect(payload).toBeTruthy();
     expect(payload.reply_to.email).toBe("lead@example.com");
     expect(payload.from.email).toBe("e2e-sender@softogram.test");
     expect(payload.personalizations[0].to[0].email).toBe("e2e-inbox@softogram.test");
@@ -49,6 +51,12 @@ test.describe("contact API", () => {
     expect(html).toContain("I need a web app.");
     expect(html).toContain("+91-9876543210");
     expect(html).toContain("Custom Web Application");
+
+    const autoReply = emails.find((e) =>
+      (e.payload.subject || "").toLowerCase().includes("received your softogram"),
+    );
+    expect(autoReply).toBeTruthy();
+    expect(autoReply.payload.personalizations[0].to[0].email).toBe("lead@example.com");
   });
 
   test("invalid email address is rejected with 422 and sends nothing", async ({ request }) => {
@@ -183,9 +191,11 @@ test.describe("contact API", () => {
         message: "<b>bold</b>",
       },
     });
-    const emails = await waitForEmails(request, 1);
-    const htmlBody = emails[0].payload.content[0].value;
-    const subject = emails[0].payload.subject || "";
+    const emails = await waitForEmails(request, 2);
+    const inquiry = emails.find((e) => (e.payload.subject || "").includes("New Project Inquiry"));
+    expect(inquiry).toBeTruthy();
+    const htmlBody = inquiry.payload.content[0].value;
+    const subject = inquiry.payload.subject || "";
     expect(htmlBody).not.toContain("<img src=x");
     expect(htmlBody).toContain("&lt;img src=x");
     expect(htmlBody).not.toContain("<b>bold</b>");

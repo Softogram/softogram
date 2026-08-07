@@ -4,6 +4,8 @@ import { Outlet, Link, useLocation } from 'react-router-dom'
 import LogoMono from './LogoMono'
 import Logo from './Logo'
 import WhatsAppButton from './WhatsAppButton'
+import { BOOKING_URL, TRUST_BADGES, SUPPORT_EMAIL, PHONE_TEL, PHONE_DISPLAY } from '@/data/site'
+import { capture } from '@/lib/analytics'
 
 const G      = '#4ade80'
 const DIM    = '#8b949e'
@@ -264,6 +266,19 @@ export default function Layout() {
             </a>
             <div className="w-px h-3" style={{ background: BORDER }} />
             <a
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="nav-booking-cta"
+              className="text-xs transition-colors duration-150"
+              style={{ color: DIM, fontFamily: "'JetBrains Mono', monospace" }}
+              onClick={() => capture('booking_clicked', { placement: 'nav' })}
+              onMouseEnter={e => (e.currentTarget.style.color = '#e2e8f0')}
+              onMouseLeave={e => (e.currentTarget.style.color = DIM)}
+            >
+              book a call
+            </a>
+            <a
               href="/#contact"
               className="px-4 py-1.5 rounded-sm text-xs font-semibold transition-all duration-150 hover:opacity-90"
               style={{ background: G, color: '#0d1117', fontFamily: "'JetBrains Mono', monospace" }}
@@ -382,7 +397,30 @@ export default function Layout() {
               <div className="text-xs" style={{ color: DIM, fontFamily: "'JetBrains Mono', monospace" }}>
                 © 2026 Softogram
                 <br />
+                <a href={`mailto:${SUPPORT_EMAIL}`} style={{ color: DIM }} data-testid="footer-email">
+                  {SUPPORT_EMAIL}
+                </a>
+                <br />
+                <a href={PHONE_TEL} style={{ color: DIM }} data-testid="footer-phone">
+                  {PHONE_DISPLAY}
+                </a>
+                <br />
                 <span style={{ color: 'rgba(255,255,255,0.15)' }}>dark theme · softogram.in</span>
+                <div className="flex flex-wrap gap-3 mt-3" data-testid="trust-badges">
+                  {TRUST_BADGES.map((b) => (
+                    <a
+                      key={b.id}
+                      href={b.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                      style={{ color: 'rgba(255,255,255,0.35)' }}
+                      data-testid={`trust-badge-${b.id}`}
+                    >
+                      {b.label}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

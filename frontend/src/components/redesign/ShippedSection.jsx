@@ -23,7 +23,7 @@ export const SHIPPED = [
     lang: "Go",
     version: "week-2",
     status: "reported",
-    repoUrl: null,
+    repoUrl: "https://github.com/Softogram",
     desc: "Tavily-powered search pipeline that outputs structured Markdown. Single-query working. Batch dedup and retry-with-backoff not yet shipped.",
     claimOld: "intelligent research automation with enterprise Tavily integration",
     claimNew: "single-query Tavily → Markdown, Go. Rate-limit retry deferred.",

@@ -89,6 +89,11 @@ frontend/node_modules/.cache/default-development/2.pack
 *.env
 *.env.*
 
+# Keep example env templates tracked
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
 Redesign-Softogram-Website/
 
 # Local graph / analysis cache

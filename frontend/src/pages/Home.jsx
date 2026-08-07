@@ -21,6 +21,9 @@ import {
   Reveal,
 } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import TestimonialsSection from "@/components/redesign/TestimonialsSection";
+import { capture } from "@/lib/analytics";
+import { BOOKING_URL, SUPPORT_EMAIL } from "@/data/site";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -128,6 +131,10 @@ function ContactSection({ lineStart }) {
   const [error, setError] = useState("");
   let ln = lineStart;
 
+  useEffect(() => {
+    capture("contact_form_viewed");
+  }, []);
+
   const inputBase = {
     background: CARD,
     border: `1px solid ${BORDER}`,
@@ -151,12 +158,14 @@ function ContactSection({ lineStart }) {
         company_website: form.company_website || "",
       });
       if (response.data?.status === "success") {
+        capture("contact_form_submitted");
         toast.success(response.data.message || "Thank you! We'll be in touch.");
         setForm(emptyForm);
         setSubmitted(true);
       } else {
         const msg = "Failed to submit. Please try again.";
         setError(msg);
+        capture("contact_form_failed", { reason: "bad_status" });
         toast.error(msg);
       }
     } catch (err) {
@@ -168,6 +177,7 @@ function ContactSection({ lineStart }) {
           : detail || err.response?.data?.message || "Failed to submit. Please try again.";
       const text = typeof msg === "string" ? msg : "Failed to submit. Please try again.";
       setError(text);
+      capture("contact_form_failed", { reason: status || "network" });
       toast.error(text);
     } finally {
       setLoading(false);
@@ -200,8 +210,33 @@ function ContactSection({ lineStart }) {
               </span>
             </h2>
             <p className="text-sm" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
-              responds within 24 hours · support@softogram.in
+              responds within 24 hours · {SUPPORT_EMAIL}
             </p>
+            <div className="flex flex-wrap gap-3 mt-4">
+              <a
+                href={BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="booking-cta"
+                className="px-4 py-2 text-xs font-semibold rounded-sm"
+                style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
+                onClick={() => capture("booking_clicked", { placement: "contact" })}
+              >
+                book a free 30-min call →
+              </a>
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="px-4 py-2 text-xs rounded-sm"
+                style={{
+                  color: DIM,
+                  border: `1px solid ${BORDER}`,
+                  fontFamily: "var(--font-mono)",
+                }}
+                data-testid="contact-email-link"
+              >
+                {SUPPORT_EMAIL}
+              </a>
+            </div>
           </Reveal>
         </GutterRow>
 
@@ -570,6 +605,9 @@ export default function Home() {
       <BuildLogSection lineStart={ln + 5} />
       <ShippedSection lineStart={ln + 20} />
       <ServicesSection lineStart={ln + 30} />
+      <div className="max-w-7xl mx-auto px-6">
+        <TestimonialsSection startLine={ln + 35} />
+      </div>
       <ContactSection lineStart={ln + 40} />
     </>
   );

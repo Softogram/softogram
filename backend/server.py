@@ -7,6 +7,7 @@ import html
 from collections import defaultdict, deque
 from pathlib import Path
 from datetime import datetime, timezone
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
@@ -29,7 +30,14 @@ db_name = os.getenv("DB_NAME", "softogram_db")
 client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=2000)
 db = client[db_name]
 
-app = FastAPI(title="Softogram API")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    yield
+    client.close()
+
+
+app = FastAPI(title="Softogram API", lifespan=lifespan)
 api_router = APIRouter(prefix="/api")
 
 logger = logging.getLogger("softogram")
@@ -112,14 +120,30 @@ async def persist_contact_submission(submission: ContactSubmission) -> dict:
 
 # --- Helper Functions ---
 
+def _sendgrid_send(mail: Mail) -> bool:
+    api_key = os.getenv("SENDGRID_API_KEY")
+    if not api_key:
+        logging.warning("SendGrid API key not configured.")
+        return False
+    try:
+        sg = SendGridAPIClient(api_key)
+        sendgrid_host = os.getenv("SENDGRID_HOST")
+        if sendgrid_host:
+            sg.client.host = sendgrid_host
+        response = sg.send(mail)
+        return response.status_code == 202
+    except Exception as e:
+        logging.error("SendGrid Error: %s", e)
+        return False
+
+
 def send_contact_email(name: str, user_email: str, phone: str, service: str, message: str) -> bool:
     """Send contact form submission via SendGrid (single attempt)."""
     sender_email = os.getenv("SENDER_EMAIL")
     recipient_email = os.getenv("RECIPIENT_EMAIL")
-    api_key = os.getenv("SENDGRID_API_KEY")
 
-    if not api_key or not sender_email:
-        logging.warning("SendGrid API key or Verified Sender not configured.")
+    if not sender_email:
+        logging.warning("Verified Sender not configured.")
         return False
 
     # Escape all user fields for HTML body; strip CR/LF from subject (issue #4).
@@ -156,17 +180,36 @@ def send_contact_email(name: str, user_email: str, phone: str, service: str, mes
         html_content=html_content,
     )
     mail.reply_to = user_email
+    return _sendgrid_send(mail)
 
-    try:
-        sg = SendGridAPIClient(api_key)
-        sendgrid_host = os.getenv("SENDGRID_HOST")
-        if sendgrid_host:
-            sg.client.host = sendgrid_host
-        response = sg.send(mail)
-        return response.status_code == 202
-    except Exception as e:
-        logging.error("SendGrid Error: %s", e)
+
+def send_lead_auto_reply(name: str, user_email: str) -> bool:
+    """Confirmation email to the lead (issue #11)."""
+    sender_email = os.getenv("SENDER_EMAIL")
+    if not sender_email or not user_email:
         return False
+    safe_name = html.escape(name or "there", quote=True)
+    support = os.getenv("RECIPIENT_EMAIL", "support@softogram.in")
+    html_content = f"""
+    <html>
+      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px;">
+          <h2 style="color: #0d1117;">We got your message</h2>
+          <p>Hi {safe_name},</p>
+          <p>Thanks for reaching out to Softogram. We received your inquiry and typically respond within 24 hours.</p>
+          <p>If anything is urgent, reply to this email or write to {html.escape(support)}.</p>
+          <p style="font-size: 12px; color: #9ca3af; margin-top: 25px;">— Softogram</p>
+        </div>
+      </body>
+    </html>
+    """
+    mail = Mail(
+        from_email=sender_email,
+        to_emails=user_email,
+        subject="We received your Softogram inquiry",
+        html_content=html_content,
+    )
+    return _sendgrid_send(mail)
 
 
 def send_contact_email_with_retries(
@@ -178,11 +221,15 @@ def send_contact_email_with_retries(
     message: str,
     attempts: int = 3,
 ) -> bool:
-    """Retry SendGrid with exponential backoff; alert on final failure."""
+    """Retry SendGrid with exponential backoff; alert on final failure; auto-reply on success."""
     for i in range(attempts):
         ok = send_contact_email(name, user_email, phone, service, message)
         if ok:
             logger.info("Contact email sent lead_id=%s attempt=%s", lead_id, i + 1)
+            if send_lead_auto_reply(name, user_email):
+                logger.info("Lead auto-reply sent lead_id=%s", lead_id)
+            else:
+                logger.warning("Lead auto-reply failed lead_id=%s", lead_id)
             return True
         if i < attempts - 1:
             time.sleep(0.4 * (2**i))
@@ -352,6 +399,3 @@ app.add_middleware(
 
 logging.basicConfig(level=logging.INFO)
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()

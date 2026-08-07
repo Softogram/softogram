@@ -11,7 +11,7 @@ export const PRODUCTS = [
     status: "Live",
     badge: "Flagship",
     img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=500&fit=crop&auto=format",
-    link: "#",
+    link: "https://github.com/Softogram/softogram-mcp-spec-migration-checker",
     features: [
       "Unified inbox",
       "AI response drafting",
@@ -31,7 +31,7 @@ export const PRODUCTS = [
     status: "Beta",
     badge: "AI-native",
     img: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&h=500&fit=crop&auto=format",
-    link: "#",
+    link: "https://github.com/Softogram",
     features: [
       "Multi-model support",
       "Checkpoint memory",
@@ -51,7 +51,7 @@ export const PRODUCTS = [
     status: "Live",
     badge: "NL-querying",
     img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop&auto=format",
-    link: "#",
+    link: "https://softogram.in/client-work",
     features: [
       "Natural language querying",
       "Real-time updates",

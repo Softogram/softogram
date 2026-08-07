@@ -139,6 +139,19 @@ function ProjectModal({ project, onClose }) {
               {project.outcome}
             </p>
           </div>
+          {project.url && (
+            <a
+              href={project.url}
+              target={project.url.startsWith("http") ? "_blank" : undefined}
+              rel={project.url.startsWith("http") ? "noopener noreferrer" : undefined}
+              className="inline-block mt-4 text-xs font-semibold"
+              style={{ color: G, fontFamily: "var(--font-mono)" }}
+              data-testid="client-project-modal-link"
+              onClick={(e) => e.stopPropagation()}
+            >
+              view project →
+            </a>
+          )}
         </div>
       </div>
     </div>
