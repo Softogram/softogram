@@ -10,6 +10,8 @@ const path = require("path");
  *   3. React frontend  -> http://localhost:3100  (real CRA dev server)
  *
  * Backend python: uses backend/.venv if present, otherwise python3 on PATH.
+ * Backend needs Postgres reachable at DATABASE_URL (default: the `softogram_e2e`
+ * database from the root docker-compose.yml) - run `docker compose up -d` first.
  * See e2e/README.md for one-time setup.
  */
 
@@ -60,8 +62,8 @@ module.exports = defineConfig({
         SENDER_EMAIL: "e2e-sender@softogram.test",
         RECIPIENT_EMAIL: "e2e-inbox@softogram.test",
         CORS_ORIGINS: FRONTEND_URL,
-        MONGO_URL: "mongodb://localhost:27017",
-        DB_NAME: "softogram_e2e",
+        DATABASE_URL:
+          process.env.DATABASE_URL || "postgresql+asyncpg://softogram:softogram@localhost:5432/softogram_e2e",
         ALLOW_E2E_CLIENT_ID: "1",
         CONTACT_RATE_LIMIT_PER_MINUTE: "30",
         CONTACT_RATE_LIMIT_PER_HOUR: "200",

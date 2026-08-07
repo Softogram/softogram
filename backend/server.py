@@ -1,5 +1,7 @@
 import os
 import json
+import sys
+import subprocess
 import time
 import uuid
 import logging
@@ -13,9 +15,10 @@ from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
 from dotenv import load_dotenv
-from motor.motor_asyncio import AsyncIOMotorClient
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from database import AsyncSessionLocal, engine
+from models import Lead
 import cms as content_cms
 
 # --- Configuration & Setup ---
@@ -23,20 +26,25 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
 
 DATA_DIR = Path(os.getenv("LEADS_DATA_DIR", str(ROOT_DIR / "data")))
-LEADS_JSONL = DATA_DIR / "contact_leads.jsonl"
 EMAIL_FAILURES_JSONL = DATA_DIR / "contact_email_failures.jsonl"
 
-mongo_url = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-db_name = os.getenv("DB_NAME", "softogram_db")
-# Short timeout so a down Mongo cannot hang contact submissions.
-client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=2000)
-db = client[db_name]
+
+def _run_migrations() -> None:
+    """Apply pending Alembic migrations at boot (issue #31/#32) - dev, CI, and
+    prod all self-provision the schema; there is no separate step to forget."""
+    subprocess.run(
+        [sys.executable, "-m", "alembic", "upgrade", "head"],
+        cwd=ROOT_DIR,
+        check=True,
+    )
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    _run_migrations()
+    await content_cms.ensure_seeded()
     yield
-    client.close()
+    await engine.dispose()
 
 
 app = FastAPI(title="Softogram API", lifespan=lifespan)
@@ -77,7 +85,7 @@ class ContactSubmission(BaseModel):
     service: str
     message: str
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    storage: str = "pending"  # jsonl | mongo+jsonl | mongo | failed
+    storage: str = "pending"  # postgres | failed
 
 
 # --- Persistence (issue #3) ---
@@ -95,27 +103,25 @@ def _append_jsonl(path: Path, record: dict) -> None:
 
 
 async def persist_contact_submission(submission: ContactSubmission) -> dict:
-    """
-    Durably store the lead before returning HTTP success.
-    Always write JSONL; also try Mongo (best effort, short timeout).
-    """
+    """Durably store the lead in Postgres before returning HTTP success (issue #33)."""
     doc = submission.model_dump()
     doc["timestamp"] = doc["timestamp"].isoformat()
-    mongo_ok = False
+    doc["storage"] = "postgres"
 
-    try:
-        await db.contact_submissions.insert_one({**doc})
-        mongo_ok = True
-    except Exception as e:
-        logger.warning("Mongo contact persist skipped: %s", e)
-
-    doc["storage"] = "mongo+jsonl" if mongo_ok else "jsonl"
-
-    try:
-        _append_jsonl(LEADS_JSONL, doc)
-    except Exception as e:
-        logger.error("Failed to append contact lead JSONL: %s", e)
-        raise
+    async with AsyncSessionLocal() as session:
+        session.add(
+            Lead(
+                id=submission.id,
+                name=submission.name,
+                email=submission.email,
+                phone=submission.phone,
+                service=submission.service,
+                message=submission.message,
+                status="new",
+                storage="postgres",
+            )
+        )
+        await session.commit()
 
     return doc
 
@@ -422,12 +428,12 @@ def _require_admin(request: Request) -> None:
 
 @api_router.get("/content/blog")
 async def public_blog_list():
-    return content_cms.published_blogs()
+    return await content_cms.published_blogs()
 
 
 @api_router.get("/content/blog/{slug}")
 async def public_blog_post(slug: str):
-    post = content_cms.blog_by_slug(slug)
+    post = await content_cms.blog_by_slug(slug)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     return post
@@ -435,7 +441,7 @@ async def public_blog_post(slug: str):
 
 @api_router.get("/content/projects")
 async def public_projects():
-    return content_cms.published_projects()
+    return await content_cms.published_projects()
 
 
 @api_router.post("/admin/login", response_model=AdminLoginResponse)
@@ -448,25 +454,25 @@ async def admin_login(body: AdminLoginRequest):
 @api_router.get("/admin/blog")
 async def admin_list_blogs(request: Request):
     _require_admin(request)
-    return content_cms.get_blogs()
+    return await content_cms.get_blogs()
 
 
 @api_router.put("/admin/blog")
 async def admin_replace_blogs(request: Request, items: List[BlogPostModel]):
     _require_admin(request)
-    return content_cms.save_blogs([i.model_dump() for i in items])
+    return await content_cms.save_blogs([i.model_dump() for i in items])
 
 
 @api_router.get("/admin/projects")
 async def admin_list_projects(request: Request):
     _require_admin(request)
-    return content_cms.get_projects()
+    return await content_cms.get_projects()
 
 
 @api_router.put("/admin/projects")
 async def admin_replace_projects(request: Request, items: List[ProjectModel]):
     _require_admin(request)
-    return content_cms.save_projects([i.model_dump() for i in items])
+    return await content_cms.save_projects([i.model_dump() for i in items])
 
 
 # --- App Initialization ---

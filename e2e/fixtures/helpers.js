@@ -1,6 +1,33 @@
+const { Client } = require("pg");
+
 const SENDGRID_MOCK_URL = "http://localhost:8025";
 const BACKEND_URL = "http://localhost:8001";
 const FRONTEND_URL = "http://localhost:3100";
+
+// Same default as playwright.config.js's backend webServer, with the
+// Python-only "+asyncpg" driver suffix stripped for the node `pg` client.
+const DATABASE_URL = (
+  process.env.DATABASE_URL || "postgresql+asyncpg://softogram:softogram@localhost:5432/softogram_e2e"
+).replace("+asyncpg", "");
+
+/** Poll Postgres until a `leads` row with this email exists; returns the row. */
+async function waitForLead(email, timeoutMs = 10_000) {
+  const client = new Client({ connectionString: DATABASE_URL });
+  await client.connect();
+  try {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      const { rows } = await client.query("SELECT * FROM leads WHERE email = $1 ORDER BY created_at DESC LIMIT 1", [
+        email,
+      ]);
+      if (rows.length) return rows[0];
+      await new Promise((r) => setTimeout(r, 250));
+    }
+    throw new Error(`no lead row for ${email} appeared in Postgres within ${timeoutMs}ms`);
+  } finally {
+    await client.end();
+  }
+}
 
 /** Clear captured emails on the SendGrid mock. */
 async function resetEmails(request) {
@@ -48,4 +75,5 @@ module.exports = {
   waitForEmails,
   waitForEmailFrom,
   forceSendFailure,
+  waitForLead,
 };
