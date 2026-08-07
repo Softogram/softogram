@@ -159,9 +159,9 @@ Implemented in [PR #59](https://github.com/Softogram/softogram/pull/59) - pendin
 
 - [ ] [#46 Register Google Search Console + submit sitemap](https://github.com/Softogram/softogram/issues/46) - needs your hands, not just an agent's
 - [ ] [#47 List Softogram on Clutch, GoodFirms, Google Business Profile](https://github.com/Softogram/softogram/issues/47) - needs your hands, not just an agent's
-- [ ] [#48 Cal.com booking button on site](https://github.com/Softogram/softogram/issues/48)
+- [x] [#48 Cal.com booking button on site](https://github.com/Softogram/softogram/issues/48)
 - [ ] [#49 Uptime + TLS expiry monitoring](https://github.com/Softogram/softogram/issues/49) - needs your hands, not just an agent's
-- [ ] [#50 Newsletter capture + exit-intent lead magnet](https://github.com/Softogram/softogram/issues/50)
+- [x] [#50 Newsletter capture + exit-intent lead magnet](https://github.com/Softogram/softogram/issues/50)
 
 ### Phase 15 - RDS cutover
 

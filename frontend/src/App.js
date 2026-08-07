@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import Layout from "@/components/redesign/Layout";
 import ConsentBanner from "@/components/ConsentBanner";
+import LeadMagnet from "@/components/LeadMagnet";
 import ScrollToHash from "@/components/ScrollToHash";
 
 const Home = lazy(() => import("@/pages/Home"));
@@ -49,6 +50,7 @@ function App() {
         <ScrollToHash />
         <Toaster position="top-center" richColors theme="dark" />
         <ConsentBanner />
+        <LeadMagnet />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route element={<Layout />}>
