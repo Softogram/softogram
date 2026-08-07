@@ -2,7 +2,13 @@ module.exports = {
   ci: {
     collect: {
       url: ["http://127.0.0.1:4173/"],
-      numberOfRuns: 1,
+      // 3 runs, LHCI takes the median (issue #58). GitHub-hosted shared runners
+      // are frequently CPU-starved for a few seconds at a time (noisy-neighbor
+      // contention) - a single run can show 6s+ of Total Blocking Time on
+      // otherwise-unchanged code purely from that, which numberOfRuns:1 had no
+      // way to smooth over. Confirmed via two real incidents (PRs #57 and #59)
+      // where the exact same commit measured perfect locally but failed in CI.
+      numberOfRuns: 3,
       settings: {
         // Mobile form factor for the perf budget below (growth plan: mobile
         // performance >= 85). Do not pair this with preset:"desktop" - that
