@@ -141,9 +141,11 @@ Implemented in [PR #54](https://github.com/Softogram/softogram/pull/54) - pendin
 
 ### Phase 12 - Admin dashboard v2
 
-- [ ] [#38 Leads pipeline UI in the admin dashboard](https://github.com/Softogram/softogram/issues/38)
-- [ ] [#39 Markdown editor with live preview + image upload](https://github.com/Softogram/softogram/issues/39)
-- [ ] [#40 Analytics tab: PostHog API + recharts](https://github.com/Softogram/softogram/issues/40)
+Implemented in [PR #59](https://github.com/Softogram/softogram/pull/59) - pending review/merge.
+
+- [x] [#38 Leads pipeline UI in the admin dashboard](https://github.com/Softogram/softogram/issues/38)
+- [x] [#39 Markdown editor with live preview + image upload](https://github.com/Softogram/softogram/issues/39) - also fixed the public blog page's markdown rendering (was silently broken)
+- [x] [#40 Analytics tab: PostHog API + recharts](https://github.com/Softogram/softogram/issues/40) - PostHog side not yet verified against a live account (none existed at implementation time)
 
 ### Phase 13 - Blogging platform
 
