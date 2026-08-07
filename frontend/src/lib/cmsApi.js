@@ -76,8 +76,8 @@ function adminHeaders() {
   return { Authorization: `Bearer ${getAdminToken()}` };
 }
 
-export async function adminLogin(password) {
-  const { data } = await axios.post(`${API}/admin/login`, { password });
+export async function adminLogin(email, password) {
+  const { data } = await axios.post(`${API}/admin/login`, { email, password });
   setAdminToken(data.token);
   return data.token;
 }

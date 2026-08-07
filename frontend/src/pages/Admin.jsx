@@ -69,6 +69,7 @@ const emptyProject = () => ({
 });
 
 export default function Admin() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(!!getAdminToken());
   const [tab, setTab] = useState("blog");
@@ -193,11 +194,11 @@ export default function Admin() {
     e.preventDefault();
     setError("");
     try {
-      await adminLogin(password);
+      await adminLogin(email, password);
       setPassword("");
       setAuthed(true);
     } catch {
-      setError("Invalid password");
+      setError("Invalid email or password");
     }
   };
 
@@ -248,9 +249,20 @@ export default function Admin() {
             Softogram CMS
           </h1>
           <input
+            type="email"
+            data-testid="admin-email"
+            placeholder="email"
+            autoComplete="username"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-3 py-2 text-sm rounded-sm mb-3"
+            style={{ background: "#0d1117", border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+          />
+          <input
             type="password"
             data-testid="admin-password"
-            placeholder="ADMIN_PASSWORD"
+            placeholder="password"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-3 py-2 text-sm rounded-sm mb-3"

@@ -67,10 +67,35 @@ async function forceSendFailure(request, status = 500, times = 1) {
   await request.post(`${SENDGRID_MOCK_URL}/behavior`, { data: { status, times } });
 }
 
+/** Phase 11 admin seeded via ADMIN_SEED_* on the e2e backend. */
+const ADMIN_EMAIL = "admin@example.com";
+const ADMIN_PASSWORD = "e2e-admin-password";
+
+async function adminToken(request) {
+  const res = await request.post(`${BACKEND_URL}/api/admin/login`, {
+    data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
+  });
+  if (!res.ok()) {
+    throw new Error(`admin login failed: ${res.status()} ${await res.text()}`);
+  }
+  return (await res.json()).token;
+}
+
+async function adminUiLogin(page) {
+  await page.goto("/admin");
+  await page.getByTestId("admin-email").fill(ADMIN_EMAIL);
+  await page.getByTestId("admin-password").fill(ADMIN_PASSWORD);
+  await page.getByTestId("admin-login-button").click();
+}
+
 module.exports = {
   SENDGRID_MOCK_URL,
   BACKEND_URL,
   FRONTEND_URL,
+  ADMIN_EMAIL,
+  ADMIN_PASSWORD,
+  adminToken,
+  adminUiLogin,
   resetEmails,
   waitForEmails,
   waitForEmailFrom,

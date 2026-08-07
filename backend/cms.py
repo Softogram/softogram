@@ -4,30 +4,33 @@ Seed JSON files under content/ still ship in-repo, but only to auto-seed a truly
 database (local dev, CI, first prod boot) - see ensure_seeded(). Once anyone publishes or
 edits via /admin, Postgres holds the real content and the seed files are never read again.
 
-Admin auth (admin_password_ok / create_session / session_ok) is untouched here - that
-still runs on the env-password + in-memory session mechanism. Moving it onto admin_users /
-admin_sessions is Phase 11, not this one.
+Admin auth (Phase 11 / issues #35-#37): argon2-hashed passwords in admin_users,
+Postgres-backed sessions in admin_sessions. The shared ADMIN_PASSWORD env var is gone.
 """
 from __future__ import annotations
 
+import hashlib
 import json
+import logging
 import os
 import secrets
-import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+from passlib.context import CryptContext
 from sqlalchemy import delete, select
 
 from database import AsyncSessionLocal
-from models import BlogComment, BlogPost, Project
+from models import AdminSession, AdminUser, BlogComment, BlogPost, Project
 
 ROOT = Path(__file__).parent
 SEED_BLOGS = ROOT / "content" / "seed_blogs.json"
 SEED_PROJECTS = ROOT / "content" / "seed_projects.json"
 
-_sessions: dict[str, float] = {}  # token -> expiry epoch
 SESSION_TTL_SEC = 60 * 60 * 12
+_pwd = CryptContext(schemes=["argon2"], deprecated="auto")
+_log = logging.getLogger("softogram")
 
 
 def _load_seed(path: Path) -> list[dict[str, Any]]:
@@ -286,31 +289,95 @@ async def moderate_comment(comment_id: int, approved: bool) -> Optional[dict[str
         return {"id": comment_id, "deleted": True}
 
 
-def admin_password_ok(password: str) -> bool:
-    expected = os.getenv("ADMIN_PASSWORD") or ""
-    if not expected:
-        return False
-    return secrets.compare_digest(password or "", expected)
+def hash_password(password: str) -> str:
+    return _pwd.hash(password)
 
 
-def create_session() -> str:
+def _hash_token(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+async def upsert_admin_user(email: str, password: str) -> AdminUser:
+    """Create or update an admin by email (seed script + e2e boot). Never logs the password."""
+    normalized = (email or "").strip().lower()
+    if not normalized or not password:
+        raise ValueError("email and password are required")
+    pw_hash = hash_password(password)
+    async with AsyncSessionLocal() as session:
+        user = (
+            await session.execute(select(AdminUser).where(AdminUser.email == normalized))
+        ).scalar_one_or_none()
+        if user is None:
+            user = AdminUser(email=normalized, password_hash=pw_hash)
+            session.add(user)
+        else:
+            user.password_hash = pw_hash
+        await session.commit()
+        await session.refresh(user)
+        return user
+
+
+async def ensure_admin_seeded() -> None:
+    """Optional boot seed when ADMIN_SEED_EMAIL + ADMIN_SEED_PASSWORD are set (CI/e2e)."""
+    email = (os.getenv("ADMIN_SEED_EMAIL") or "").strip()
+    password = os.getenv("ADMIN_SEED_PASSWORD") or ""
+    if not email or not password:
+        return
+    await upsert_admin_user(email, password)
+    _log.info("Admin seed ensured for %s", email.strip().lower())
+
+
+async def authenticate_admin(email: str, password: str) -> Optional[int]:
+    """Return admin_users.id on success, else None. Does not log credentials."""
+    normalized = (email or "").strip().lower()
+    if not normalized or not password:
+        return None
+    async with AsyncSessionLocal() as session:
+        user = (
+            await session.execute(select(AdminUser).where(AdminUser.email == normalized))
+        ).scalar_one_or_none()
+        if user is None:
+            return None
+        try:
+            ok = _pwd.verify(password, user.password_hash)
+        except Exception:
+            return None
+        return user.id if ok else None
+
+
+async def create_session(admin_user_id: int) -> str:
+    """Issue a bearer token; store only sha256(token) in admin_sessions."""
     token = secrets.token_urlsafe(32)
-    _sessions[token] = time.time() + SESSION_TTL_SEC
-    # prune
-    now = time.time()
-    expired = [k for k, exp in _sessions.items() if exp < now]
-    for k in expired:
-        _sessions.pop(k, None)
+    expires_at = datetime.now(timezone.utc) + timedelta(seconds=SESSION_TTL_SEC)
+    async with AsyncSessionLocal() as session:
+        session.add(
+            AdminSession(
+                token_hash=_hash_token(token),
+                admin_user_id=admin_user_id,
+                expires_at=expires_at,
+            )
+        )
+        await session.commit()
     return token
 
 
-def session_ok(token: Optional[str]) -> bool:
+async def session_ok(token: Optional[str]) -> bool:
+    """Validate a bearer token against Postgres; lazy-delete expired rows."""
     if not token:
         return False
-    exp = _sessions.get(token)
-    if not exp:
-        return False
-    if exp < time.time():
-        _sessions.pop(token, None)
-        return False
-    return True
+    th = _hash_token(token)
+    async with AsyncSessionLocal() as session:
+        row = (
+            await session.execute(select(AdminSession).where(AdminSession.token_hash == th))
+        ).scalar_one_or_none()
+        if row is None:
+            return False
+        now = datetime.now(timezone.utc)
+        exp = row.expires_at
+        if exp.tzinfo is None:
+            exp = exp.replace(tzinfo=timezone.utc)
+        if exp < now:
+            await session.delete(row)
+            await session.commit()
+            return False
+        return True
