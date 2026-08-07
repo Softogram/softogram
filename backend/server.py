@@ -12,8 +12,12 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from contextlib import asynccontextmanager
+from email.utils import format_datetime
+from xml.sax.saxutils import escape as xml_escape
+
 from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
 from dotenv import load_dotenv
@@ -305,6 +309,13 @@ _contact_limiter = ContactRateLimiter(
 )
 # Separate bucket for E2E burst tests (never used in production).
 _e2e_strict_limiter = ContactRateLimiter(per_minute=2, per_hour=5)
+# Comment submissions reuse the same limiter class/limits (issue #42).
+_comment_limiter = ContactRateLimiter(
+    per_minute=int(os.getenv("CONTACT_RATE_LIMIT_PER_MINUTE", "2")),
+    per_hour=int(os.getenv("CONTACT_RATE_LIMIT_PER_HOUR", "5")),
+)
+
+SITE_URL = os.getenv("SITE_URL", "https://softogram.in").rstrip("/")
 
 
 def _client_key(request: Request) -> str:
@@ -436,9 +447,138 @@ def _require_admin(request: Request) -> None:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
+class BlogCommentCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    comment: str = Field(min_length=1, max_length=5000)
+    # Honeypot (issue #42) — same pattern as contact form.
+    company_website: str = Field(default="", max_length=200)
+
+    @field_validator("name", "comment", mode="before")
+    @classmethod
+    def strip_whitespace(cls, v: str) -> str:
+        return v.strip() if isinstance(v, str) else v
+
+
+class CommentModerationUpdate(BaseModel):
+    approved: bool
+
+
+def _parse_post_date(date_str: str) -> datetime:
+    """Best-effort parse of CMS date strings into an aware UTC datetime for RSS."""
+    raw = (date_str or "").strip()
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%d %b %Y"):
+        try:
+            return datetime.strptime(raw, fmt).replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+    return datetime.now(timezone.utc)
+
+
+def _blog_share_html(post: dict) -> str:
+    title = html.escape(f"{post.get('title', '')} | Softogram Blog")
+    description = html.escape(post.get("excerpt") or "")
+    image = html.escape(post.get("coverImage") or f"{SITE_URL}/og-banner.png")
+    canonical = html.escape(f"{SITE_URL}/blog/{post.get('slug', '')}")
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{title}</title>
+  <meta name="description" content="{description}" />
+  <link rel="canonical" href="{canonical}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="{title}" />
+  <meta property="og:description" content="{description}" />
+  <meta property="og:url" content="{canonical}" />
+  <meta property="og:image" content="{image}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{title}" />
+  <meta name="twitter:description" content="{description}" />
+  <meta name="twitter:image" content="{image}" />
+</head>
+<body>
+  <h1>{html.escape(post.get("title") or "")}</h1>
+  <p>{description}</p>
+  <p><a href="{canonical}">Read on Softogram</a></p>
+</body>
+</html>
+"""
+
+
 @api_router.get("/content/blog")
 async def public_blog_list():
     return await content_cms.published_blogs()
+
+
+@api_router.get("/content/blog/rss.xml")
+async def public_blog_rss():
+    """RSS 2.0 feed of published posts (issue #45). Must be registered before {{slug}}."""
+    posts = await content_cms.published_blogs()
+    items = []
+    for post in posts:
+        link = f"{SITE_URL}/blog/{post['slug']}"
+        pub = format_datetime(_parse_post_date(post.get("date") or ""))
+        items.append(
+            "\n".join(
+                [
+                    "    <item>",
+                    f"      <title>{xml_escape(post.get('title') or '')}</title>",
+                    f"      <link>{xml_escape(link)}</link>",
+                    f"      <guid isPermaLink=\"true\">{xml_escape(link)}</guid>",
+                    f"      <description>{xml_escape(post.get('excerpt') or '')}</description>",
+                    f"      <pubDate>{pub}</pubDate>",
+                    "    </item>",
+                ]
+            )
+        )
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<rss version="2.0">\n'
+        "  <channel>\n"
+        "    <title>Softogram Blog</title>\n"
+        f"    <link>{xml_escape(SITE_URL)}/blog</link>\n"
+        "    <description>Engineering insights, buying guides, and launch checklists from Softogram.</description>\n"
+        f"    <language>en</language>\n"
+        + ("\n".join(items) + ("\n" if items else ""))
+        + "  </channel>\n"
+        "</rss>\n"
+    )
+    return Response(content=body, media_type="application/rss+xml; charset=utf-8")
+
+
+@api_router.get("/content/blog/{slug}/share.html", response_class=HTMLResponse)
+async def public_blog_share_html(slug: str):
+    """Crawler-friendly OG HTML for a post (issue #41). Does not increment view_count."""
+    post = await content_cms.get_published_blog_by_slug(slug)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return HTMLResponse(content=_blog_share_html(post))
+
+
+@api_router.get("/content/blog/{slug}/comments")
+async def public_list_comments(slug: str):
+    comments = await content_cms.list_approved_comments(slug)
+    if comments is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return comments
+
+
+@api_router.post("/content/blog/{slug}/comments")
+async def public_create_comment(slug: str, body: BlogCommentCreate, request: Request):
+    key = f"comment:{_client_key(request)}"
+    if not _comment_limiter.allow(key):
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please try again later.",
+        )
+    if (body.company_website or "").strip():
+        logger.info("Comment honeypot tripped; dropping submission key=%s", key)
+        return {"status": "success", "message": "Thanks — your comment was submitted for review."}
+
+    created = await content_cms.create_comment(slug, body.name, body.comment)
+    if created is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return {"status": "success", "message": "Thanks — your comment was submitted for review."}
 
 
 @api_router.get("/content/blog/{slug}")
@@ -452,6 +592,21 @@ async def public_blog_post(slug: str):
 @api_router.get("/content/projects")
 async def public_projects():
     return await content_cms.published_projects()
+
+
+@api_router.get("/admin/comments")
+async def admin_list_comments(request: Request):
+    _require_admin(request)
+    return await content_cms.list_pending_comments()
+
+
+@api_router.patch("/admin/comments/{comment_id}")
+async def admin_moderate_comment(comment_id: int, body: CommentModerationUpdate, request: Request):
+    _require_admin(request)
+    result = await content_cms.moderate_comment(comment_id, body.approved)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return result
 
 
 @api_router.post("/admin/login", response_model=AdminLoginResponse)

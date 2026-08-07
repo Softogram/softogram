@@ -4,6 +4,7 @@
   <url><loc>https://softogram.in/products</loc><lastmod>2026-08-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://softogram.in/client-work</loc><lastmod>2026-08-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://softogram.in/blog</loc><lastmod>2026-08-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://api.softogram.in/api/content/blog/rss.xml</loc><lastmod>2026-08-08</lastmod><changefreq>daily</changefreq><priority>0.5</priority></url>
   <url><loc>https://softogram.in/blog/how-we-built-polluxkart</loc><lastmod>2026-08-07</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://softogram.in/blog/custom-software-costs-india-2026</loc><lastmod>2026-08-07</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://softogram.in/blog/website-vs-web-app</loc><lastmod>2026-08-07</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>

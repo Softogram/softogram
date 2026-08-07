@@ -24,6 +24,8 @@ import {
   adminSaveProjects,
   adminFetchLeads,
   adminUpdateLeadStatus,
+  adminFetchComments,
+  adminModerateComment,
   adminUploadImage,
   adminFetchAnalytics,
   getAdminToken,
@@ -75,6 +77,8 @@ export default function Admin() {
   const [leads, setLeads] = useState([]);
   const [leadsLoaded, setLeadsLoaded] = useState(false);
   const [leadFilter, setLeadFilter] = useState("all");
+  const [comments, setComments] = useState([]);
+  const [commentsLoaded, setCommentsLoaded] = useState(false);
   const [analytics, setAnalytics] = useState(null);
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
@@ -114,6 +118,16 @@ export default function Admin() {
         .catch((e) => setError(e.response?.data?.detail || "Failed to load leads"))
         .finally(() => setBusy(false));
     }
+    if (tab === "comments") {
+      setBusy(true);
+      adminFetchComments()
+        .then((data) => {
+          setComments(data);
+          setCommentsLoaded(true);
+        })
+        .catch((e) => setError(e.response?.data?.detail || "Failed to load comments"))
+        .finally(() => setBusy(false));
+    }
     if (tab === "analytics" && !analytics) {
       setBusy(true);
       adminFetchAnalytics()
@@ -132,6 +146,17 @@ export default function Admin() {
     } catch (e) {
       setLeads(prevLeads);
       setError(e.response?.data?.detail || "Failed to update status");
+    }
+  };
+
+  const moderateComment = async (id, approved) => {
+    const prev = comments;
+    setComments((c) => c.filter((row) => row.id !== id));
+    try {
+      await adminModerateComment(id, approved);
+    } catch (e) {
+      setComments(prev);
+      setError(e.response?.data?.detail || "Failed to moderate comment");
     }
   };
 
@@ -306,6 +331,19 @@ export default function Admin() {
             }}
           >
             leads
+          </button>
+          <button
+            type="button"
+            data-testid="admin-tab-comments"
+            onClick={() => setTab("comments")}
+            className="px-3 py-1 text-xs rounded-sm"
+            style={{
+              background: tab === "comments" ? `${G}22` : "transparent",
+              border: `1px solid ${BORDER}`,
+              color: tab === "comments" ? G : DIM,
+            }}
+          >
+            comments
           </button>
           <button
             type="button"
@@ -692,6 +730,72 @@ export default function Admin() {
               </p>
             )}
           </div>
+        </div>
+      )}
+
+      {tab === "comments" && (
+        <div className="p-6" data-testid="admin-comments">
+          <p className="text-xs mb-4" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+            Pending moderation queue — approve to publish, reject to delete.
+          </p>
+          {busy && !commentsLoaded && (
+            <p className="text-sm" style={{ color: DIM }}>
+              loading…
+            </p>
+          )}
+          {commentsLoaded && comments.length === 0 && (
+            <p className="text-sm" style={{ color: DIM }} data-testid="admin-comments-empty">
+              No pending comments.
+            </p>
+          )}
+          <ul className="space-y-3">
+            {comments.map((c) => (
+              <li
+                key={c.id}
+                className="rounded-sm p-4"
+                style={{ background: CARD, border: `1px solid ${BORDER}` }}
+                data-testid="admin-comment-row"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs mb-1" style={{ color: G, fontFamily: "var(--font-mono)" }}>
+                      {c.name}
+                      {c.postSlug ? ` · /blog/${c.postSlug}` : ""}
+                      {c.createdAt ? ` · ${new Date(c.createdAt).toLocaleString()}` : ""}
+                    </div>
+                    {c.postTitle && (
+                      <div className="text-xs mb-2" style={{ color: DIM }}>
+                        on “{c.postTitle}”
+                      </div>
+                    )}
+                    <p className="text-sm" style={{ color: "#e2e8f0" }}>
+                      {c.comment}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      type="button"
+                      data-testid="admin-comment-approve"
+                      onClick={() => moderateComment(c.id, true)}
+                      className="px-3 py-1 text-xs font-semibold rounded-sm"
+                      style={{ background: G, color: "#0d1117" }}
+                    >
+                      approve
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="admin-comment-reject"
+                      onClick={() => moderateComment(c.id, false)}
+                      className="px-3 py-1 text-xs rounded-sm"
+                      style={{ border: `1px solid ${BORDER}`, color: "#f85149" }}
+                    >
+                      reject
+                    </button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

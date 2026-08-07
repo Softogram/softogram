@@ -149,11 +149,11 @@ Implemented in [PR #59](https://github.com/Softogram/softogram/pull/59) - pendin
 
 ### Phase 13 - Blogging platform
 
-- [ ] [#41 Fix blog OG/share tags not rendering for crawlers](https://github.com/Softogram/softogram/issues/41)
-- [ ] [#42 blog_comments schema + moderated comment API](https://github.com/Softogram/softogram/issues/42)
-- [ ] [#43 Comment UI on blog posts + moderation queue in admin](https://github.com/Softogram/softogram/issues/43)
-- [ ] [#44 Share buttons on blog posts](https://github.com/Softogram/softogram/issues/44)
-- [ ] [#45 RSS feed for blog posts](https://github.com/Softogram/softogram/issues/45)
+- [x] [#41 Fix blog OG/share tags not rendering for crawlers](https://github.com/Softogram/softogram/issues/41) - API `share.html` + Cloudflare Worker in `workers/blog-og/` (deploy is a human ops step)
+- [x] [#42 blog_comments schema + moderated comment API](https://github.com/Softogram/softogram/issues/42)
+- [x] [#43 Comment UI on blog posts + moderation queue in admin](https://github.com/Softogram/softogram/issues/43)
+- [x] [#44 Share buttons on blog posts](https://github.com/Softogram/softogram/issues/44)
+- [x] [#45 RSS feed for blog posts](https://github.com/Softogram/softogram/issues/45)
 
 ### Phase 14 - Growth push
 

@@ -25,6 +25,24 @@ export async function fetchBlogBySlug(slug) {
   return SEED_BLOGS.find((p) => p.published && p.slug === slug) || null;
 }
 
+export async function fetchBlogComments(slug) {
+  const { data } = await axios.get(`${API}/content/blog/${slug}/comments`, { timeout: 5000 });
+  return Array.isArray(data) ? data : [];
+}
+
+export async function submitBlogComment(slug, { name, comment, company_website = "" }) {
+  const { data } = await axios.post(
+    `${API}/content/blog/${slug}/comments`,
+    { name, comment, company_website },
+    { timeout: 8000 },
+  );
+  return data;
+}
+
+export function blogRssUrl() {
+  return `${API}/content/blog/rss.xml`;
+}
+
 export async function fetchPublishedProjects() {
   try {
     const { data } = await axios.get(`${API}/content/projects`, { timeout: 5000 });
@@ -103,5 +121,19 @@ export async function adminUploadImage(file) {
 
 export async function adminFetchAnalytics() {
   const { data } = await axios.get(`${API}/admin/analytics`, { headers: adminHeaders() });
+  return data;
+}
+
+export async function adminFetchComments() {
+  const { data } = await axios.get(`${API}/admin/comments`, { headers: adminHeaders() });
+  return data;
+}
+
+export async function adminModerateComment(id, approved) {
+  const { data } = await axios.patch(
+    `${API}/admin/comments/${id}`,
+    { approved },
+    { headers: adminHeaders() },
+  );
   return data;
 }

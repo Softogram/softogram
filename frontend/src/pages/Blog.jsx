@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchPublishedBlogs } from "@/lib/cmsApi";
+import { fetchPublishedBlogs, blogRssUrl } from "@/lib/cmsApi";
 import { G, DIM, BORDER, CARD, Reveal } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
 
@@ -40,6 +40,7 @@ export default function Blog() {
         title="Blog | Softogram"
         description="Engineering insights, buying guides, and launch checklists from Softogram."
         canonical="https://softogram.in/blog"
+        rssUrl={blogRssUrl()}
       />
 
       <section className="relative py-24 overflow-hidden" data-testid="blog-hero">

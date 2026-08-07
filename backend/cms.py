@@ -20,7 +20,7 @@ from typing import Any, Optional
 from sqlalchemy import delete, select
 
 from database import AsyncSessionLocal
-from models import BlogPost, Project
+from models import BlogComment, BlogPost, Project
 
 ROOT = Path(__file__).parent
 SEED_BLOGS = ROOT / "content" / "seed_blogs.json"
@@ -143,6 +143,8 @@ async def save_blogs(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     across the delete+recreate so editing a post doesn't silently zero its views."""
     async with AsyncSessionLocal() as session:
         existing_counts = dict((await session.execute(select(BlogPost.id, BlogPost.view_count))).all())
+        # Bulk delete bypasses ORM relationship cascades — clear comments first (issue #42).
+        await session.execute(delete(BlogComment))
         await session.execute(delete(BlogPost))
         for item in items:
             row = _blog_row(item)
@@ -169,6 +171,17 @@ async def published_projects() -> list[dict[str, Any]]:
     return [p for p in await get_projects() if p.get("published")]
 
 
+async def get_published_blog_by_slug(slug: str) -> Optional[dict[str, Any]]:
+    """Fetch a published post by slug without incrementing view_count (OG/RSS/comments)."""
+    async with AsyncSessionLocal() as session:
+        row = (
+            await session.execute(select(BlogPost).where(BlogPost.slug == slug, BlogPost.published.is_(True)))
+        ).scalar_one_or_none()
+        if row is None:
+            return None
+        return _blog_to_dict(row)
+
+
 async def blog_by_slug(slug: str) -> Optional[dict[str, Any]]:
     """Fetch a published post by slug, counting the read as a view (issue #40)."""
     async with AsyncSessionLocal() as session:
@@ -180,6 +193,97 @@ async def blog_by_slug(slug: str) -> Optional[dict[str, Any]]:
         row.view_count = (row.view_count or 0) + 1
         await session.commit()
         return _blog_to_dict(row)
+
+
+def _comment_to_dict(row: BlogComment, *, include_post: bool = False) -> dict[str, Any]:
+    out: dict[str, Any] = {
+        "id": row.id,
+        "postId": row.post_id,
+        "name": row.name,
+        "comment": row.comment,
+        "approved": row.approved,
+        "createdAt": row.created_at.isoformat() if row.created_at else None,
+    }
+    if include_post and row.post is not None:
+        out["postTitle"] = row.post.title
+        out["postSlug"] = row.post.slug
+    return out
+
+
+async def list_approved_comments(slug: str) -> Optional[list[dict[str, Any]]]:
+    """Public list for a post. Returns None if the slug is unknown / unpublished."""
+    async with AsyncSessionLocal() as session:
+        post = (
+            await session.execute(select(BlogPost).where(BlogPost.slug == slug, BlogPost.published.is_(True)))
+        ).scalar_one_or_none()
+        if post is None:
+            return None
+        rows = (
+            await session.execute(
+                select(BlogComment)
+                .where(BlogComment.post_id == post.id, BlogComment.approved.is_(True))
+                .order_by(BlogComment.created_at.asc())
+            )
+        ).scalars().all()
+        return [_comment_to_dict(r) for r in rows]
+
+
+async def create_comment(slug: str, name: str, comment: str) -> Optional[dict[str, Any]]:
+    """Create an unapproved comment. Returns None if the slug is unknown / unpublished."""
+    async with AsyncSessionLocal() as session:
+        post = (
+            await session.execute(select(BlogPost).where(BlogPost.slug == slug, BlogPost.published.is_(True)))
+        ).scalar_one_or_none()
+        if post is None:
+            return None
+        row = BlogComment(post_id=post.id, name=name, comment=comment, approved=False)
+        session.add(row)
+        await session.commit()
+        await session.refresh(row)
+        return _comment_to_dict(row)
+
+
+async def list_pending_comments() -> list[dict[str, Any]]:
+    async with AsyncSessionLocal() as session:
+        rows = (
+            await session.execute(
+                select(BlogComment)
+                .where(BlogComment.approved.is_(False))
+                .order_by(BlogComment.created_at.asc())
+            )
+        ).scalars().all()
+        post_ids = {r.post_id for r in rows}
+        posts: dict[str, BlogPost] = {}
+        if post_ids:
+            for p in (
+                await session.execute(select(BlogPost).where(BlogPost.id.in_(post_ids)))
+            ).scalars().all():
+                posts[p.id] = p
+        out = []
+        for r in rows:
+            item = _comment_to_dict(r)
+            post = posts.get(r.post_id)
+            if post is not None:
+                item["postTitle"] = post.title
+                item["postSlug"] = post.slug
+            out.append(item)
+        return out
+
+
+async def moderate_comment(comment_id: int, approved: bool) -> Optional[dict[str, Any]]:
+    """Approve (approved=True) or reject/delete (approved=False). None if missing."""
+    async with AsyncSessionLocal() as session:
+        row = await session.get(BlogComment, comment_id)
+        if row is None:
+            return None
+        if approved:
+            row.approved = True
+            await session.commit()
+            await session.refresh(row)
+            return _comment_to_dict(row)
+        await session.delete(row)
+        await session.commit()
+        return {"id": comment_id, "deleted": True}
 
 
 def admin_password_ok(password: str) -> bool:
