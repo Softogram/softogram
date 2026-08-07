@@ -4,7 +4,7 @@ const { BACKEND_URL } = require("../fixtures/helpers");
 
 async function adminToken(request) {
   const res = await request.post(`${BACKEND_URL}/api/admin/login`, {
-    data: { password: "e2e-admin-password" },
+    data: { email: "admin@example.com", password: "e2e-admin-password" },
   });
   return (await res.json()).token;
 }
@@ -112,6 +112,7 @@ test.describe("Comment UI + admin queue (issue #43)", () => {
     await expect(page.getByTestId("blog-comment").filter({ hasText: marker })).toHaveCount(0);
 
     await page.goto("/admin");
+    await page.getByTestId("admin-email").fill("admin@example.com");
     await page.getByTestId("admin-password").fill("e2e-admin-password");
     await page.getByTestId("admin-login-button").click();
     await expect(page.getByTestId("admin-page")).toBeVisible({ timeout: 10000 });

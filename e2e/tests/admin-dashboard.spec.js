@@ -5,7 +5,7 @@ const { BACKEND_URL } = require("../fixtures/helpers");
 
 async function adminToken(request) {
   const res = await request.post(`${BACKEND_URL}/api/admin/login`, {
-    data: { password: "e2e-admin-password" },
+    data: { email: "admin@example.com", password: "e2e-admin-password" },
   });
   return (await res.json()).token;
 }
@@ -148,6 +148,7 @@ test.describe("Admin UI (leads + analytics tabs)", () => {
     });
 
     await page.goto("/admin");
+    await page.getByTestId("admin-email").fill("admin@example.com");
     await page.getByTestId("admin-password").fill("e2e-admin-password");
     await page.getByTestId("admin-login-button").click();
     await expect(page.getByTestId("admin-page")).toBeVisible({ timeout: 10000 });
@@ -168,6 +169,7 @@ test.describe("Admin UI (leads + analytics tabs)", () => {
 
   test("analytics tab renders without PostHog configured", async ({ page }) => {
     await page.goto("/admin");
+    await page.getByTestId("admin-email").fill("admin@example.com");
     await page.getByTestId("admin-password").fill("e2e-admin-password");
     await page.getByTestId("admin-login-button").click();
     await expect(page.getByTestId("admin-page")).toBeVisible({ timeout: 10000 });
@@ -179,6 +181,7 @@ test.describe("Admin UI (leads + analytics tabs)", () => {
 
   test("blog editor shows a live markdown preview", async ({ page }) => {
     await page.goto("/admin");
+    await page.getByTestId("admin-email").fill("admin@example.com");
     await page.getByTestId("admin-password").fill("e2e-admin-password");
     await page.getByTestId("admin-login-button").click();
     await expect(page.getByTestId("admin-page")).toBeVisible({ timeout: 10000 });

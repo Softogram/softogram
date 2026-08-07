@@ -57,6 +57,7 @@ def _run_migrations() -> None:
 async def lifespan(_app: FastAPI):
     _run_migrations()
     await content_cms.ensure_seeded()
+    await content_cms.ensure_admin_seeded()
     yield
     await engine.dispose()
 
@@ -314,6 +315,13 @@ _comment_limiter = ContactRateLimiter(
     per_minute=int(os.getenv("CONTACT_RATE_LIMIT_PER_MINUTE", "2")),
     per_hour=int(os.getenv("CONTACT_RATE_LIMIT_PER_HOUR", "5")),
 )
+# Admin login gets its own, stricter bucket - it guards account access directly,
+# not just a public form (issue found in PR #62 review; #35-#37 shipped with no
+# rate limit on login at all).
+_login_limiter = ContactRateLimiter(
+    per_minute=int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_PER_MINUTE", "5")),
+    per_hour=int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_PER_HOUR", "20")),
+)
 
 SITE_URL = os.getenv("SITE_URL", "https://softogram.in").rstrip("/")
 
@@ -403,6 +411,7 @@ async def submit_contact_form(
 # --- CMS (issue #17) ---
 
 class AdminLoginRequest(BaseModel):
+    email: EmailStr
     password: str = Field(min_length=1, max_length=200)
 
 
@@ -440,10 +449,10 @@ class ProjectModel(BaseModel):
     url: str = Field(default="", max_length=500)
 
 
-def _require_admin(request: Request) -> None:
+async def _require_admin(request: Request) -> None:
     auth = request.headers.get("authorization") or ""
     token = auth[7:].strip() if auth.lower().startswith("bearer ") else ""
-    if not content_cms.session_ok(token):
+    if not await content_cms.session_ok(token):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
@@ -596,13 +605,13 @@ async def public_projects():
 
 @api_router.get("/admin/comments")
 async def admin_list_comments(request: Request):
-    _require_admin(request)
+    await _require_admin(request)
     return await content_cms.list_pending_comments()
 
 
 @api_router.patch("/admin/comments/{comment_id}")
 async def admin_moderate_comment(comment_id: int, body: CommentModerationUpdate, request: Request):
-    _require_admin(request)
+    await _require_admin(request)
     result = await content_cms.moderate_comment(comment_id, body.approved)
     if result is None:
         raise HTTPException(status_code=404, detail="Comment not found")
@@ -610,33 +619,38 @@ async def admin_moderate_comment(comment_id: int, body: CommentModerationUpdate,
 
 
 @api_router.post("/admin/login", response_model=AdminLoginResponse)
-async def admin_login(body: AdminLoginRequest):
-    if not content_cms.admin_password_ok(body.password):
-        raise HTTPException(status_code=401, detail="Invalid password")
-    return AdminLoginResponse(token=content_cms.create_session())
+async def admin_login(body: AdminLoginRequest, request: Request):
+    key = f"admin-login:{_client_key(request)}"
+    if not _login_limiter.allow(key):
+        raise HTTPException(status_code=429, detail="Too many login attempts. Please try again later.")
+    admin_id = await content_cms.authenticate_admin(str(body.email), body.password)
+    if admin_id is None:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    token = await content_cms.create_session(admin_id)
+    return AdminLoginResponse(token=token)
 
 
 @api_router.get("/admin/blog")
 async def admin_list_blogs(request: Request):
-    _require_admin(request)
+    await _require_admin(request)
     return await content_cms.get_blogs()
 
 
 @api_router.put("/admin/blog")
 async def admin_replace_blogs(request: Request, items: List[BlogPostModel]):
-    _require_admin(request)
+    await _require_admin(request)
     return await content_cms.save_blogs([i.model_dump() for i in items])
 
 
 @api_router.get("/admin/projects")
 async def admin_list_projects(request: Request):
-    _require_admin(request)
+    await _require_admin(request)
     return await content_cms.get_projects()
 
 
 @api_router.put("/admin/projects")
 async def admin_replace_projects(request: Request, items: List[ProjectModel]):
-    _require_admin(request)
+    await _require_admin(request)
     return await content_cms.save_projects([i.model_dump() for i in items])
 
 
@@ -672,7 +686,7 @@ def _lead_to_dict(row: Lead) -> dict:
 
 @api_router.get("/admin/leads")
 async def admin_list_leads(request: Request):
-    _require_admin(request)
+    await _require_admin(request)
     async with AsyncSessionLocal() as session:
         rows = (await session.execute(select(Lead).order_by(Lead.created_at.desc()))).scalars().all()
         return [_lead_to_dict(r) for r in rows]
@@ -680,7 +694,7 @@ async def admin_list_leads(request: Request):
 
 @api_router.patch("/admin/leads/{lead_id}")
 async def admin_update_lead_status(lead_id: str, body: LeadStatusUpdate, request: Request):
-    _require_admin(request)
+    await _require_admin(request)
     async with AsyncSessionLocal() as session:
         lead = await session.get(Lead, lead_id)
         if lead is None:
@@ -703,7 +717,7 @@ MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5MB
 
 @api_router.post("/admin/upload")
 async def admin_upload_image(request: Request, file: UploadFile = File(...)):
-    _require_admin(request)
+    await _require_admin(request)
 
     ext = ALLOWED_UPLOAD_TYPES.get(file.content_type)
     if ext is None:
@@ -774,7 +788,7 @@ async def _posthog_summary() -> Optional[dict]:
 
 @api_router.get("/admin/analytics")
 async def admin_analytics(request: Request):
-    _require_admin(request)
+    await _require_admin(request)
 
     since = datetime.now(timezone.utc) - timedelta(days=30)
     async with AsyncSessionLocal() as session:

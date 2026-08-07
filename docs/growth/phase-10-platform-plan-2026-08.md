@@ -135,9 +135,9 @@ Implemented in [PR #54](https://github.com/Softogram/softogram/pull/54) - pendin
 
 ### Phase 11 - Admin auth hardening
 
-- [ ] [#35 admin_users table with argon2-hashed passwords](https://github.com/Softogram/softogram/issues/35)
-- [ ] [#36 Postgres-backed admin sessions](https://github.com/Softogram/softogram/issues/36)
-- [ ] [#37 Retire the shared ADMIN_PASSWORD login flow](https://github.com/Softogram/softogram/issues/37)
+- [x] [#35 admin_users table with argon2-hashed passwords](https://github.com/Softogram/softogram/issues/35)
+- [x] [#36 Postgres-backed admin sessions](https://github.com/Softogram/softogram/issues/36)
+- [x] [#37 Retire the shared ADMIN_PASSWORD login flow](https://github.com/Softogram/softogram/issues/37)
 
 ### Phase 12 - Admin dashboard v2
 

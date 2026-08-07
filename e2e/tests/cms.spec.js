@@ -26,12 +26,12 @@ test.describe("CMS API", () => {
     expect(denied.status()).toBe(401);
 
     const bad = await request.post(`${BACKEND_URL}/api/admin/login`, {
-      data: { password: "wrong" },
+      data: { email: "admin@example.com", password: "wrong" },
     });
     expect(bad.status()).toBe(401);
 
     const ok = await request.post(`${BACKEND_URL}/api/admin/login`, {
-      data: { password: "e2e-admin-password" },
+      data: { email: "admin@example.com", password: "e2e-admin-password" },
     });
     expect(ok.status()).toBe(200);
     const { token } = await ok.json();
@@ -55,6 +55,7 @@ test.describe("Admin UI", () => {
   test("admin login unlocks CMS", async ({ page }) => {
     await page.goto("/admin");
     await expect(page.getByTestId("admin-login")).toBeVisible();
+    await page.getByTestId("admin-email").fill("admin@example.com");
     await page.getByTestId("admin-password").fill("e2e-admin-password");
     await page.getByTestId("admin-login-button").click();
     await expect(page.getByTestId("admin-page")).toBeVisible({ timeout: 10000 });

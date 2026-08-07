@@ -2,9 +2,8 @@
 SQLAlchemy ORM models for all seven Postgres tables (issue #32).
 Schema matches docs/growth/phase-10-platform-plan-2026-08.md.
 
-admin_users / admin_sessions are created here but not wired into auth yet -
-that cutover is Phase 11. Admin auth still runs on cms.py's env-password +
-in-memory session mechanism until then.
+admin_users / admin_sessions are wired in Phase 11 (argon2 passwords +
+Postgres-backed session tokens).
 """
 from datetime import datetime, timezone
 
