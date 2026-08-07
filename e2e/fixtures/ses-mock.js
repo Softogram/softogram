@@ -1,21 +1,25 @@
 #!/usr/bin/env node
 /**
- * Minimal SendGrid v3 mock for e2e tests.
+ * Minimal AWS SES v2 (sesv2) mock for e2e tests.
  *
- * Captures POST /v3/mail/send payloads in memory and exposes them for
- * assertions. The backend is pointed here via the SENDGRID_HOST env var.
+ * Captures POST /v2/email/outbound-emails payloads in memory and exposes
+ * them for assertions. The backend is pointed here via AWS_SES_ENDPOINT_URL.
+ * Wire shape verified empirically against boto3 (see git history for the
+ * probe script): plain JSON body, no SigV4 validation needed since this
+ * mock never checks the Authorization header.
  *
  * Endpoints:
- *   GET    /health            -> 200 ok (used as the Playwright readiness probe)
- *   POST   /v3/mail/send      -> 202 (or a forced status, see below), captures body
- *   GET    /emails            -> JSON array of captured send payloads
- *   DELETE /emails            -> clears captured payloads
- *   POST   /behavior          -> {"status": 500, "times": 2} forces the next N
- *                                mail sends to return that status (failure-path tests)
+ *   GET    /health                    -> 200 ok (Playwright readiness probe)
+ *   POST   /v2/email/outbound-emails  -> 200 (or a forced status, see below),
+ *                                         captures body, returns {"MessageId": ...}
+ *   GET    /emails                    -> JSON array of captured send payloads
+ *   DELETE /emails                    -> clears captured payloads
+ *   POST   /behavior                  -> {"status": 500, "times": 2} forces the
+ *                                         next N sends to return that status
  */
 const http = require("http");
 
-const PORT = process.env.SENDGRID_MOCK_PORT || 8025;
+const PORT = process.env.SES_MOCK_PORT || 8025;
 
 let emails = [];
 let forced = { status: null, times: 0 };
@@ -36,7 +40,7 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ ok: true, captured: emails.length }));
   }
 
-  if (method === "POST" && url === "/v3/mail/send") {
+  if (method === "POST" && url === "/v2/email/outbound-emails") {
     const raw = await readBody(req);
     let payload;
     try {
@@ -47,11 +51,11 @@ const server = http.createServer(async (req, res) => {
     if (forced.times > 0 && forced.status) {
       forced.times -= 1;
       res.writeHead(forced.status, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({ errors: [{ message: "forced by e2e mock" }] }));
+      return res.end(JSON.stringify({ message: "forced by e2e mock" }));
     }
     emails.push({ receivedAt: new Date().toISOString(), payload });
-    res.writeHead(202);
-    return res.end();
+    res.writeHead(200, { "Content-Type": "application/json" });
+    return res.end(JSON.stringify({ MessageId: `mock-${emails.length}` }));
   }
 
   if (method === "GET" && url === "/emails") {
@@ -83,5 +87,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`[sendgrid-mock] listening on http://localhost:${PORT}`);
+  console.log(`[ses-mock] listening on http://localhost:${PORT}`);
 });

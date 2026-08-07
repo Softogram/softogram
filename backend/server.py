@@ -21,8 +21,9 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
 from dotenv import load_dotenv
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+import boto3
+from botocore.config import Config as BotoConfig
+from botocore.exceptions import ClientError
 from sqlalchemy import select, func
 import httpx
 from database import AsyncSessionLocal, engine
@@ -32,6 +33,13 @@ import cms as content_cms
 # --- Configuration & Setup ---
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
+
+_ses_client = boto3.client(
+    "sesv2",
+    region_name=os.getenv("AWS_SES_REGION", "ap-south-2"),
+    endpoint_url=os.getenv("AWS_SES_ENDPOINT_URL") or None,
+    config=BotoConfig(retries={"max_attempts": 0}),
+)
 
 DATA_DIR = Path(os.getenv("LEADS_DATA_DIR", str(ROOT_DIR / "data")))
 EMAIL_FAILURES_JSONL = DATA_DIR / "contact_email_failures.jsonl"
@@ -143,25 +151,29 @@ async def persist_contact_submission(submission: ContactSubmission) -> dict:
 
 # --- Helper Functions ---
 
-def _sendgrid_send(mail: Mail) -> bool:
-    api_key = os.getenv("SENDGRID_API_KEY")
-    if not api_key:
-        logging.warning("SendGrid API key not configured.")
-        return False
+def _send_email(sender: str, to: str, subject: str, html_content: str, reply_to: Optional[str] = None) -> bool:
     try:
-        sg = SendGridAPIClient(api_key)
-        sendgrid_host = os.getenv("SENDGRID_HOST")
-        if sendgrid_host:
-            sg.client.host = sendgrid_host
-        response = sg.send(mail)
-        return response.status_code == 202
-    except Exception as e:
-        logging.error("SendGrid Error: %s", e)
+        kwargs = {
+            "FromEmailAddress": sender,
+            "Destination": {"ToAddresses": [to]},
+            "Content": {
+                "Simple": {
+                    "Subject": {"Data": subject, "Charset": "UTF-8"},
+                    "Body": {"Html": {"Data": html_content, "Charset": "UTF-8"}},
+                }
+            },
+        }
+        if reply_to:
+            kwargs["ReplyToAddresses"] = [reply_to]
+        _ses_client.send_email(**kwargs)
+        return True
+    except ClientError as e:
+        logging.error("SES Error: %s", e)
         return False
 
 
 def send_contact_email(name: str, user_email: str, phone: str, service: str, message: str) -> bool:
-    """Send contact form submission via SendGrid (single attempt)."""
+    """Send contact form submission via SES (single attempt)."""
     sender_email = os.getenv("SENDER_EMAIL")
     recipient_email = os.getenv("RECIPIENT_EMAIL")
 
@@ -196,14 +208,7 @@ def send_contact_email(name: str, user_email: str, phone: str, service: str, mes
     </html>
     """
 
-    mail = Mail(
-        from_email=sender_email,
-        to_emails=recipient_email,
-        subject=subject,
-        html_content=html_content,
-    )
-    mail.reply_to = user_email
-    return _sendgrid_send(mail)
+    return _send_email(sender_email, recipient_email, subject, html_content, reply_to=user_email)
 
 
 def send_lead_auto_reply(name: str, user_email: str) -> bool:
@@ -226,13 +231,7 @@ def send_lead_auto_reply(name: str, user_email: str) -> bool:
       </body>
     </html>
     """
-    mail = Mail(
-        from_email=sender_email,
-        to_emails=user_email,
-        subject="We received your Softogram inquiry",
-        html_content=html_content,
-    )
-    return _sendgrid_send(mail)
+    return _send_email(sender_email, user_email, "We received your Softogram inquiry", html_content)
 
 
 def send_contact_email_with_retries(
@@ -244,7 +243,7 @@ def send_contact_email_with_retries(
     message: str,
     attempts: int = 3,
 ) -> bool:
-    """Retry SendGrid with exponential backoff; alert on final failure; auto-reply on success."""
+    """Retry SES with exponential backoff; alert on final failure; auto-reply on success."""
     for i in range(attempts):
         ok = send_contact_email(name, user_email, phone, service, message)
         if ok:
@@ -431,7 +430,7 @@ class NewsletterSubscribeResponse(BaseModel):
 
 
 def send_checklist_email(user_email: str) -> bool:
-    """Send the launch-checklist lead magnet via SendGrid (issue #50)."""
+    """Send the launch-checklist lead magnet via SES (issue #50)."""
     sender_email = os.getenv("SENDER_EMAIL")
     if not sender_email or not user_email:
         return False
@@ -448,13 +447,7 @@ def send_checklist_email(user_email: str) -> bool:
       </body>
     </html>
     """
-    mail = Mail(
-        from_email=sender_email,
-        to_emails=user_email,
-        subject="Your Softogram launch checklist",
-        html_content=html_content,
-    )
-    return _sendgrid_send(mail)
+    return _send_email(sender_email, user_email, "Your Softogram launch checklist", html_content)
 
 
 @api_router.post("/newsletter/subscribe", response_model=NewsletterSubscribeResponse)

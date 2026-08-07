@@ -39,6 +39,7 @@
 
 html {
     scroll-behavior: smooth;
+    scrollbar-color: var(--rd-primary) var(--bg-primary);
 }
 
 body {
@@ -65,17 +66,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--accent-cyan);
+    background: var(--rd-primary);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #00d4dd;
+    background: #22c55e;
 }
 
 ::selection {
-    background-color: var(--accent-cyan);
-    color: black;
+    background-color: var(--rd-primary);
+    color: var(--rd-primary-fg);
 }
 
 /* Gradient Text */

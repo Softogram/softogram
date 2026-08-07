@@ -79,7 +79,7 @@ test.describe("Newsletter lead magnet (issue #50)", () => {
     expect(dup.status()).toBe(200);
     expect((await dup.json()).alreadySubscribed).toBe(true);
 
-    // No second SendGrid send for duplicates.
+    // No second SES send for duplicates.
     await new Promise((r) => setTimeout(r, 800));
     const after = await (await request.get("http://localhost:8025/emails")).json();
     expect(after.length).toBe(0);

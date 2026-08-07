@@ -1,4 +1,4 @@
-// API-level e2e: real backend, real HTTP, SendGrid mocked.
+// API-level e2e: real backend, real HTTP, SES mocked.
 const { test, expect } = require("@playwright/test");
 const {
   BACKEND_URL,
@@ -42,22 +42,22 @@ test.describe("contact API", () => {
 
     const emails = await waitForEmails(request, 2);
     const payload = emails.find((e) =>
-      (e.payload.subject || "").includes("API Test User"),
+      (e.payload.Content?.Simple?.Subject?.Data || "").includes("API Test User"),
     )?.payload;
     expect(payload).toBeTruthy();
-    expect(payload.reply_to.email).toBe("lead@example.com");
-    expect(payload.from.email).toBe("e2e-sender@softogram.test");
-    expect(payload.personalizations[0].to[0].email).toBe("e2e-inbox@softogram.test");
-    const html = payload.content[0].value;
+    expect(payload.ReplyToAddresses[0]).toBe("lead@example.com");
+    expect(payload.FromEmailAddress).toBe("e2e-sender@softogram.test");
+    expect(payload.Destination.ToAddresses[0]).toBe("e2e-inbox@softogram.test");
+    const html = payload.Content.Simple.Body.Html.Data;
     expect(html).toContain("I need a web app.");
     expect(html).toContain("+91-9876543210");
     expect(html).toContain("Custom Web Application");
 
     const autoReply = emails.find((e) =>
-      (e.payload.subject || "").toLowerCase().includes("received your softogram"),
+      (e.payload.Content?.Simple?.Subject?.Data || "").toLowerCase().includes("received your softogram"),
     );
     expect(autoReply).toBeTruthy();
-    expect(autoReply.payload.personalizations[0].to[0].email).toBe("lead@example.com");
+    expect(autoReply.payload.Destination.ToAddresses[0]).toBe("lead@example.com");
   });
 
   test("invalid email address is rejected with 422 and sends nothing", async ({ request }) => {
@@ -118,7 +118,7 @@ test.describe("contact API", () => {
     expect(Date.now() - started).toBeLessThan(3000);
   });
 
-  test("visitor still gets success when SendGrid is down and lead is persisted in Postgres (issue #3)", async ({
+  test("visitor still gets success when SES is down and lead is persisted in Postgres (issue #3)", async ({
     request,
   }) => {
     await forceSendFailure(request, 500, 5);
@@ -145,7 +145,7 @@ test.describe("contact API", () => {
     // (3 attempts, exponential backoff) finishes. Wait for that background task
     // to actually settle before this test ends - otherwise its retries can still
     // be in flight when the next test starts, and a late-arriving email leaks
-    // into that test's SendGrid mock assertions.
+    // into that test's SES mock assertions.
     const fs = require("fs");
     const path = require("path");
     const failuresFile = path.join(__dirname, "../../backend/data/contact_email_failures.jsonl");
@@ -198,10 +198,12 @@ test.describe("contact API", () => {
       },
     });
     const emails = await waitForEmails(request, 2);
-    const inquiry = emails.find((e) => (e.payload.subject || "").includes("New Project Inquiry"));
+    const inquiry = emails.find((e) =>
+      (e.payload.Content?.Simple?.Subject?.Data || "").includes("New Project Inquiry"),
+    );
     expect(inquiry).toBeTruthy();
-    const htmlBody = inquiry.payload.content[0].value;
-    const subject = inquiry.payload.subject || "";
+    const htmlBody = inquiry.payload.Content.Simple.Body.Html.Data;
+    const subject = inquiry.payload.Content.Simple.Subject.Data || "";
     expect(htmlBody).not.toContain("<img src=x");
     expect(htmlBody).toContain("&lt;img src=x");
     expect(htmlBody).not.toContain("<b>bold</b>");
@@ -229,7 +231,7 @@ test.describe("contact API", () => {
   });
 
   test("3rd rapid submission from same client is rate-limited (issue #5)", async ({ request }) => {
-    // Avoid polluting the SendGrid mock with burst traffic emails.
+    // Avoid polluting the SES mock with burst traffic emails.
     await forceSendFailure(request, 500, 10);
     const id = `api-rate-${Date.now()}`;
     const payload = {

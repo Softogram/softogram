@@ -108,7 +108,7 @@ export default function LeadMagnet() {
       <button
         type="button"
         data-testid="lead-magnet-trigger"
-        className="fixed bottom-20 right-4 z-[1050] px-3 py-2 text-xs rounded-sm shadow-lg"
+        className="fixed bottom-28 right-6 z-[1050] px-3 py-2 text-xs rounded-sm shadow-lg"
         style={{
           background: CARD,
           border: `1px solid ${BORDER}`,

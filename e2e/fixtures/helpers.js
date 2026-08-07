@@ -1,6 +1,6 @@
 const { Client } = require("pg");
 
-const SENDGRID_MOCK_URL = "http://localhost:8025";
+const EMAIL_MOCK_URL = "http://localhost:8025";
 const BACKEND_URL = "http://localhost:8001";
 const FRONTEND_URL = "http://localhost:3100";
 
@@ -29,11 +29,11 @@ async function waitForLead(email, timeoutMs = 10_000) {
   }
 }
 
-/** Clear captured emails on the SendGrid mock. */
+/** Clear captured emails on the SES mock. */
 async function resetEmails(request) {
-  const res = await request.delete(`${SENDGRID_MOCK_URL}/emails`);
+  const res = await request.delete(`${EMAIL_MOCK_URL}/emails`);
   if (!res.ok() && res.status() !== 204) {
-    throw new Error(`failed to reset sendgrid mock: ${res.status()}`);
+    throw new Error(`failed to reset SES mock: ${res.status()}`);
   }
 }
 
@@ -41,30 +41,30 @@ async function resetEmails(request) {
 async function waitForEmails(request, count = 1, timeoutMs = 10_000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    const res = await request.get(`${SENDGRID_MOCK_URL}/emails`);
+    const res = await request.get(`${EMAIL_MOCK_URL}/emails`);
     const emails = await res.json();
     if (emails.length >= count) return emails;
     await new Promise((r) => setTimeout(r, 250));
   }
-  throw new Error(`sendgrid mock did not capture ${count} email(s) within ${timeoutMs}ms`);
+  throw new Error(`SES mock did not capture ${count} email(s) within ${timeoutMs}ms`);
 }
 
-/** Poll until an email whose reply_to matches `email` appears. */
+/** Poll until an email whose reply-to matches `email` appears. */
 async function waitForEmailFrom(request, email, timeoutMs = 10_000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    const res = await request.get(`${SENDGRID_MOCK_URL}/emails`);
+    const res = await request.get(`${EMAIL_MOCK_URL}/emails`);
     const emails = await res.json();
-    const match = emails.find((e) => e?.payload?.reply_to?.email === email);
+    const match = emails.find((e) => e?.payload?.ReplyToAddresses?.[0] === email);
     if (match) return match;
     await new Promise((r) => setTimeout(r, 250));
   }
-  throw new Error(`sendgrid mock did not capture email from ${email} within ${timeoutMs}ms`);
+  throw new Error(`SES mock did not capture email from ${email} within ${timeoutMs}ms`);
 }
 
 /** Force the next N mail sends to fail with the given status. */
 async function forceSendFailure(request, status = 500, times = 1) {
-  await request.post(`${SENDGRID_MOCK_URL}/behavior`, { data: { status, times } });
+  await request.post(`${EMAIL_MOCK_URL}/behavior`, { data: { status, times } });
 }
 
 /** Phase 11 admin seeded via ADMIN_SEED_* on the e2e backend. */
@@ -89,7 +89,7 @@ async function adminUiLogin(page) {
 }
 
 module.exports = {
-  SENDGRID_MOCK_URL,
+  EMAIL_MOCK_URL,
   BACKEND_URL,
   FRONTEND_URL,
   ADMIN_EMAIL,

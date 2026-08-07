@@ -1,4 +1,4 @@
-// Contact form: posts to FastAPI /api/contact; SendGrid captured via mock on :8025.
+// Contact form: posts to FastAPI /api/contact; SES captured via mock on :8025.
 const { test, expect } = require("@playwright/test");
 const { resetEmails, waitForEmailFrom } = require("../fixtures/helpers");
 
@@ -21,7 +21,7 @@ test.describe("contact form", () => {
     await expect(page.getByTestId("contact-success")).toBeVisible({ timeout: 15000 });
 
     const email = await waitForEmailFrom(request, "visitor@example.com");
-    expect(email.payload.reply_to.email).toBe("visitor@example.com");
+    expect(email.payload.ReplyToAddresses[0]).toBe("visitor@example.com");
   });
 
   test("empty submit is blocked by browser required fields and sends nothing", async ({ page, request }) => {

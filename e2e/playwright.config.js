@@ -5,7 +5,7 @@ const path = require("path");
 
 /**
  * E2E stack (all started automatically by Playwright):
- *   1. SendGrid mock   -> http://localhost:8025  (fixtures/sendgrid-mock.js)
+ *   1. SES mock        -> http://localhost:8025  (fixtures/ses-mock.js)
  *   2. FastAPI backend -> http://localhost:8001  (real server, emails go to the mock)
  *   3. React frontend  -> http://localhost:3100  (real CRA dev server)
  *
@@ -19,7 +19,7 @@ const ROOT = path.resolve(__dirname, "..");
 const VENV_PYTHON = path.join(ROOT, "backend", ".venv", "bin", "python");
 const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : "python3";
 
-const SENDGRID_MOCK_URL = "http://localhost:8025";
+const EMAIL_MOCK_URL = "http://localhost:8025";
 const BACKEND_URL = "http://localhost:8001";
 const FRONTEND_URL = "http://localhost:3100";
 
@@ -45,8 +45,8 @@ module.exports = defineConfig({
   ],
   webServer: [
     {
-      command: "node fixtures/sendgrid-mock.js",
-      url: `${SENDGRID_MOCK_URL}/health`,
+      command: "node fixtures/ses-mock.js",
+      url: `${EMAIL_MOCK_URL}/health`,
       reuseExistingServer: !process.env.CI,
       timeout: 15_000,
     },
@@ -57,8 +57,10 @@ module.exports = defineConfig({
       reuseExistingServer: !process.env.CI,
       timeout: 30_000,
       env: {
-        SENDGRID_HOST: SENDGRID_MOCK_URL,
-        SENDGRID_API_KEY: "SG.e2e-test-key",
+        AWS_SES_ENDPOINT_URL: EMAIL_MOCK_URL,
+        AWS_SES_REGION: "ap-south-2",
+        AWS_ACCESS_KEY_ID: "e2e-test-key",
+        AWS_SECRET_ACCESS_KEY: "e2e-test-secret",
         SENDER_EMAIL: "e2e-sender@softogram.test",
         RECIPIENT_EMAIL: "e2e-inbox@softogram.test",
         CORS_ORIGINS: FRONTEND_URL,
@@ -89,4 +91,4 @@ module.exports = defineConfig({
   ],
 });
 
-module.exports.urls = { SENDGRID_MOCK_URL, BACKEND_URL, FRONTEND_URL };
+module.exports.urls = { EMAIL_MOCK_URL, BACKEND_URL, FRONTEND_URL };
