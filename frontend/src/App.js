@@ -1328,7 +1328,7 @@ const ContactSection = () => {
                   <label className="text-sm text-gray-400 mb-2 block">Phone Number *</label>
                   <input
                     type="tel"
-                    placeholder="+91-6393783010"
+                    placeholder="+91-6360158761"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="input-dark w-full"
@@ -1435,8 +1435,8 @@ const ContactSection = () => {
                     </div>
                     <div>
                       <h4 className="font-semibold text-white mb-1">Call Us</h4>
-                      <a href="tel:+91-6393783010" className="text-gray-500 hover:text-cyan-400 transition-colors" data-testid="contact-phone-link">
-                        +91-6393783010
+                      <a href="tel:+91-6360158761" className="text-gray-500 hover:text-cyan-400 transition-colors" data-testid="contact-phone-link">
+                        +91-6360158761
                       </a>
                     </div>
                   </div>
@@ -1596,11 +1596,11 @@ const Footer = () => {
               </li>
               <li>
                 <a 
-                  href="tel:+91-6393783010"
+                  href="tel:+91-6360158761"
                   className="text-gray-500 hover:text-cyan-400 transition-colors text-sm flex items-center gap-2"
                 >
                   <Phone className="w-4 h-4" />
-                  <span>+91-6393783010</span>
+                  <span>+91-6360158761</span>
                 </a>
               </li>
               <li className="text-gray-500 text-sm flex items-center gap-2">
@@ -1631,7 +1631,7 @@ const Footer = () => {
 const WhatsAppButton = () => {
   return (
     <a
-      href="https://wa.me/916393783010?text=Hello%20Softogram!%20I%20have%20a%20project%20idea%20I'd%20like%20to%20discuss."
+      href="https://wa.me/916360158761?text=Hello%20Softogram!%20I%20have%20a%20project%20idea%20I'd%20like%20to%20discuss."
       target="_blank"
       rel="noopener noreferrer"
       className="whatsapp-btn"

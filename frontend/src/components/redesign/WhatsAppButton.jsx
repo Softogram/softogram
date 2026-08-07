@@ -3,7 +3,7 @@
  * wa.me requires country code digits with no + or separators.
  */
 const WA_HREF =
-  "https://wa.me/916393783010?text=Hello%20Softogram!%20I%20have%20a%20project%20idea%20I'd%20like%20to%20discuss.";
+  "https://wa.me/916360158761?text=Hello%20Softogram!%20I%20have%20a%20project%20idea%20I'd%20like%20to%20discuss.";
 
 export default function WhatsAppButton() {
   return (

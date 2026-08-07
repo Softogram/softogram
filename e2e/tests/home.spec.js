@@ -58,7 +58,7 @@ test.describe("landing page", () => {
     await page.goto("/");
     await expect(page.getByTestId("whatsapp-button")).toHaveAttribute(
       "href",
-      /wa\.me\/916393783010(\?|$)/,
+      /wa\.me\/916360158761(\?|$)/,
     );
   });
 });
