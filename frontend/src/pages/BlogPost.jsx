@@ -3,9 +3,70 @@
  */
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import { fetchBlogBySlug } from "@/lib/cmsApi";
 import { G, DIM, BORDER } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+
+const MARKDOWN_COMPONENTS = {
+  h1: ({ children }) => (
+    <h2 className="text-2xl font-bold pt-4" style={{ color: "#e2e8f0", fontFamily: "var(--font-display)" }}>
+      {children}
+    </h2>
+  ),
+  h2: ({ children }) => (
+    <h3 className="text-xl font-semibold pt-3" style={{ color: "#e2e8f0" }}>
+      {children}
+    </h3>
+  ),
+  h3: ({ children }) => (
+    <h4 className="text-lg font-semibold pt-2" style={{ color: G }}>
+      {children}
+    </h4>
+  ),
+  p: ({ children }) => (
+    <p className="text-sm leading-relaxed" style={{ color: "#cbd5e1" }}>
+      {children}
+    </p>
+  ),
+  ul: ({ children }) => <ul className="list-disc space-y-1 pl-5">{children}</ul>,
+  ol: ({ children }) => <ol className="list-decimal space-y-1 pl-5">{children}</ol>,
+  li: ({ children }) => (
+    <li className="text-sm" style={{ color: DIM }}>
+      {children}
+    </li>
+  ),
+  a: ({ children, href }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: G, textDecoration: "underline" }}>
+      {children}
+    </a>
+  ),
+  strong: ({ children }) => (
+    <strong style={{ color: "#e2e8f0", fontWeight: 600 }}>{children}</strong>
+  ),
+  em: ({ children }) => <em style={{ fontStyle: "italic" }}>{children}</em>,
+  code: ({ children }) => (
+    <code
+      className="text-xs px-1.5 py-0.5 rounded-sm"
+      style={{ background: "#161b22", color: G, fontFamily: "var(--font-mono)" }}
+    >
+      {children}
+    </code>
+  ),
+  pre: ({ children }) => (
+    <pre
+      className="text-xs p-4 rounded-sm overflow-x-auto"
+      style={{ background: "#161b22", border: `1px solid ${BORDER}`, fontFamily: "var(--font-mono)" }}
+    >
+      {children}
+    </pre>
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className="pl-4 italic" style={{ borderLeft: `2px solid ${G}`, color: DIM }}>
+      {children}
+    </blockquote>
+  ),
+};
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -51,7 +112,6 @@ export default function BlogPost() {
     );
   }
 
-  const lines = (post.content || "").split("\n");
   const canonical = `https://softogram.in/blog/${post.slug}`;
   const jsonLd = {
     "@context": "https://schema.org",
@@ -127,38 +187,7 @@ export default function BlogPost() {
         </div>
 
         <article className="pt-10 space-y-3" data-testid="blog-post-content">
-          {lines.map((line, i) => {
-            if (line.startsWith("# "))
-              return (
-                <h2 key={i} className="text-2xl font-bold pt-4" style={{ color: "#e2e8f0", fontFamily: "var(--font-display)" }}>
-                  {line.replace(/^#\s+/, "")}
-                </h2>
-              );
-            if (line.startsWith("## "))
-              return (
-                <h3 key={i} className="text-xl font-semibold pt-3" style={{ color: "#e2e8f0" }}>
-                  {line.replace(/^##\s+/, "")}
-                </h3>
-              );
-            if (line.startsWith("### "))
-              return (
-                <h4 key={i} className="text-lg font-semibold pt-2" style={{ color: G }}>
-                  {line.replace(/^###\s+/, "")}
-                </h4>
-              );
-            if (line.startsWith("- "))
-              return (
-                <li key={i} className="ml-5 text-sm" style={{ color: DIM }}>
-                  {line.replace(/^-\s+/, "")}
-                </li>
-              );
-            if (!line.trim()) return <div key={i} className="h-2" />;
-            return (
-              <p key={i} className="text-sm leading-relaxed" style={{ color: "#cbd5e1" }}>
-                {line}
-              </p>
-            );
-          })}
+          <ReactMarkdown components={MARKDOWN_COMPONENTS}>{post.content || ""}</ReactMarkdown>
         </article>
       </div>
     </div>

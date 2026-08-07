@@ -51,6 +51,7 @@ def _blog_to_dict(row: BlogPost) -> dict[str, Any]:
         "coverImage": row.cover_image,
         "published": row.published,
         "readTime": row.read_time,
+        "viewCount": row.view_count,
     }
 
 
@@ -135,11 +136,18 @@ async def get_projects() -> list[dict[str, Any]]:
 
 async def save_blogs(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Replace-all: the admin UI always PUTs its full working set (matches the old
-    file-overwrite semantics, so the frontend needed no changes for this cutover)."""
+    file-overwrite semantics, so the frontend needed no changes for this cutover).
+
+    view_count is server-managed (incremented on each public read, see blog_by_slug)
+    and never round-trips through the admin form - carry existing counts forward
+    across the delete+recreate so editing a post doesn't silently zero its views."""
     async with AsyncSessionLocal() as session:
+        existing_counts = dict((await session.execute(select(BlogPost.id, BlogPost.view_count))).all())
         await session.execute(delete(BlogPost))
         for item in items:
-            session.add(_blog_row(item))
+            row = _blog_row(item)
+            row.view_count = existing_counts.get(row.id, 0)
+            session.add(row)
         await session.commit()
     return await get_blogs()
 
@@ -162,10 +170,16 @@ async def published_projects() -> list[dict[str, Any]]:
 
 
 async def blog_by_slug(slug: str) -> Optional[dict[str, Any]]:
-    for b in await published_blogs():
-        if b.get("slug") == slug:
-            return b
-    return None
+    """Fetch a published post by slug, counting the read as a view (issue #40)."""
+    async with AsyncSessionLocal() as session:
+        row = (
+            await session.execute(select(BlogPost).where(BlogPost.slug == slug, BlogPost.published.is_(True)))
+        ).scalar_one_or_none()
+        if row is None:
+            return None
+        row.view_count = (row.view_count or 0) + 1
+        await session.commit()
+        return _blog_to_dict(row)
 
 
 def admin_password_ok(password: str) -> bool:
