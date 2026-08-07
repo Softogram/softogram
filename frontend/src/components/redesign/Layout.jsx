@@ -344,8 +344,27 @@ export default function Layout() {
               )
             })}
             <a
-              href="/#contact"
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="nav-booking-cta-mobile"
               className="mt-3 px-4 py-2.5 text-xs font-semibold rounded-sm text-center"
+              style={{
+                background: 'transparent',
+                color: G,
+                border: `1px solid ${BORDER}`,
+                fontFamily: "'JetBrains Mono', monospace",
+              }}
+              onClick={() => {
+                capture('booking_clicked', { placement: 'nav_mobile' })
+                setMenuOpen(false)
+              }}
+            >
+              book a free 30-min call
+            </a>
+            <a
+              href="/#contact"
+              className="mt-2 px-4 py-2.5 text-xs font-semibold rounded-sm text-center"
               style={{ background: G, color: '#0d1117', fontFamily: "'JetBrains Mono', monospace" }}
               onClick={() => setMenuOpen(false)}
             >

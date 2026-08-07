@@ -26,7 +26,7 @@ from sendgrid.helpers.mail import Mail
 from sqlalchemy import select, func
 import httpx
 from database import AsyncSessionLocal, engine
-from models import Lead, BlogPost
+from models import Lead, BlogPost, NewsletterSubscriber
 import cms as content_cms
 
 # --- Configuration & Setup ---
@@ -406,6 +406,103 @@ async def submit_contact_form(
         raise HTTPException(status_code=500, detail="Failed to process request")
 
 # Legacy template /api/status removed (issue #6).
+
+
+# --- Newsletter / lead magnet (issue #50) ---
+
+CHECKLIST_URL = f"{SITE_URL}/blog/launch-checklist-25-things"
+
+_newsletter_limiter = ContactRateLimiter(
+    per_minute=int(os.getenv("CONTACT_RATE_LIMIT_PER_MINUTE", "2")),
+    per_hour=int(os.getenv("CONTACT_RATE_LIMIT_PER_HOUR", "5")),
+)
+
+
+class NewsletterSubscribeRequest(BaseModel):
+    email: EmailStr
+    # Honeypot — same pattern as contact form.
+    company_website: str = Field(default="", max_length=200)
+
+
+class NewsletterSubscribeResponse(BaseModel):
+    status: str
+    message: str
+    alreadySubscribed: bool = False
+
+
+def send_checklist_email(user_email: str) -> bool:
+    """Send the launch-checklist lead magnet via SendGrid (issue #50)."""
+    sender_email = os.getenv("SENDER_EMAIL")
+    if not sender_email or not user_email:
+        return False
+    safe_url = html.escape(CHECKLIST_URL, quote=True)
+    html_content = f"""
+    <html>
+      <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px;">
+          <h2 style="color: #0d1117;">Your launch checklist</h2>
+          <p>Thanks for subscribing. Here is Softogram's <strong>Launch checklist: 25 things before your product goes live</strong>.</p>
+          <p><a href="{safe_url}" style="color: #16a34a;">Read the checklist →</a></p>
+          <p style="font-size: 12px; color: #9ca3af; margin-top: 25px;">— Softogram</p>
+        </div>
+      </body>
+    </html>
+    """
+    mail = Mail(
+        from_email=sender_email,
+        to_emails=user_email,
+        subject="Your Softogram launch checklist",
+        html_content=html_content,
+    )
+    return _sendgrid_send(mail)
+
+
+@api_router.post("/newsletter/subscribe", response_model=NewsletterSubscribeResponse)
+async def newsletter_subscribe(
+    body: NewsletterSubscribeRequest,
+    background_tasks: BackgroundTasks,
+    request: Request,
+):
+    key = f"newsletter:{_client_key(request)}"
+    if not _newsletter_limiter.allow(key):
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please try again later.",
+        )
+    if (body.company_website or "").strip():
+        logger.info("Newsletter honeypot tripped; dropping key=%s", key)
+        return NewsletterSubscribeResponse(
+            status="success",
+            message="Check your inbox for the launch checklist.",
+            alreadySubscribed=False,
+        )
+
+    email = str(body.email).strip().lower()
+    try:
+        async with AsyncSessionLocal() as session:
+            existing = (
+                await session.execute(
+                    select(NewsletterSubscriber).where(NewsletterSubscriber.email == email)
+                )
+            ).scalar_one_or_none()
+            if existing is not None:
+                return NewsletterSubscribeResponse(
+                    status="success",
+                    message="You're already on the list — checklist link is in your inbox if you subscribed before.",
+                    alreadySubscribed=True,
+                )
+            session.add(NewsletterSubscriber(email=email))
+            await session.commit()
+    except Exception as e:
+        logging.error("Newsletter subscribe error: %s", e)
+        raise HTTPException(status_code=500, detail="Failed to subscribe")
+
+    background_tasks.add_task(send_checklist_email, email)
+    return NewsletterSubscribeResponse(
+        status="success",
+        message="Check your inbox for the launch checklist.",
+        alreadySubscribed=False,
+    )
 
 
 # --- CMS (issue #17) ---

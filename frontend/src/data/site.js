@@ -4,7 +4,7 @@ export const PHONE_DISPLAY = "+91-6360158761";
 export const PHONE_TEL = "tel:+91-6360158761";
 export const WHATSAPP_HREF =
   "https://wa.me/916360158761?text=Hello%20Softogram!%20I%20have%20a%20project%20idea%20I'd%20like%20to%20discuss.";
-/** Placeholder Cal.com page — replace via REACT_APP_BOOKING_URL when the real calendar is live. */
+/** Cal.com booking page (issue #48). Override with REACT_APP_BOOKING_URL if the slug changes. */
 export const BOOKING_URL =
   process.env.REACT_APP_BOOKING_URL || "https://cal.com/softogram";
 

@@ -222,7 +222,7 @@ function ContactSection({ lineStart }) {
                 style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
                 onClick={() => capture("booking_clicked", { placement: "contact" })}
               >
-                book a free 30-min call →
+                Book a free 30-min call →
               </a>
               <a
                 href={`mailto:${SUPPORT_EMAIL}`}
