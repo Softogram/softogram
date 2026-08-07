@@ -1,15 +1,34 @@
 /**
- * Blog post — Phase 7.
+ * Blog post — CMS-backed with seed fallback (issue #17).
  */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getPostBySlug } from "@/data/blogPosts";
-import { G, DIM, BORDER, CARD } from "@/components/redesign/homePrimitives";
+import { fetchBlogBySlug } from "@/lib/cmsApi";
+import { G, DIM, BORDER } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
 
 export default function BlogPost() {
   const { slug } = useParams();
-  const post = getPostBySlug(slug);
+  const [post, setPost] = useState(undefined); // undefined loading, null missing
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const data = await fetchBlogBySlug(slug);
+      if (!cancelled) setPost(data);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (post === undefined) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ paddingTop: 80 }} data-testid="blog-post-loading">
+        <p style={{ color: DIM, fontFamily: "var(--font-mono)" }}>loading…</p>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -32,11 +51,34 @@ export default function BlogPost() {
     );
   }
 
-  const lines = post.content.split("\n");
+  const lines = (post.content || "").split("\n");
+  const canonical = `https://softogram.in/blog/${post.slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    image: post.coverImage,
+    datePublished: post.date,
+    author: { "@type": "Organization", name: post.author || "Softogram" },
+    publisher: {
+      "@type": "Organization",
+      name: "Softogram",
+      logo: { "@type": "ImageObject", url: "https://softogram.in/softogram-logo.png" },
+    },
+    mainEntityOfPage: canonical,
+  };
 
   return (
     <div style={{ paddingTop: 80 }} data-testid="blog-post-page">
-      <SeoHead title={`${post.title} | Softogram Blog`} description={post.excerpt} />
+      <SeoHead
+        title={`${post.title} | Softogram Blog`}
+        description={post.excerpt}
+        canonical={canonical}
+        image={post.coverImage}
+        type="article"
+        jsonLd={jsonLd}
+      />
 
       <div className="relative h-64 md:h-96 overflow-hidden" style={{ background: "#010409" }}>
         <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover opacity-40" />
@@ -50,20 +92,14 @@ export default function BlogPost() {
         <div className="pt-10 pb-8" style={{ borderBottom: `1px solid ${BORDER}` }}>
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 text-xs mb-6 transition-colors duration-200"
+            className="inline-flex items-center gap-2 text-xs mb-6"
             style={{ color: DIM, fontFamily: "var(--font-mono)" }}
             data-testid="blog-post-back"
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#e2e8f0";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = DIM;
-            }}
           >
             ← Back to Blog
           </Link>
           <div className="flex flex-wrap gap-2 mb-5">
-            {post.tags.map((t) => (
+            {(post.tags || []).map((t) => (
               <span
                 key={t}
                 className="text-xs px-2.5 py-1 rounded-sm"
@@ -85,81 +121,45 @@ export default function BlogPost() {
           >
             {post.title}
           </h1>
-          <div className="flex items-center gap-4">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{ background: `${G}22`, color: G }}
-            >
-              {post.author[0]}
-            </div>
-            <div>
-              <div className="text-sm font-medium" style={{ color: "#cbd5e1" }}>
-                {post.author}
-              </div>
-              <div className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
-                {new Date(post.date).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}{" "}
-                · {post.readTime} min read
-              </div>
-            </div>
+          <div className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+            {post.author} · {post.date} · {post.readTime || 5} min
           </div>
         </div>
 
-        <article className="pt-10" data-testid="blog-post-content">
+        <article className="pt-10 space-y-3" data-testid="blog-post-content">
           {lines.map((line, i) => {
-            if (line.startsWith("# ")) return null;
-            if (line.startsWith("## ")) {
+            if (line.startsWith("# "))
               return (
-                <h2
-                  key={i}
-                  className="text-2xl font-bold mt-10 mb-4"
-                  style={{ fontFamily: "var(--font-display)", color: "#e2e8f0" }}
-                >
-                  {line.replace("## ", "")}
+                <h2 key={i} className="text-2xl font-bold pt-4" style={{ color: "#e2e8f0", fontFamily: "var(--font-display)" }}>
+                  {line.replace(/^#\s+/, "")}
                 </h2>
               );
-            }
-            if (line.startsWith("### ")) {
+            if (line.startsWith("## "))
               return (
-                <h3 key={i} className="text-lg font-semibold mt-8 mb-3" style={{ color: "#cbd5e1" }}>
-                  {line.replace("### ", "")}
+                <h3 key={i} className="text-xl font-semibold pt-3" style={{ color: "#e2e8f0" }}>
+                  {line.replace(/^##\s+/, "")}
                 </h3>
               );
-            }
-            if (line.trim() === "") return <div key={i} className="h-4" />;
+            if (line.startsWith("### "))
+              return (
+                <h4 key={i} className="text-lg font-semibold pt-2" style={{ color: G }}>
+                  {line.replace(/^###\s+/, "")}
+                </h4>
+              );
+            if (line.startsWith("- "))
+              return (
+                <li key={i} className="ml-5 text-sm" style={{ color: DIM }}>
+                  {line.replace(/^-\s+/, "")}
+                </li>
+              );
+            if (!line.trim()) return <div key={i} className="h-2" />;
             return (
-              <p key={i} className="text-base leading-relaxed mb-2" style={{ color: "#cbd5e1" }}>
+              <p key={i} className="text-sm leading-relaxed" style={{ color: "#cbd5e1" }}>
                 {line}
               </p>
             );
           })}
         </article>
-
-        <div
-          className="mt-16 p-8 rounded-sm text-center"
-          style={{ background: CARD, border: `1px solid ${BORDER}` }}
-        >
-          <h3
-            className="text-xl font-bold mb-3"
-            style={{ fontFamily: "var(--font-display)", color: "#e2e8f0" }}
-          >
-            Want to build something like this?
-          </h3>
-          <p className="text-sm mb-6" style={{ color: DIM }}>
-            Softogram turns ideas into production-grade software.
-          </p>
-          <Link
-            to="/#contact"
-            className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold rounded-sm transition-all duration-200 hover:opacity-90"
-            style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
-            data-testid="blog-post-cta"
-          >
-            Start a conversation →
-          </Link>
-        </div>
       </div>
     </div>
   );

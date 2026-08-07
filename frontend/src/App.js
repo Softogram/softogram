@@ -28,6 +28,7 @@ const RefundPolicy = lazy(() =>
 const CookiePolicy = lazy(() =>
   import("@/pages/policies").then((m) => ({ default: m.CookiePolicy })),
 );
+const Admin = lazy(() => import("@/pages/Admin"));
 
 function RouteFallback() {
   return (
@@ -61,6 +62,7 @@ function App() {
               <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

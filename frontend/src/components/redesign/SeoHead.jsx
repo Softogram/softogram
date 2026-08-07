@@ -1,22 +1,65 @@
 /**
- * Lightweight per-route SEO head (Phase 8).
- * Updates document.title + primary meta description without a Helmet dependency.
+ * Per-route SEO: title, description, OG/Twitter tags, optional JSON-LD (issues #13/#17).
  */
 import { useEffect } from "react";
 
-export default function SeoHead({ title, description }) {
+function upsertMeta(attr, key, content) {
+  if (!content) return;
+  let el = document.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+}
+
+export default function SeoHead({
+  title,
+  description,
+  canonical,
+  image = "https://softogram.in/og-banner.png",
+  type = "website",
+  jsonLd,
+}) {
   useEffect(() => {
     if (title) document.title = title;
-    if (description) {
-      let el = document.querySelector('meta[name="description"]');
-      if (!el) {
-        el = document.createElement("meta");
-        el.setAttribute("name", "description");
-        document.head.appendChild(el);
+    if (description) upsertMeta("name", "description", description);
+
+    const url = canonical || (typeof window !== "undefined" ? window.location.href : "");
+    upsertMeta("property", "og:title", title);
+    upsertMeta("property", "og:description", description);
+    upsertMeta("property", "og:type", type);
+    upsertMeta("property", "og:url", url);
+    upsertMeta("property", "og:image", image);
+    upsertMeta("name", "twitter:card", "summary_large_image");
+    upsertMeta("name", "twitter:title", title);
+    upsertMeta("name", "twitter:description", description);
+    upsertMeta("name", "twitter:image", image);
+
+    if (canonical) {
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
+        document.head.appendChild(link);
       }
-      el.setAttribute("content", description);
+      link.setAttribute("href", canonical);
     }
-  }, [title, description]);
+
+    let script = document.getElementById("softogram-jsonld");
+    if (jsonLd) {
+      if (!script) {
+        script = document.createElement("script");
+        script.id = "softogram-jsonld";
+        script.type = "application/ld+json";
+        document.head.appendChild(script);
+      }
+      script.textContent = JSON.stringify(jsonLd);
+    } else if (script) {
+      script.remove();
+    }
+  }, [title, description, canonical, image, type, jsonLd]);
 
   return null;
 }

@@ -1,8 +1,9 @@
 /**
- * Client Work — Phase 6. Static case studies (no localStorage / admin).
+ * Client Work — CMS-backed case studies (issue #17).
  */
 import React, { useEffect, useState } from "react";
-import { CLIENT_PROJECTS, INDUSTRIES } from "@/data/clientProjects";
+import { INDUSTRIES } from "@/data/clientProjects";
+import { fetchPublishedProjects } from "@/lib/cmsApi";
 import { G, DIM, BORDER, CARD, Reveal } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
 
@@ -138,6 +139,19 @@ function ProjectModal({ project, onClose }) {
             <p className="text-sm font-medium" style={{ color: "#e2e8f0" }}>
               {project.outcome}
             </p>
+            {Array.isArray(project.metrics) && project.metrics.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2" data-testid="client-project-metrics">
+                {project.metrics.map((m) => (
+                  <span
+                    key={`${m.label}-${m.value}`}
+                    className="text-xs px-2 py-1 rounded-sm"
+                    style={{ border: `1px solid ${G}44`, color: G, fontFamily: "var(--font-mono)" }}
+                  >
+                    {m.label}: {m.value}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
           {project.url && (
             <a
@@ -159,9 +173,30 @@ function ProjectModal({ project, onClose }) {
 }
 
 export default function ClientWork() {
-  const projects = CLIENT_PROJECTS.filter((p) => p.published);
+  const [projects, setProjects] = useState([]);
   const [selected, setSelected] = useState(null);
   const [filter, setFilter] = useState("All");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const data = await fetchPublishedProjects();
+      if (!cancelled) setProjects(data);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const industryFilters = [
+    "All",
+    ...Array.from(
+      new Set([
+        ...INDUSTRIES.filter((i) => i !== "All"),
+        ...projects.map((p) => p.industry).filter(Boolean),
+      ]),
+    ),
+  ];
   const filtered = filter === "All" ? projects : projects.filter((p) => p.industry === filter);
 
   return (
@@ -239,7 +274,7 @@ export default function ClientWork() {
 
         <div className="max-w-7xl mx-auto px-6 mb-12">
           <div className="flex gap-3 flex-wrap" data-testid="client-work-filter">
-            {INDUSTRIES.map((ind) => (
+            {industryFilters.map((ind) => (
               <button
                 key={ind}
                 type="button"

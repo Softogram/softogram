@@ -1,13 +1,12 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Softogram .gitignore
 
-# IDE and editors
+# IDE / editors
 .idea/
 .vscode/
 
 # Dependencies
 node_modules/
-/node_modules
-/.pnp
+.pnp
 .pnp.js
 .yarn/install-state.gz
 .yarn/*
@@ -16,11 +15,12 @@ node_modules/
 !.yarn/releases
 !.yarn/versions
 
-# Testing
+# Testing / coverage
+coverage/
 /coverage
 
-# Next.js
-/.next/
+# Next.js leftovers (if any)
+.next/
 /out/
 next-env.d.ts
 *.tsbuildinfo
@@ -28,43 +28,48 @@ next-env.d.ts
 # Production builds
 /build
 dist/
-dist
 
-# Environment files (comprehensive coverage)
+# Environment files (never commit secrets)
+*.env
+*.env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.example
 
+# Token / credential dumps
 *token.json*
 *credentials.json*
 
-# Logs and debug files
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 dump.rdb
 
-# System files
+# System / secrets accidentally dropped in tree
 .DS_Store
 *.pem
+.gitconfig
 
 # Python
 __pycache__/
-*pyc*
+*.pyc
 venv/
 .venv/
+.venv-p1/
 
-# Development tools
-chainlit.md
-.chainlit
-.ipynb_checkpoints/
-.ac
+# Caches / local analysis
+.cache/
+graphify-out/
 
-# Deployment
-.vercel
+# Prototype redesign tree (gitignored workspace copy)
+Redesign-Softogram-Website/
 
-# Data and databases
-agenthub/agents/youtube/db
+# Contact leads + CMS runtime writes (PII / mutable content)
+backend/data/
 
-# Archive files and large assets
+# Archives / mobile junk
 **/*.zip
 **/*.tar.gz
 **/*.tar
@@ -72,32 +77,12 @@ agenthub/agents/youtube/db
 *.pack
 *.deb
 *.dylib
+android-sdk/
 
-# Build caches
-.cache/
-
-# Mobile development
-android-sdk/ frontend/node_modules/.cache/default-development/2.pack
-frontend/node_modules/.cache/default-development/2.pack
-# Environment files
-*.env
-*.env.*
-# Environment files
-*.env
-*.env.*
-# Environment files
-*.env
-*.env.*
-
-# Keep example env templates tracked
-!.env.example
-!backend/.env.example
-!frontend/.env.example
-
-Redesign-Softogram-Website/
-
-# Local graph / analysis cache
-graphify-out/
-
-# Contact lead stores (issue #3) — never commit PII
-backend/data/
+# Misc tooling
+agenthub/agents/youtube/db
+chainlit.md
+.chainlit
+.ipynb_checkpoints/
+.vercel
+.ac

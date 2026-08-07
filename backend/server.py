@@ -7,6 +7,7 @@ import html
 from collections import defaultdict, deque
 from pathlib import Path
 from datetime import datetime, timezone
+from typing import List
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +16,7 @@ from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+import cms as content_cms
 
 # --- Configuration & Setup ---
 ROOT_DIR = Path(__file__).parent
@@ -368,8 +370,104 @@ async def submit_contact_form(
         logging.error("Contact Form Error: %s", e)
         raise HTTPException(status_code=500, detail="Failed to process request")
 
-# Legacy template /api/status removed (issue #6) — it hung when Mongo was down
-# and exposed DB documents without auth. Use GET /api/ for liveness.
+# Legacy template /api/status removed (issue #6).
+
+
+# --- CMS (issue #17) ---
+
+class AdminLoginRequest(BaseModel):
+    password: str = Field(min_length=1, max_length=200)
+
+
+class AdminLoginResponse(BaseModel):
+    token: str
+    expires_in: int = content_cms.SESSION_TTL_SEC
+
+
+class BlogPostModel(BaseModel):
+    id: str = Field(min_length=1, max_length=80)
+    title: str = Field(min_length=1, max_length=200)
+    slug: str = Field(min_length=1, max_length=200)
+    excerpt: str = Field(default="", max_length=1000)
+    content: str = Field(default="", max_length=100_000)
+    author: str = Field(default="Softogram Team", max_length=120)
+    date: str = Field(default="", max_length=40)
+    tags: List[str] = Field(default_factory=list)
+    coverImage: str = Field(default="", max_length=500)
+    published: bool = True
+    readTime: int = Field(default=5, ge=1, le=120)
+
+
+class ProjectModel(BaseModel):
+    id: str = Field(min_length=1, max_length=80)
+    client: str = Field(min_length=1, max_length=120)
+    title: str = Field(min_length=1, max_length=200)
+    desc: str = Field(default="", max_length=5000)
+    industry: str = Field(default="Other", max_length=80)
+    services: List[str] = Field(default_factory=list)
+    outcome: str = Field(default="", max_length=2000)
+    metrics: List[dict] = Field(default_factory=list)
+    img: str = Field(default="", max_length=500)
+    year: str = Field(default="", max_length=10)
+    published: bool = True
+    url: str = Field(default="", max_length=500)
+
+
+def _require_admin(request: Request) -> None:
+    auth = request.headers.get("authorization") or ""
+    token = auth[7:].strip() if auth.lower().startswith("bearer ") else ""
+    if not content_cms.session_ok(token):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+@api_router.get("/content/blog")
+async def public_blog_list():
+    return content_cms.published_blogs()
+
+
+@api_router.get("/content/blog/{slug}")
+async def public_blog_post(slug: str):
+    post = content_cms.blog_by_slug(slug)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return post
+
+
+@api_router.get("/content/projects")
+async def public_projects():
+    return content_cms.published_projects()
+
+
+@api_router.post("/admin/login", response_model=AdminLoginResponse)
+async def admin_login(body: AdminLoginRequest):
+    if not content_cms.admin_password_ok(body.password):
+        raise HTTPException(status_code=401, detail="Invalid password")
+    return AdminLoginResponse(token=content_cms.create_session())
+
+
+@api_router.get("/admin/blog")
+async def admin_list_blogs(request: Request):
+    _require_admin(request)
+    return content_cms.get_blogs()
+
+
+@api_router.put("/admin/blog")
+async def admin_replace_blogs(request: Request, items: List[BlogPostModel]):
+    _require_admin(request)
+    return content_cms.save_blogs([i.model_dump() for i in items])
+
+
+@api_router.get("/admin/projects")
+async def admin_list_projects(request: Request):
+    _require_admin(request)
+    return content_cms.get_projects()
+
+
+@api_router.put("/admin/projects")
+async def admin_replace_projects(request: Request, items: List[ProjectModel]):
+    _require_admin(request)
+    return content_cms.save_projects([i.model_dump() for i in items])
+
 
 # --- App Initialization ---
 
@@ -389,12 +487,30 @@ def _parse_cors_origins(raw):
     return origins
 
 
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    """Baseline API security headers (issue #10)."""
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault(
+        "Strict-Transport-Security",
+        "max-age=31536000; includeSubDomains",
+    )
+    response.headers.setdefault(
+        "Permissions-Policy",
+        "geolocation=(), microphone=(), camera=()",
+    )
+    return response
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_parse_cors_origins(os.environ.get("CORS_ORIGINS", _DEFAULT_CORS_ORIGINS)),
     allow_credentials=False,
-    allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type"],
+    allow_methods=["GET", "POST", "PUT", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 logging.basicConfig(level=logging.INFO)

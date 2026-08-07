@@ -1,4 +1,4 @@
-// Blog list + post (Phase 7).
+// Blog list + post (CMS-backed, issue #17).
 const { test, expect } = require("@playwright/test");
 
 test.describe("blog", () => {
@@ -7,23 +7,23 @@ test.describe("blog", () => {
     await expect(page.getByTestId("blog-page")).toBeVisible();
     await expect(page.getByTestId("blog-hero")).toContainText(/insights/i);
     await expect(page.getByTestId("blog-featured")).toBeVisible();
-    await expect(page.getByTestId("blog-post-card")).toHaveCount(2);
-    await expect(page.getByTestId("placeholder-page")).toHaveCount(0);
+    await expect(page.getByTestId("blog-card").first()).toBeVisible();
   });
 
   test("tag filter narrows posts", async ({ page }) => {
     await page.goto("/blog");
-    await page.getByTestId("blog-filter-design").click();
-    await expect(page.getByTestId("blog-featured")).toContainText(/Fraunces/i);
-    await expect(page.getByTestId("blog-post-card")).toHaveCount(0);
+    await page.getByTestId("blog-filter-checklist").click();
+    await expect(page.getByTestId("blog-featured")).toContainText(/Launch checklist/i);
   });
 
-  test("navigating to a slug shows the post", async ({ page }) => {
-    await page.goto("/blog/building-ai-agents-production");
+  test("navigating to a slug shows the post with JSON-LD", async ({ page }) => {
+    await page.goto("/blog/how-we-built-polluxkart");
     await expect(page.getByTestId("blog-post-page")).toBeVisible();
-    await expect(page.getByTestId("blog-post-title")).toContainText(/AI Agents/i);
+    await expect(page.getByTestId("blog-post-title")).toContainText(/Polluxkart/i);
     await expect(page.getByTestId("blog-post-content")).toBeVisible();
-    await expect(page.getByTestId("blog-post-cta")).toHaveAttribute("href", "/#contact");
+    const jsonLd = await page.locator("#softogram-jsonld").textContent();
+    expect(jsonLd).toContain("BlogPosting");
+    expect(jsonLd).toContain("Polluxkart");
   });
 
   test("unknown slug shows not found", async ({ page }) => {

@@ -1,0 +1,113 @@
+[
+  {
+    "id": "polluxkart",
+    "client": "Polluxkart",
+    "title": "Commerce experience rebuild",
+    "desc": "Custom storefront and ops tooling for a growing Indian commerce brand.",
+    "industry": "Retail",
+    "services": [
+      "E-commerce",
+      "Custom Development"
+    ],
+    "outcome": "Live storefront with continuous shipping; mobile-first conversion focus.",
+    "metrics": [
+      {
+        "label": "Storefront",
+        "value": "Live"
+      },
+      {
+        "label": "Focus",
+        "value": "Mobile checkout"
+      }
+    ],
+    "img": "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&h=500&fit=crop&auto=format",
+    "year": "2024",
+    "published": true,
+    "url": "https://polluxkart.com"
+  },
+  {
+    "id": "fieldworks",
+    "client": "Fieldworks AI",
+    "title": "Field Service Management & AI Dispatch",
+    "desc": "Real-time dispatch platform with ML-based route optimization for 800+ technicians.",
+    "industry": "Operations",
+    "services": [
+      "Mobile App",
+      "AI/ML",
+      "Real-time Systems"
+    ],
+    "outcome": "31% fuel cost reduction. 94% on-time arrival rate.",
+    "metrics": [
+      {
+        "label": "Fuel cost",
+        "value": "-31%"
+      },
+      {
+        "label": "On-time",
+        "value": "94%"
+      }
+    ],
+    "img": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=500&fit=crop&auto=format",
+    "year": "2024",
+    "published": true,
+    "url": "/client-work"
+  },
+  {
+    "id": "mcp-checker",
+    "client": "Softogram Open Source",
+    "title": "mcp-migration-checker",
+    "desc": "Go CLI that scans MCP server implementations against spec changes and emits CONFIRMED / REPORTED findings with file:line references.",
+    "industry": "Open Source",
+    "services": [
+      "CLI",
+      "Static Analysis",
+      "CI"
+    ],
+    "outcome": "Cross-platform binary published via GitHub Actions \u2014 v0.1.1 after a same-day glibc fix.",
+    "metrics": [
+      {
+        "label": "Language",
+        "value": "Go"
+      },
+      {
+        "label": "Release",
+        "value": "v0.1.1"
+      },
+      {
+        "label": "Findings",
+        "value": "4 types"
+      }
+    ],
+    "img": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=500&fit=crop&auto=format",
+    "year": "2025",
+    "published": true,
+    "url": "https://github.com/Softogram/softogram-mcp-spec-migration-checker"
+  },
+  {
+    "id": "meridian",
+    "client": "Meridian Health",
+    "title": "Patient Portal & Scheduling Platform",
+    "desc": "HIPAA-aware patient portal with scheduling and care-plan tracking.",
+    "industry": "Healthcare",
+    "services": [
+      "Custom Development",
+      "AI Integration",
+      "Cloud Infrastructure"
+    ],
+    "outcome": "62% reduction in scheduling call volume. 4.8/5 patient satisfaction score.",
+    "metrics": [
+      {
+        "label": "Scheduling calls",
+        "value": "-62%"
+      },
+      {
+        "label": "Satisfaction",
+        "value": "4.8/5"
+      }
+    ],
+    "img": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop&auto=format",
+    "year": "2024",
+    "published": true,
+    "url": "/client-work"
+  }
+]
