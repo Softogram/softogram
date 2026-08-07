@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://softogram.in/sitemap.xml
+# RSS (also linked from /blog); Worker may expose https://softogram.in/rss.xml after deploy.
+# https://api.softogram.in/api/content/blog/rss.xml

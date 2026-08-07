@@ -1,10 +1,12 @@
 /**
  * Blog post — CMS-backed with seed fallback (issue #17).
+ * Comments (#43), share buttons (#44).
  */
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { fetchBlogBySlug } from "@/lib/cmsApi";
+import { fetchBlogBySlug, fetchBlogComments, submitBlogComment } from "@/lib/cmsApi";
+import { capture } from "@/lib/analytics";
 import { G, DIM, BORDER } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
 
@@ -67,6 +69,226 @@ const MARKDOWN_COMPONENTS = {
     </blockquote>
   ),
 };
+
+function ShareRow({ post, canonical }) {
+  const [copied, setCopied] = useState(false);
+  const text = `${post.title} — ${canonical}`;
+  const encodedUrl = encodeURIComponent(canonical);
+  const encodedText = encodeURIComponent(text);
+
+  const track = (channel) => {
+    capture("blog_post_shared", { channel, slug: post.slug });
+  };
+
+  const btnStyle = {
+    border: `1px solid ${BORDER}`,
+    color: DIM,
+    background: "transparent",
+    fontFamily: "var(--font-mono)",
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2 items-center" data-testid="blog-share-row">
+      <span className="text-xs mr-1" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+        share
+      </span>
+      <a
+        href={`https://wa.me/?text=${encodedText}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="blog-share-whatsapp"
+        className="px-3 py-1.5 text-xs rounded-sm"
+        style={btnStyle}
+        onClick={() => track("whatsapp")}
+      >
+        WhatsApp
+      </a>
+      <a
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="blog-share-linkedin"
+        className="px-3 py-1.5 text-xs rounded-sm"
+        style={btnStyle}
+        onClick={() => track("linkedin")}
+      >
+        LinkedIn
+      </a>
+      <a
+        href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodeURIComponent(post.title)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="blog-share-x"
+        className="px-3 py-1.5 text-xs rounded-sm"
+        style={btnStyle}
+        onClick={() => track("x")}
+      >
+        X
+      </a>
+      <button
+        type="button"
+        data-testid="blog-share-copy"
+        className="px-3 py-1.5 text-xs rounded-sm"
+        style={btnStyle}
+        onClick={async () => {
+          track("copy");
+          try {
+            await navigator.clipboard.writeText(canonical);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          } catch {
+            /* ignore */
+          }
+        }}
+      >
+        {copied ? "copied" : "copy link"}
+      </button>
+    </div>
+  );
+}
+
+function CommentsSection({ slug }) {
+  const [comments, setComments] = useState([]);
+  const [name, setName] = useState("");
+  const [comment, setComment] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const load = async () => {
+    try {
+      const data = await fetchBlogComments(slug);
+      setComments(data);
+    } catch {
+      setComments([]);
+    }
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const res = await submitBlogComment(slug, {
+        name,
+        comment,
+        company_website: honeypot,
+      });
+      setMessage(res.message || "Thanks — your comment was submitted for review.");
+      setName("");
+      setComment("");
+      setHoneypot("");
+    } catch (err) {
+      setError(err.response?.data?.detail || "Could not submit comment. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="pt-12 mt-12" style={{ borderTop: `1px solid ${BORDER}` }} data-testid="blog-comments">
+      <h2
+        className="text-2xl font-bold mb-6"
+        style={{ fontFamily: "var(--font-display)", color: "#e2e8f0" }}
+      >
+        Comments
+      </h2>
+
+      {comments.length === 0 ? (
+        <p className="text-sm mb-8" style={{ color: DIM }} data-testid="blog-comments-empty">
+          No comments yet. Be the first.
+        </p>
+      ) : (
+        <ul className="space-y-4 mb-10" data-testid="blog-comments-list">
+          {comments.map((c) => (
+            <li
+              key={c.id}
+              className="rounded-sm p-4"
+              style={{ background: "#161b22", border: `1px solid ${BORDER}` }}
+              data-testid="blog-comment"
+            >
+              <div className="text-xs mb-2" style={{ color: G, fontFamily: "var(--font-mono)" }}>
+                {c.name}
+                {c.createdAt ? ` · ${new Date(c.createdAt).toLocaleDateString()}` : ""}
+              </div>
+              <p className="text-sm leading-relaxed" style={{ color: "#cbd5e1" }}>
+                {c.comment}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <form onSubmit={onSubmit} className="space-y-3 max-w-xl" data-testid="blog-comment-form">
+        <p className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+          Comments are moderated before they appear.
+        </p>
+        <label className="block text-xs" style={{ color: DIM }}>
+          Name
+          <input
+            required
+            maxLength={120}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            data-testid="blog-comment-name"
+            className="mt-1 w-full px-3 py-2 text-sm rounded-sm"
+            style={{ background: "#161b22", border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+          />
+        </label>
+        <label className="block text-xs" style={{ color: DIM }}>
+          Comment
+          <textarea
+            required
+            maxLength={5000}
+            rows={4}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            data-testid="blog-comment-body"
+            className="mt-1 w-full px-3 py-2 text-sm rounded-sm"
+            style={{ background: "#161b22", border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+          />
+        </label>
+        {/* Honeypot — visually hidden; bots fill it */}
+        <input
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          data-testid="blog-comment-honeypot"
+          aria-hidden="true"
+          style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }}
+        />
+        {message && (
+          <p className="text-xs" style={{ color: G }} data-testid="blog-comment-success">
+            {message}
+          </p>
+        )}
+        {error && (
+          <p className="text-xs" style={{ color: "#f85149" }} data-testid="blog-comment-error">
+            {error}
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={busy}
+          data-testid="blog-comment-submit"
+          className="px-4 py-2 text-xs font-semibold rounded-sm"
+          style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
+        >
+          {busy ? "…" : "submit comment"}
+        </button>
+      </form>
+    </section>
+  );
+}
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -181,14 +403,17 @@ export default function BlogPost() {
           >
             {post.title}
           </h1>
-          <div className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+          <div className="text-xs mb-6" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
             {post.author} · {post.date} · {post.readTime || 5} min
           </div>
+          <ShareRow post={post} canonical={canonical} />
         </div>
 
         <article className="pt-10 space-y-3" data-testid="blog-post-content">
           <ReactMarkdown components={MARKDOWN_COMPONENTS}>{post.content || ""}</ReactMarkdown>
         </article>
+
+        <CommentsSection slug={post.slug} />
       </div>
     </div>
   );

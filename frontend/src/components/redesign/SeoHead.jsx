@@ -21,6 +21,7 @@ export default function SeoHead({
   image = "https://softogram.in/og-banner.png",
   type = "website",
   jsonLd,
+  rssUrl,
 }) {
   useEffect(() => {
     if (title) document.title = title;
@@ -47,6 +48,21 @@ export default function SeoHead({
       link.setAttribute("href", canonical);
     }
 
+    let rss = document.getElementById("softogram-rss");
+    if (rssUrl) {
+      if (!rss) {
+        rss = document.createElement("link");
+        rss.id = "softogram-rss";
+        rss.setAttribute("rel", "alternate");
+        rss.setAttribute("type", "application/rss+xml");
+        rss.setAttribute("title", "Softogram Blog");
+        document.head.appendChild(rss);
+      }
+      rss.setAttribute("href", rssUrl);
+    } else if (rss) {
+      rss.remove();
+    }
+
     let script = document.getElementById("softogram-jsonld");
     if (jsonLd) {
       if (!script) {
@@ -59,7 +75,7 @@ export default function SeoHead({
     } else if (script) {
       script.remove();
     }
-  }, [title, description, canonical, image, type, jsonLd]);
+  }, [title, description, canonical, image, type, jsonLd, rssUrl]);
 
   return null;
 }
