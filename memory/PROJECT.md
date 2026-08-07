@@ -19,7 +19,7 @@ Not a monorepo product app; the "application" is the landing site and lead-captu
 | Blog page (`/blog`) | Static post cards; no individual post routes or CMS |
 | Legal pages (privacy, terms, refund, cookie) | Shipped |
 | Contact → SendGrid email | Implemented; requires env keys in production |
-| MongoDB persistence for leads | Disabled (commented out in `server.py`) |
+| Primary database | Postgres (SQLAlchemy async + Alembic). MongoDB removed entirely in Phase 10 - see `docs/growth/phase-10-platform-plan-2026-08.md` |
 | TypeScript migration | Not started; frontend is `.js`/`.jsx` |
 | Component extraction from `App.js` | Not done; single-file architecture |
 
@@ -42,8 +42,11 @@ Not a monorepo product app; the "application" is the landing site and lead-captu
 
 | Path | Role |
 |------|------|
-| `server.py` | FastAPI app, `/api/contact`, SendGrid helper, CORS |
-| `requirements.txt` | Python deps (includes SendGrid, Motor, FastAPI) |
+| `server.py` | FastAPI app, `/api/contact`, SendGrid helper, CORS, migration-on-boot |
+| `database.py` / `models.py` | Async SQLAlchemy engine + ORM models (7 tables) |
+| `migrations/` | Alembic migrations |
+| `scripts/backfill_postgres.py` | One-time JSONL/JSON -> Postgres migration for an existing environment |
+| `requirements.txt` | Python deps (SendGrid, SQLAlchemy, asyncpg, Alembic, FastAPI) |
 | `.env` | Secrets (not in git) |
 
 ### Root
@@ -98,7 +101,7 @@ Canonical live palette:
 1. **Monolithic `App.js`** — hard to navigate; extract components only when asked
 2. **JS vs TS** — README describes TS/shadcn TS patterns; repo uses JSX
 3. **Email domain** — codebase uses `@softogram.com`; confirm with owner before changing to `.in`
-4. **MongoDB wired but unused** for contact; status endpoints still hit DB
+4. **Admin auth still single-password** — `admin_users`/`admin_sessions` tables exist (Phase 10 migration) but auth doesn't use them yet; that cutover is Phase 11
 5. **Blog/case studies** — marketing placeholders, not backed by API or MD files
 6. **Large agent skill trees** in `.cursor/skills` — not part of deploy artifact
 
@@ -127,7 +130,7 @@ graphify update .
 ## What not to do
 
 - Do not bulk-migrate `App.js` to TypeScript or split files without explicit request
-- Do not re-enable MongoDB contact save without product approval
+- Do not reintroduce MongoDB; Postgres is the primary store as of Phase 10
 - Do not change brand colors/fonts casually; consistency is a selling point
 - Do not commit secrets or modify auto-generated changelogs
 - Do not treat `graphify-out/` cache as hand-edited source

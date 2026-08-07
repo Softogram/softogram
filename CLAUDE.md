@@ -28,7 +28,7 @@ They are agent tooling copied into the repo.
 |-------|-------|
 | Frontend | React 19, JavaScript (not TypeScript), Tailwind CSS 3, shadcn/ui (Radix), Framer Motion, React Router 7 |
 | Build | Create React App via `@craco/craco`, `@/` alias → `frontend/src` |
-| Backend | FastAPI, Pydantic v2, Motor (MongoDB client), SendGrid |
+| Backend | FastAPI, Pydantic v2, SQLAlchemy 2.0 (async) + Alembic on Postgres, SendGrid |
 | Testing | `backend_test.py` (requests-based API tests), `data-testid` on interactive UI elements |
 
 ## Brand and design (canonical)
@@ -61,9 +61,14 @@ Budget range is appended to `message` on the client before POST.
 
 **Email**: `SENDER_EMAIL` → `RECIPIENT_EMAIL` via SendGrid.
 `reply_to` is set to the submitter's email.
-MongoDB save for contact submissions is intentionally commented out.
+Leads persist to the `leads` table in Postgres; MongoDB has been removed entirely (Phase 10, see `docs/growth/phase-10-platform-plan-2026-08.md`).
 
 **Canonical contact email in code**: `support@softogram.in`
+
+**Database**: Postgres is the only datastore - `leads`, `admin_users`, `admin_sessions`, `blog_posts`, `blog_comments`, `projects`, `newsletter_subscribers`.
+Alembic migrations apply automatically on backend boot (`server.py`'s `lifespan`); there is no separate migrate step to remember.
+Local Postgres runs via `docker compose up -d` (root `docker-compose.yml`).
+`admin_users`/`admin_sessions` exist in the schema but auth doesn't use them yet - that cutover is Phase 11, tracked as a separate issue; do not wire it up unless asked.
 
 ## Environment variables
 
@@ -78,8 +83,7 @@ SENDGRID_API_KEY=
 SENDER_EMAIL=admin@softogram.in
 RECIPIENT_EMAIL=support@softogram.in
 CORS_ORIGINS=http://localhost:3000
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=softogram_db
+DATABASE_URL=postgresql+asyncpg://softogram:softogram@localhost:5432/softogram
 ```
 
 Never commit real API keys.
@@ -88,6 +92,9 @@ Warn if asked to commit `.env` files.
 ## Local development
 
 ```bash
+# Postgres (once, or after a machine restart)
+docker compose up -d
+
 # Backend
 cd backend && pip install -r requirements.txt
 uvicorn server:app --reload --port 8000

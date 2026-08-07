@@ -7,6 +7,7 @@ const {
   waitForEmails,
   forceSendFailure,
   waitForEmailFrom,
+  waitForLead,
 } = require("../fixtures/helpers");
 
 function e2eHeaders(id, extra = {}) {
@@ -117,14 +118,9 @@ test.describe("contact API", () => {
     expect(Date.now() - started).toBeLessThan(3000);
   });
 
-  test("visitor still gets success when SendGrid is down and lead is persisted (issue #3)", async ({
+  test("visitor still gets success when SendGrid is down and lead is persisted in Postgres (issue #3)", async ({
     request,
   }) => {
-    const fs = require("fs");
-    const path = require("path");
-    const leadsFile = path.join(__dirname, "../../backend/data/contact_leads.jsonl");
-    const before = fs.existsSync(leadsFile) ? fs.readFileSync(leadsFile, "utf8") : "";
-
     await forceSendFailure(request, 500, 5);
     const email = `persist-${Date.now()}@example.com`;
     const res = await request.post(`${BACKEND_URL}/api/contact`, {
@@ -140,18 +136,28 @@ test.describe("contact API", () => {
     expect(res.status()).toBe(200);
     expect((await res.json()).status).toBe("success");
 
-    await expect
-      .poll(() => (fs.existsSync(leadsFile) ? fs.readFileSync(leadsFile, "utf8") : ""), {
-        timeout: 5000,
-      })
-      .toContain(email);
+    const lead = await waitForLead(email);
+    expect(lead.name).toBe("Persist Test");
+    expect(lead.status).toBe("new");
+    expect(lead.storage).toBe("postgres");
 
-    const after = fs.readFileSync(leadsFile, "utf8");
-    expect(after.length).toBeGreaterThan(before.length);
-    const lastLine = after.trim().split("\n").pop();
-    const record = JSON.parse(lastLine);
-    expect(record.email).toBe(email);
-    expect(record.storage).toMatch(/jsonl/);
+    // The lead row lands synchronously, well before the background retry loop
+    // (3 attempts, exponential backoff) finishes. Wait for that background task
+    // to actually settle before this test ends - otherwise its retries can still
+    // be in flight when the next test starts, and a late-arriving email leaks
+    // into that test's SendGrid mock assertions.
+    const fs = require("fs");
+    const path = require("path");
+    const failuresFile = path.join(__dirname, "../../backend/data/contact_email_failures.jsonl");
+    await expect
+      .poll(
+        () => {
+          if (!fs.existsSync(failuresFile)) return false;
+          return fs.readFileSync(failuresFile, "utf8").includes(email);
+        },
+        { timeout: 10_000 },
+      )
+      .toBe(true);
   });
 
   test("preflight from a foreign origin is not reflected (issue #2)", async ({ request }) => {

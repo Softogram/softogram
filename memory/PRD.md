@@ -29,7 +29,7 @@ Build a premium, dark-themed website for Softogram software company with:
 
 ## Architecture
 - **Frontend**: React 19 with Tailwind CSS, Framer Motion, shadcn/ui
-- **Backend**: FastAPI with MongoDB
+- **Backend**: FastAPI with PostgreSQL (SQLAlchemy async + Alembic)
 - **Email**: SendGrid (configurable via environment variables)
 
 ## What's Been Implemented

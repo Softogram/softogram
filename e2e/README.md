@@ -15,14 +15,17 @@ All three servers are started automatically by `playwright.config.js` (`webServe
 ## One-time setup
 
 ```bash
-# 1. Backend python env (kept in backend/.venv; auto-detected by the config)
-python3 -m venv backend/.venv
-backend/.venv/bin/pip install fastapi uvicorn python-dotenv motor sendgrid "pydantic[email]"
+# 1. Local Postgres (creates both the dev and softogram_e2e databases)
+docker compose up -d
 
-# 2. Frontend deps (if not already installed)
+# 2. Backend python env (kept in backend/.venv; auto-detected by the config)
+python3 -m venv backend/.venv
+backend/.venv/bin/pip install -r backend/requirements.txt
+
+# 3. Frontend deps (if not already installed)
 cd frontend && yarn install && cd ..
 
-# 3. E2E deps + browser
+# 4. E2E deps + browser
 cd e2e && npm install && npx playwright install chromium
 ```
 
@@ -36,7 +39,10 @@ npm run test:ui     # Playwright UI mode
 npm run report      # open the last HTML report
 ```
 
-No MongoDB is required for the contact happy path (JSONL + optional Mongo), and the suite asserts legacy `/api/status` is gone (issue #6).
+The backend applies pending Alembic migrations automatically on boot, against the
+`softogram_e2e` database (see `playwright.config.js`), and the suite asserts legacy
+`/api/status` is gone (issue #6). MongoDB has been removed entirely (issue #34);
+Postgres is the only datastore.
 
 ## Suite layout
 

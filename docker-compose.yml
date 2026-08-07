@@ -1,0 +1,23 @@
+# Local Postgres for development (issue #31).
+# Matches the version planned for RDS later (docs/growth/phase-10-platform-plan-2026-08.md)
+# so the eventual cutover is a data copy, not a schema rewrite.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: softogram
+      POSTGRES_PASSWORD: softogram
+      POSTGRES_DB: softogram
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U softogram"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
