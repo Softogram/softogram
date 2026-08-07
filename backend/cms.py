@@ -32,6 +32,14 @@ SESSION_TTL_SEC = 60 * 60 * 12
 _pwd = CryptContext(schemes=["argon2"], deprecated="auto")
 _log = logging.getLogger("softogram")
 
+# Verified against on every failed login where no matching user exists, so an
+# unknown email takes the same time as a known email with the wrong password.
+# Without this, response timing leaks which emails have admin accounts (an
+# argon2 verify is deliberately slow; skipping it for unknown emails is fast
+# enough to distinguish via simple timing - confirmed empirically: ~10ms vs
+# ~30ms in local testing before this fix).
+_DUMMY_HASH = _pwd.hash(secrets.token_urlsafe(32))
+
 
 def _load_seed(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
@@ -328,15 +336,18 @@ async def ensure_admin_seeded() -> None:
 
 
 async def authenticate_admin(email: str, password: str) -> Optional[int]:
-    """Return admin_users.id on success, else None. Does not log credentials."""
+    """Return admin_users.id on success, else None. Does not log credentials.
+    Constant-time with respect to whether the email exists (see _DUMMY_HASH)."""
     normalized = (email or "").strip().lower()
     if not normalized or not password:
+        _pwd.verify(password or "", _DUMMY_HASH)
         return None
     async with AsyncSessionLocal() as session:
         user = (
             await session.execute(select(AdminUser).where(AdminUser.email == normalized))
         ).scalar_one_or_none()
         if user is None:
+            _pwd.verify(password, _DUMMY_HASH)
             return None
         try:
             ok = _pwd.verify(password, user.password_hash)

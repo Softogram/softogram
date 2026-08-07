@@ -67,6 +67,8 @@ module.exports = defineConfig({
         ALLOW_E2E_CLIENT_ID: "1",
         CONTACT_RATE_LIMIT_PER_MINUTE: "30",
         CONTACT_RATE_LIMIT_PER_HOUR: "200",
+        ADMIN_LOGIN_RATE_LIMIT_PER_MINUTE: "30",
+        ADMIN_LOGIN_RATE_LIMIT_PER_HOUR: "200",
         ADMIN_SEED_EMAIL: "admin@example.com",
         ADMIN_SEED_PASSWORD: "e2e-admin-password",
       },

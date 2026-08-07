@@ -315,6 +315,13 @@ _comment_limiter = ContactRateLimiter(
     per_minute=int(os.getenv("CONTACT_RATE_LIMIT_PER_MINUTE", "2")),
     per_hour=int(os.getenv("CONTACT_RATE_LIMIT_PER_HOUR", "5")),
 )
+# Admin login gets its own, stricter bucket - it guards account access directly,
+# not just a public form (issue found in PR #62 review; #35-#37 shipped with no
+# rate limit on login at all).
+_login_limiter = ContactRateLimiter(
+    per_minute=int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_PER_MINUTE", "5")),
+    per_hour=int(os.getenv("ADMIN_LOGIN_RATE_LIMIT_PER_HOUR", "20")),
+)
 
 SITE_URL = os.getenv("SITE_URL", "https://softogram.in").rstrip("/")
 
@@ -612,7 +619,10 @@ async def admin_moderate_comment(comment_id: int, body: CommentModerationUpdate,
 
 
 @api_router.post("/admin/login", response_model=AdminLoginResponse)
-async def admin_login(body: AdminLoginRequest):
+async def admin_login(body: AdminLoginRequest, request: Request):
+    key = f"admin-login:{_client_key(request)}"
+    if not _login_limiter.allow(key):
+        raise HTTPException(status_code=429, detail="Too many login attempts. Please try again later.")
     admin_id = await content_cms.authenticate_admin(str(body.email), body.password)
     if admin_id is None:
         raise HTTPException(status_code=401, detail="Invalid email or password")
