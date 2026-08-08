@@ -827,22 +827,29 @@ async def admin_upload_image(request: Request, file: UploadFile = File(...)):
 
 # --- Analytics (issue #40) ---
 
+_POSTHOG_EVENTS = ["$pageview", "contact_form_viewed", "contact_form_submitted", "whatsapp_clicked"]
+
+
 async def _posthog_summary() -> Optional[dict]:
-    """Best-effort PostHog trend query. Returns None if not configured or unreachable -
-    the analytics endpoint degrades gracefully rather than failing the whole response."""
+    """Best-effort PostHog query (HogQL via the Query API - the legacy /insights/trend/
+    REST endpoint this used to call is no longer available on newer PostHog accounts).
+    Returns None if not configured or unreachable - the analytics endpoint degrades
+    gracefully rather than failing the whole response."""
     if not POSTHOG_API_KEY or not POSTHOG_PROJECT_ID:
         return None
 
-    events = ["$pageview", "contact_form_viewed", "contact_form_submitted", "whatsapp_clicked"]
+    event_list = ", ".join(f"'{e}'" for e in _POSTHOG_EVENTS)
+    hogql = (
+        "SELECT toDate(timestamp) AS day, event, count() AS n FROM events "
+        f"WHERE event IN ({event_list}) AND timestamp > now() - INTERVAL 30 DAY "
+        "GROUP BY day, event ORDER BY day"
+    )
     try:
         async with httpx.AsyncClient(timeout=10) as client:
-            resp = await client.get(
-                f"{POSTHOG_HOST}/api/projects/{POSTHOG_PROJECT_ID}/insights/trend/",
+            resp = await client.post(
+                f"{POSTHOG_HOST}/api/projects/{POSTHOG_PROJECT_ID}/query/",
                 headers={"Authorization": f"Bearer {POSTHOG_API_KEY}"},
-                params={
-                    "events": json.dumps([{"id": e} for e in events]),
-                    "date_from": "-30d",
-                },
+                json={"query": {"kind": "HogQLQuery", "query": hogql}},
             )
             resp.raise_for_status()
             data = resp.json()
@@ -852,15 +859,11 @@ async def _posthog_summary() -> Optional[dict]:
 
     series = {}
     pageviews_by_day = []
-    for result in data.get("result", []):
-        event_id = result.get("action", {}).get("name") or result.get("label")
-        total = sum(result.get("data", []))
-        series[event_id] = total
-        if event_id == "$pageview":
-            pageviews_by_day = [
-                {"date": label, "count": count}
-                for label, count in zip(result.get("labels", []), result.get("data", []))
-            ]
+    for day, event, n in data.get("results", []):
+        series[event] = series.get(event, 0) + n
+        if event == "$pageview":
+            pageviews_by_day.append({"date": day, "count": n})
+    pageviews_by_day.sort(key=lambda row: row["date"])
 
     viewed = series.get("contact_form_viewed", 0)
     submitted = series.get("contact_form_submitted", 0)

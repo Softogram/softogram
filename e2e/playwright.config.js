@@ -73,6 +73,12 @@ module.exports = defineConfig({
         ADMIN_LOGIN_RATE_LIMIT_PER_HOUR: "200",
         ADMIN_SEED_EMAIL: "admin@example.com",
         ADMIN_SEED_PASSWORD: "e2e-admin-password",
+        // Explicitly blank, not merely unset: dotenv only skips keys already PRESENT in
+        // the environment, so an absent key here still gets filled in from a developer's
+        // local backend/.env if it happens to have real PostHog credentials - breaking
+        // the "PostHog isn't configured" test's isolation. Presence (even empty) wins.
+        POSTHOG_API_KEY: "",
+        POSTHOG_PROJECT_ID: "",
       },
     },
     {
