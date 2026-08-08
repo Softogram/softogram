@@ -21,7 +21,6 @@ import {
   Reveal,
 } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
-import TestimonialsSection from "@/components/redesign/TestimonialsSection";
 import { capture } from "@/lib/analytics";
 import { BOOKING_URL, SUPPORT_EMAIL } from "@/data/site";
 
@@ -605,9 +604,6 @@ export default function Home() {
       <BuildLogSection lineStart={ln + 5} />
       <ShippedSection lineStart={ln + 20} />
       <ServicesSection lineStart={ln + 30} />
-      <div className="max-w-7xl mx-auto px-6">
-        <TestimonialsSection startLine={ln + 35} />
-      </div>
       <ContactSection lineStart={ln + 40} />
     </>
   );

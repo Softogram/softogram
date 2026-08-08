@@ -21,10 +21,10 @@ export const SHIPPED = [
   {
     name: "search-to-md",
     lang: "Go",
-    version: "week-2",
-    status: "reported",
-    repoUrl: "https://github.com/Softogram",
-    desc: "Tavily-powered search pipeline that outputs structured Markdown. Single-query working. Batch dedup and retry-with-backoff not yet shipped.",
+    version: "v0.1.0",
+    status: "confirmed",
+    repoUrl: "https://github.com/Softogram/softogram-search-to-markdown",
+    desc: "Free, open-source CLI that turns a web search into clean, source-attributed Markdown for an AI agent to read directly. Tavily-powered.",
     claimOld: "intelligent research automation with enterprise Tavily integration",
     claimNew: "single-query Tavily → Markdown, Go. Rate-limit retry deferred.",
     honesty:

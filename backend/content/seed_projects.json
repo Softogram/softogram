@@ -26,31 +26,32 @@
     "url": "https://polluxkart.com"
   },
   {
-    "id": "fieldworks",
-    "client": "Fieldworks AI",
-    "title": "Field Service Management & AI Dispatch",
-    "desc": "Real-time dispatch platform with ML-based route optimization for 800+ technicians.",
-    "industry": "Operations",
+    "id": "syn-grid",
+    "client": "Softogram Games",
+    "title": "Syn-Grid — mobile auto-battler",
+    "desc": "Server-authoritative inventory-management auto-battler for mobile. Every game value — grid positions, item stats, gold, combat outcomes — is computed and enforced server-side; a compromised client can only affect cosmetics.",
+    "industry": "Gaming",
     "services": [
-      "Mobile App",
-      "AI/ML",
-      "Real-time Systems"
+      "Game Backend",
+      "Go",
+      "gRPC",
+      "Godot"
     ],
-    "outcome": "31% fuel cost reduction. 94% on-time arrival rate.",
+    "outcome": "In active development. Go/gRPC backend on Postgres + Redis, Godot 4 client for Android/iOS.",
     "metrics": [
       {
-        "label": "Fuel cost",
-        "value": "-31%"
+        "label": "Backend",
+        "value": "Go + gRPC"
       },
       {
-        "label": "On-time",
-        "value": "94%"
+        "label": "Client",
+        "value": "Godot 4"
       }
     ],
-    "img": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=500&fit=crop&auto=format",
-    "year": "2024",
+    "img": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=500&fit=crop&auto=format",
+    "year": "2026",
     "published": true,
-    "url": "/client-work"
+    "url": "https://github.com/Softogram/syn-grid"
   },
   {
     "id": "mcp-checker",
@@ -63,7 +64,7 @@
       "Static Analysis",
       "CI"
     ],
-    "outcome": "Cross-platform binary published via GitHub Actions \u2014 v0.1.1 after a same-day glibc fix.",
+    "outcome": "Cross-platform binary published via GitHub Actions — v0.1.1 after a same-day glibc fix.",
     "metrics": [
       {
         "label": "Language",
@@ -84,30 +85,30 @@
     "url": "https://github.com/Softogram/softogram-mcp-spec-migration-checker"
   },
   {
-    "id": "meridian",
-    "client": "Meridian Health",
-    "title": "Patient Portal & Scheduling Platform",
-    "desc": "HIPAA-aware patient portal with scheduling and care-plan tracking.",
-    "industry": "Healthcare",
+    "id": "search-to-md",
+    "client": "Softogram Open Source",
+    "title": "search-to-md",
+    "desc": "Free, open-source CLI that turns a web search into clean, source-attributed Markdown built for an AI agent to read directly — no HTML stripping or citation-wrangling required.",
+    "industry": "Open Source",
     "services": [
-      "Custom Development",
-      "AI Integration",
-      "Cloud Infrastructure"
+      "CLI",
+      "Go",
+      "AI Tooling"
     ],
-    "outcome": "62% reduction in scheduling call volume. 4.8/5 patient satisfaction score.",
+    "outcome": "v0.1.0 released — Tavily-powered search-to-Markdown pipeline.",
     "metrics": [
       {
-        "label": "Scheduling calls",
-        "value": "-62%"
+        "label": "Language",
+        "value": "Go"
       },
       {
-        "label": "Satisfaction",
-        "value": "4.8/5"
+        "label": "Release",
+        "value": "v0.1.0"
       }
     ],
-    "img": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=500&fit=crop&auto=format",
-    "year": "2024",
+    "img": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=500&fit=crop&auto=format",
+    "year": "2026",
     "published": true,
-    "url": "/client-work"
+    "url": "https://github.com/Softogram/softogram-search-to-markdown"
   }
 ]

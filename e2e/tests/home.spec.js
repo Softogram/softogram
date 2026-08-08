@@ -54,11 +54,10 @@ test.describe("landing page", () => {
     await expect(btn).toHaveAttribute("href", /wa\.me\/916360158761(\?|$)/);
   });
 
-  test("booking CTA and named testimonials are present (issue #16)", async ({ page }) => {
+  test("booking CTA and trust badges are present (issue #16)", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByTestId("booking-cta")).toBeVisible();
     await expect(page.getByTestId("booking-cta")).toHaveAttribute("href", /cal\.com/);
-    await expect(page.getByTestId("testimonial-card").first()).toBeVisible();
     await expect(page.getByTestId("trust-badges")).toBeVisible();
   });
 

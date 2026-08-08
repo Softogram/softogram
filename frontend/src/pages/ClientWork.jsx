@@ -203,7 +203,7 @@ export default function ClientWork() {
     <>
       <SeoHead
         title="Client Work | Softogram"
-        description="Case studies across healthcare, finance, retail, and operations — real outcomes from Softogram engagements."
+        description="Real client work, open-source tools, and in-house products from Softogram — every project links to a live site or a GitHub release."
       />
       {selected && <ProjectModal project={selected} onClose={() => setSelected(null)} />}
 
@@ -234,22 +234,22 @@ export default function ClientWork() {
                     color: "#e2e8f0",
                   }}
                 >
-                  Built for{" "}
+                  What we&apos;ve{" "}
                   <span className="italic" style={{ color: G }}>
-                    real organizations.
+                    actually built.
                   </span>
                 </h1>
                 <p className="text-lg leading-relaxed" style={{ color: DIM, fontWeight: 300 }}>
-                  From HIPAA-compliant healthcare platforms to high-frequency trading infrastructure
-                  — we deliver across every vertical that demands reliability.
+                  Client work, open-source tools, and products we&apos;re building ourselves —
+                  every one verifiable by a live URL, a GitHub release, or both.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { num: "40+", label: "Projects shipped" },
-                  { num: "12", label: "Industries served" },
-                  { num: "$50M+", label: "Value delivered" },
-                  { num: "4.9★", label: "Avg. client rating" },
+                  { num: "2", label: "Open-source tools shipped" },
+                  { num: "1", label: "Live production storefront" },
+                  { num: "1", label: "Game in active development" },
+                  { num: "100%", label: "Claims are verifiable" },
                 ].map((s) => (
                   <div
                     key={s.label}

@@ -5,6 +5,15 @@ import { G, A, DIM, GutterRow, Section } from "./homePrimitives";
 
 export const BUILD_LOG = [
   {
+    date: "2026-08-07",
+    week: "week-2",
+    status: "confirmed",
+    title: "search-to-md v0.1.0 shipped",
+    detail:
+      "Go CLI, Tavily-powered search-to-Markdown for AI agents. Real before/after example in the repo. Batch dedup and rate-limit retry still not merged.",
+    ref: "https://github.com/Softogram/softogram-search-to-markdown/releases/tag/v0.1.0",
+  },
+  {
     date: "2026-08-05",
     week: "week-2",
     status: "confirmed",

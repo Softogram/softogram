@@ -2,7 +2,7 @@
 const { test, expect } = require("@playwright/test");
 
 const routes = [
-  { path: "/client-work", expectText: /real organizations/i },
+  { path: "/client-work", expectText: /actually built/i },
   { path: "/products", expectText: /build and sell/i },
   { path: "/blog", expectText: /insights/i },
   { path: "/privacy-policy", expectText: /privacy policy/i },

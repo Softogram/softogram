@@ -5,18 +5,18 @@ test.describe("client work page", () => {
   test("catalog renders project cards", async ({ page }) => {
     await page.goto("/client-work");
     await expect(page.getByTestId("client-work-page")).toBeVisible();
-    await expect(page.getByTestId("client-work-hero")).toContainText(/real organizations/i);
+    await expect(page.getByTestId("client-work-hero")).toContainText(/actually built/i);
     await expect(page.getByTestId("client-project-card")).toHaveCount(4);
     await expect(page.getByTestId("placeholder-page")).toHaveCount(0);
   });
 
   test("industry filter narrows the grid", async ({ page }) => {
     await page.goto("/client-work");
-    await page.getByTestId("client-work-filter-healthcare").click();
+    await page.getByTestId("client-work-filter-gaming").click();
     await expect(page.getByTestId("client-project-card")).toHaveCount(1);
-    await expect(page.getByTestId("client-project-card")).toContainText("Meridian");
-    await page.getByTestId("client-work-filter-logistics").click();
-    await expect(page.getByTestId("client-work-empty")).toBeVisible();
+    await expect(page.getByTestId("client-project-card")).toContainText("Syn-Grid");
+    await page.getByTestId("client-work-filter-open-source").click();
+    await expect(page.getByTestId("client-project-card")).toHaveCount(2);
     await page.getByTestId("client-work-filter-all").click();
     await expect(page.getByTestId("client-project-card")).toHaveCount(4);
   });
