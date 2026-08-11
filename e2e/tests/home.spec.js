@@ -21,8 +21,6 @@ test.describe("landing page", () => {
     // Phase 4
     await expect(page.getByTestId("shipped-section")).toBeVisible();
     await expect(page.getByTestId("shipped-card").first()).toBeVisible();
-    await expect(page.getByTestId("blog-teaser-section")).toBeVisible();
-    await expect(page.getByTestId("blog-teaser-card")).toBeVisible();
     await expect(page.getByTestId("services-section")).toBeVisible();
     await expect(page.getByTestId("service-row").first()).toBeVisible();
 
@@ -37,6 +35,18 @@ test.describe("landing page", () => {
     await expect(widget.getByText("exit 0", { exact: true })).toBeVisible({
       timeout: 15000,
     });
+  });
+
+  test("blog teaser renders the latest post on scroll (issue #76)", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByTestId("blog-teaser-section").scrollIntoViewIfNeeded();
+    await expect(page.getByTestId("blog-teaser-card")).toBeVisible();
+    await expect(page.getByTestId("blog-teaser-all-link")).toHaveAttribute(
+      "href",
+      "/blog",
+    );
   });
 
   test("build log row expands detail", async ({ page }) => {
