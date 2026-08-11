@@ -21,6 +21,8 @@ test.describe("landing page", () => {
     // Phase 4
     await expect(page.getByTestId("shipped-section")).toBeVisible();
     await expect(page.getByTestId("shipped-card").first()).toBeVisible();
+    await expect(page.getByTestId("blog-teaser-section")).toBeVisible();
+    await expect(page.getByTestId("blog-teaser-card")).toBeVisible();
     await expect(page.getByTestId("services-section")).toBeVisible();
     await expect(page.getByTestId("service-row").first()).toBeVisible();
 
@@ -32,7 +34,9 @@ test.describe("landing page", () => {
     await page.getByTestId("terminal-section").scrollIntoViewIfNeeded();
     const widget = page.getByTestId("terminal-widget");
     await widget.getByTestId("terminal-run").click();
-    await expect(widget.getByText("exit 0", { exact: true })).toBeVisible({ timeout: 15000 });
+    await expect(widget.getByText("exit 0", { exact: true })).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test("build log row expands detail", async ({ page }) => {
@@ -47,17 +51,24 @@ test.describe("landing page", () => {
     await expect(page.getByTestId("build-log-detail").first()).toBeVisible();
   });
 
-  test("WhatsApp floating button is present and links to WhatsApp", async ({ page }) => {
+  test("WhatsApp floating button is present and links to WhatsApp", async ({
+    page,
+  }) => {
     await page.goto("/");
     const btn = page.getByTestId("whatsapp-button");
     await expect(btn).toBeVisible();
     await expect(btn).toHaveAttribute("href", /wa\.me\/916360158761(\?|$)/);
   });
 
-  test("booking CTA and trust badges are present (issue #16)", async ({ page }) => {
+  test("booking CTA and trust badges are present (issue #16)", async ({
+    page,
+  }) => {
     await page.goto("/");
     await expect(page.getByTestId("booking-cta")).toBeVisible();
-    await expect(page.getByTestId("booking-cta")).toHaveAttribute("href", /cal\.com/);
+    await expect(page.getByTestId("booking-cta")).toHaveAttribute(
+      "href",
+      /cal\.com/,
+    );
     await expect(page.getByTestId("trust-badges")).toBeVisible();
   });
 

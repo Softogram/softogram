@@ -5,14 +5,23 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { fetchBlogBySlug, fetchBlogComments, submitBlogComment } from "@/lib/cmsApi";
+import {
+  fetchBlogBySlug,
+  fetchBlogComments,
+  submitBlogComment,
+  fetchPublishedBlogs,
+} from "@/lib/cmsApi";
 import { capture } from "@/lib/analytics";
-import { G, DIM, BORDER } from "@/components/redesign/homePrimitives";
+import { G, DIM, BORDER, CARD } from "@/components/redesign/homePrimitives";
+import { BOOKING_URL } from "@/data/site";
 import SeoHead from "@/components/redesign/SeoHead";
 
 const MARKDOWN_COMPONENTS = {
   h1: ({ children }) => (
-    <h2 className="text-2xl font-bold pt-4" style={{ color: "#e2e8f0", fontFamily: "var(--font-display)" }}>
+    <h2
+      className="text-2xl font-bold pt-4"
+      style={{ color: "#e2e8f0", fontFamily: "var(--font-display)" }}
+    >
       {children}
     </h2>
   ),
@@ -31,15 +40,24 @@ const MARKDOWN_COMPONENTS = {
       {children}
     </p>
   ),
-  ul: ({ children }) => <ul className="list-disc space-y-1 pl-5">{children}</ul>,
-  ol: ({ children }) => <ol className="list-decimal space-y-1 pl-5">{children}</ol>,
+  ul: ({ children }) => (
+    <ul className="list-disc space-y-1 pl-5">{children}</ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="list-decimal space-y-1 pl-5">{children}</ol>
+  ),
   li: ({ children }) => (
     <li className="text-sm" style={{ color: DIM }}>
       {children}
     </li>
   ),
   a: ({ children, href }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: G, textDecoration: "underline" }}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ color: G, textDecoration: "underline" }}
+    >
       {children}
     </a>
   ),
@@ -50,7 +68,11 @@ const MARKDOWN_COMPONENTS = {
   code: ({ children }) => (
     <code
       className="text-xs px-1.5 py-0.5 rounded-sm"
-      style={{ background: "#161b22", color: G, fontFamily: "var(--font-mono)" }}
+      style={{
+        background: "#161b22",
+        color: G,
+        fontFamily: "var(--font-mono)",
+      }}
     >
       {children}
     </code>
@@ -58,13 +80,20 @@ const MARKDOWN_COMPONENTS = {
   pre: ({ children }) => (
     <pre
       className="text-xs p-4 rounded-sm overflow-x-auto"
-      style={{ background: "#161b22", border: `1px solid ${BORDER}`, fontFamily: "var(--font-mono)" }}
+      style={{
+        background: "#161b22",
+        border: `1px solid ${BORDER}`,
+        fontFamily: "var(--font-mono)",
+      }}
     >
       {children}
     </pre>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="pl-4 italic" style={{ borderLeft: `2px solid ${G}`, color: DIM }}>
+    <blockquote
+      className="pl-4 italic"
+      style={{ borderLeft: `2px solid ${G}`, color: DIM }}
+    >
       {children}
     </blockquote>
   ),
@@ -88,8 +117,14 @@ function ShareRow({ post, canonical }) {
   };
 
   return (
-    <div className="flex flex-wrap gap-2 items-center" data-testid="blog-share-row">
-      <span className="text-xs mr-1" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+    <div
+      className="flex flex-wrap gap-2 items-center"
+      data-testid="blog-share-row"
+    >
+      <span
+        className="text-xs mr-1"
+        style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+      >
         share
       </span>
       <a
@@ -181,19 +216,27 @@ function CommentsSection({ slug }) {
         comment,
         company_website: honeypot,
       });
-      setMessage(res.message || "Thanks — your comment was submitted for review.");
+      setMessage(
+        res.message || "Thanks — your comment was submitted for review.",
+      );
       setName("");
       setComment("");
       setHoneypot("");
     } catch (err) {
-      setError(err.response?.data?.detail || "Could not submit comment. Try again.");
+      setError(
+        err.response?.data?.detail || "Could not submit comment. Try again.",
+      );
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <section className="pt-12 mt-12" style={{ borderTop: `1px solid ${BORDER}` }} data-testid="blog-comments">
+    <section
+      className="pt-12 mt-12"
+      style={{ borderTop: `1px solid ${BORDER}` }}
+      data-testid="blog-comments"
+    >
       <h2
         className="text-2xl font-bold mb-6"
         style={{ fontFamily: "var(--font-display)", color: "#e2e8f0" }}
@@ -202,7 +245,11 @@ function CommentsSection({ slug }) {
       </h2>
 
       {comments.length === 0 ? (
-        <p className="text-sm mb-8" style={{ color: DIM }} data-testid="blog-comments-empty">
+        <p
+          className="text-sm mb-8"
+          style={{ color: DIM }}
+          data-testid="blog-comments-empty"
+        >
           No comments yet. Be the first.
         </p>
       ) : (
@@ -214,11 +261,19 @@ function CommentsSection({ slug }) {
               style={{ background: "#161b22", border: `1px solid ${BORDER}` }}
               data-testid="blog-comment"
             >
-              <div className="text-xs mb-2" style={{ color: G, fontFamily: "var(--font-mono)" }}>
+              <div
+                className="text-xs mb-2"
+                style={{ color: G, fontFamily: "var(--font-mono)" }}
+              >
                 {c.name}
-                {c.createdAt ? ` · ${new Date(c.createdAt).toLocaleDateString()}` : ""}
+                {c.createdAt
+                  ? ` · ${new Date(c.createdAt).toLocaleDateString()}`
+                  : ""}
               </div>
-              <p className="text-sm leading-relaxed" style={{ color: "#cbd5e1" }}>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: "#cbd5e1" }}
+              >
                 {c.comment}
               </p>
             </li>
@@ -226,8 +281,15 @@ function CommentsSection({ slug }) {
         </ul>
       )}
 
-      <form onSubmit={onSubmit} className="space-y-3 max-w-xl" data-testid="blog-comment-form">
-        <p className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+      <form
+        onSubmit={onSubmit}
+        className="space-y-3 max-w-xl"
+        data-testid="blog-comment-form"
+      >
+        <p
+          className="text-xs"
+          style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+        >
           Comments are moderated before they appear.
         </p>
         <label className="block text-xs" style={{ color: DIM }}>
@@ -239,7 +301,11 @@ function CommentsSection({ slug }) {
             onChange={(e) => setName(e.target.value)}
             data-testid="blog-comment-name"
             className="mt-1 w-full px-3 py-2 text-sm rounded-sm"
-            style={{ background: "#161b22", border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+            style={{
+              background: "#161b22",
+              border: `1px solid ${BORDER}`,
+              color: "#e2e8f0",
+            }}
           />
         </label>
         <label className="block text-xs" style={{ color: DIM }}>
@@ -252,7 +318,11 @@ function CommentsSection({ slug }) {
             onChange={(e) => setComment(e.target.value)}
             data-testid="blog-comment-body"
             className="mt-1 w-full px-3 py-2 text-sm rounded-sm"
-            style={{ background: "#161b22", border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+            style={{
+              background: "#161b22",
+              border: `1px solid ${BORDER}`,
+              color: "#e2e8f0",
+            }}
           />
         </label>
         {/* Honeypot — visually hidden; bots fill it */}
@@ -264,15 +334,29 @@ function CommentsSection({ slug }) {
           onChange={(e) => setHoneypot(e.target.value)}
           data-testid="blog-comment-honeypot"
           aria-hidden="true"
-          style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }}
+          style={{
+            position: "absolute",
+            left: "-9999px",
+            opacity: 0,
+            height: 0,
+            width: 0,
+          }}
         />
         {message && (
-          <p className="text-xs" style={{ color: G }} data-testid="blog-comment-success">
+          <p
+            className="text-xs"
+            style={{ color: G }}
+            data-testid="blog-comment-success"
+          >
             {message}
           </p>
         )}
         {error && (
-          <p className="text-xs" style={{ color: "#f85149" }} data-testid="blog-comment-error">
+          <p
+            className="text-xs"
+            style={{ color: "#f85149" }}
+            data-testid="blog-comment-error"
+          >
             {error}
           </p>
         )}
@@ -281,7 +365,11 @@ function CommentsSection({ slug }) {
           disabled={busy}
           data-testid="blog-comment-submit"
           className="px-4 py-2 text-xs font-semibold rounded-sm"
-          style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
+          style={{
+            background: G,
+            color: "#0d1117",
+            fontFamily: "var(--font-mono)",
+          }}
         >
           {busy ? "…" : "submit comment"}
         </button>
@@ -293,6 +381,7 @@ function CommentsSection({ slug }) {
 export default function BlogPost() {
   const { slug } = useParams();
   const [post, setPost] = useState(undefined); // undefined loading, null missing
+  const [relatedPosts, setRelatedPosts] = useState([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -305,9 +394,34 @@ export default function BlogPost() {
     };
   }, [slug]);
 
+  useEffect(() => {
+    if (!post) return;
+    let cancelled = false;
+    (async () => {
+      const all = await fetchPublishedBlogs();
+      if (cancelled) return;
+      const tags = new Set(post.tags || []);
+      const scored = all
+        .filter((p) => p.slug !== post.slug)
+        .map((p) => ({
+          post: p,
+          overlap: (p.tags || []).filter((t) => tags.has(t)).length,
+        }))
+        .sort((a, b) => b.overlap - a.overlap);
+      setRelatedPosts(scored.slice(0, 2).map((s) => s.post));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [post]);
+
   if (post === undefined) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ paddingTop: 80 }} data-testid="blog-post-loading">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ paddingTop: 80 }}
+        data-testid="blog-post-loading"
+      >
         <p style={{ color: DIM, fontFamily: "var(--font-mono)" }}>loading…</p>
       </div>
     );
@@ -321,13 +435,21 @@ export default function BlogPost() {
         data-testid="blog-post-not-found"
       >
         <SeoHead title="Post not found | Softogram" />
-        <div className="text-5xl mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>
+        <div
+          className="text-5xl mb-4"
+          style={{ color: "rgba(255,255,255,0.25)" }}
+        >
           404
         </div>
         <p className="mb-6" style={{ color: DIM }}>
           Post not found.
         </p>
-        <Link to="/blog" className="text-sm" style={{ color: G }} data-testid="blog-post-back">
+        <Link
+          to="/blog"
+          className="text-sm"
+          style={{ color: G }}
+          data-testid="blog-post-back"
+        >
           ← Back to Blog
         </Link>
       </div>
@@ -346,7 +468,10 @@ export default function BlogPost() {
     publisher: {
       "@type": "Organization",
       name: "Softogram",
-      logo: { "@type": "ImageObject", url: "https://softogram.in/softogram-logo.png" },
+      logo: {
+        "@type": "ImageObject",
+        url: "https://softogram.in/softogram-logo.png",
+      },
     },
     mainEntityOfPage: canonical,
   };
@@ -362,16 +487,29 @@ export default function BlogPost() {
         jsonLd={jsonLd}
       />
 
-      <div className="relative h-64 md:h-96 overflow-hidden" style={{ background: "#010409" }}>
-        <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover opacity-40" />
+      <div
+        className="relative h-64 md:h-96 overflow-hidden"
+        style={{ background: "#010409" }}
+      >
+        <img
+          src={post.coverImage}
+          alt={post.title}
+          className="w-full h-full object-cover opacity-40"
+        />
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(7,7,13,0.3) 0%, #0d1117 100%)" }}
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(7,7,13,0.3) 0%, #0d1117 100%)",
+          }}
         />
       </div>
 
       <div className="max-w-3xl mx-auto px-6 pb-28">
-        <div className="pt-10 pb-8" style={{ borderBottom: `1px solid ${BORDER}` }}>
+        <div
+          className="pt-10 pb-8"
+          style={{ borderBottom: `1px solid ${BORDER}` }}
+        >
           <Link
             to="/blog"
             className="inline-flex items-center gap-2 text-xs mb-6"
@@ -403,15 +541,86 @@ export default function BlogPost() {
           >
             {post.title}
           </h1>
-          <div className="text-xs mb-6" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+          <div
+            className="text-xs mb-6"
+            style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+          >
             {post.author} · {post.date} · {post.readTime || 5} min
           </div>
           <ShareRow post={post} canonical={canonical} />
         </div>
 
         <article className="pt-10 space-y-3" data-testid="blog-post-content">
-          <ReactMarkdown components={MARKDOWN_COMPONENTS}>{post.content || ""}</ReactMarkdown>
+          <ReactMarkdown components={MARKDOWN_COMPONENTS}>
+            {post.content || ""}
+          </ReactMarkdown>
         </article>
+
+        <div
+          className="mt-10 rounded-sm p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+          style={{ background: CARD, border: `1px solid ${G}33` }}
+          data-testid="blog-post-cta"
+        >
+          <div>
+            <div
+              className="text-sm font-semibold mb-1"
+              style={{ color: "#e2e8f0" }}
+            >
+              Need something like this built?
+            </div>
+            <p className="text-xs" style={{ color: DIM }}>
+              Talk to us about your project - no obligation, just a
+              conversation.
+            </p>
+          </div>
+          <a
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => capture("blog_cta_clicked", { slug: post.slug })}
+            className="px-5 py-2.5 text-sm font-semibold text-center rounded-sm whitespace-nowrap transition-all duration-200 hover:opacity-90"
+            style={{
+              background: G,
+              color: "#0d1117",
+              fontFamily: "var(--font-mono)",
+            }}
+            data-testid="blog-post-cta-button"
+          >
+            book a call →
+          </a>
+        </div>
+
+        {relatedPosts.length > 0 && (
+          <div className="mt-10" data-testid="blog-related-posts">
+            <div
+              className="text-xs uppercase tracking-widest mb-4"
+              style={{ color: G, fontFamily: "var(--font-mono)" }}
+            >
+              Related posts
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {relatedPosts.map((p) => (
+                <Link
+                  key={p.slug}
+                  to={`/blog/${p.slug}`}
+                  className="block rounded-sm p-4 transition-all duration-200 hover:opacity-90"
+                  style={{ background: CARD, border: `1px solid ${BORDER}` }}
+                  data-testid="blog-related-post-card"
+                >
+                  <div
+                    className="text-sm font-semibold mb-1"
+                    style={{ color: "#e2e8f0" }}
+                  >
+                    {p.title}
+                  </div>
+                  <p className="text-xs leading-relaxed" style={{ color: DIM }}>
+                    {p.excerpt}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <CommentsSection slug={post.slug} />
       </div>
