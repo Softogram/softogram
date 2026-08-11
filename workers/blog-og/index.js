@@ -1,0 +1,88 @@
+/**
+ * Lambda@Edge (viewer-request): serve crawler-friendly OG HTML for /blog/:slug
+ * and proxy /rss.xml to the FastAPI RSS feed. Port of workers/blog-og/worker.js
+ * (issue #41) for CloudFront, since the site is on CloudFront, not Cloudflare
+ * DNS (issue #74).
+ *
+ * Must be viewer-request, not origin-request: origin-request only sees the
+ * headers CloudFront's origin request policy would forward to the origin,
+ * which excludes User-Agent by default - it arrives as the literal string
+ * "Amazon CloudFront" instead of the real client UA. viewer-request sees the
+ * actual request as the client sent it, before any policy filtering.
+ *
+ * viewer-request has a hard 5s execution ceiling (vs 30s for origin-request),
+ * so the API fetch is bounded well under that - a slow/hanging backend should
+ * never risk the Lambda timing out.
+ *
+ * Lambda@Edge does not support environment variables, so API_ORIGIN is
+ * hardcoded here rather than read from config.
+ */
+const API_ORIGIN = "https://api.softogram.in";
+const FETCH_TIMEOUT_MS = 3500;
+
+const CRAWLER_UA =
+  /facebookexternalhit|Facebot|Twitterbot|WhatsApp|LinkedInBot|Slackbot|Googlebot|Bingbot|Discordbot|TelegramBot|redditbot|Applebot/i;
+
+async function fetchWithTimeout(url, options) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+exports.handler = async (event) => {
+  const request = event.Records[0].cf.request;
+  const uaHeader = request.headers["user-agent"];
+  const ua = (uaHeader && uaHeader[0] && uaHeader[0].value) || "";
+
+  if (request.uri === "/rss.xml") {
+    try {
+      const res = await fetchWithTimeout(`${API_ORIGIN}/api/content/blog/rss.xml`, {
+        headers: { Accept: "application/rss+xml, application/xml, text/xml, */*" },
+      });
+      if (res.ok) {
+        const body = await res.text();
+        return {
+          status: "200",
+          statusDescription: "OK",
+          headers: {
+            "content-type": [{ key: "Content-Type", value: "application/rss+xml; charset=utf-8" }],
+          },
+          body,
+        };
+      }
+    } catch (e) {
+      // Fetch failed or timed out - fall through to normal origin behavior below.
+    }
+    return request;
+  }
+
+  const match = request.uri.match(/^\/blog\/([^/]+)\/?$/);
+  if (match && CRAWLER_UA.test(ua)) {
+    const slug = decodeURIComponent(match[1]);
+    try {
+      const res = await fetchWithTimeout(
+        `${API_ORIGIN}/api/content/blog/${encodeURIComponent(slug)}/share.html`,
+        { headers: { Accept: "text/html" } },
+      );
+      if (res.ok) {
+        const html = await res.text();
+        return {
+          status: "200",
+          statusDescription: "OK",
+          headers: {
+            "content-type": [{ key: "Content-Type", value: "text/html; charset=utf-8" }],
+          },
+          body: html,
+        };
+      }
+    } catch (e) {
+      // Fetch failed or timed out - fall through to normal origin behavior below.
+    }
+  }
+
+  return request;
+};
