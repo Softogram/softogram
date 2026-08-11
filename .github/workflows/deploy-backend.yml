@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - "backend/**"
+      # Seed JSON only read once, to auto-populate an empty DB (see cms.py's
+      # docstring) - once Postgres has real content, these are never read
+      # again, so changing them has zero effect on the running service.
+      - "!backend/content/**"
   workflow_dispatch:
 
 concurrency:
