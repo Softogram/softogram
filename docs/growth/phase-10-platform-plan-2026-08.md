@@ -121,7 +121,7 @@ Ordered so nothing gets built twice: Postgres has to land before the dashboard o
 
 ## Tracking
 
-Every line item below is a GitHub issue (label `platform`) on `nomotomo/softogram`.
+Every line item below is a GitHub issue (label `platform`) on `Softogram/softogram`.
 Work through them in order; later phases depend on earlier ones being done first.
 
 ### Phase 10 - Postgres foundations

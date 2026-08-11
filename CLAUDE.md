@@ -123,9 +123,16 @@ Optional: `ENABLE_HEALTH_CHECK=true` in frontend env enables CRACO webpack healt
 
 ## Issue backlog and audits
 
-- GitHub issues on `nomotomo/softogram` are the canonical backlog; labels: `P0/P1/P2`, `security`, `email`, `growth`, `seo`, `performance`, `testing`, `ops`, `agent-ready`
+- GitHub issues on `Softogram/softogram` are the canonical backlog; labels: `P0/P1/P2`, `security`, `email`, `growth`, `seo`, `performance`, `testing`, `ops`, `agent-ready`
 - Working an issue: follow `.claude/skills/issue-workflow/SKILL.md`
 - Audit and plan docs behind the issues: `docs/audit/security-audit-2026-07.md`, `docs/audit/email-integration-2026-07.md`, `docs/growth/growth-plan-2026-07.md`
+
+## Git workflow
+
+- `development` is the default branch and where all ongoing work lands - branch from it, open PRs into it.
+- `main` is production. It is branch-protected: no direct pushes, required status checks (`playwright`, `pip-audit`, `lighthouse`, CodeQL) must pass, and only a repo admin can merge into it. Pushing to `main` (via merge from `development`) is what ships to production - the CI/CD pipelines (`.github/workflows/deploy-frontend.yml`, `deploy-backend.yml`) trigger on push to `main` only.
+- Releasing is a deliberate act: open a PR from `development` into `main`; an admin merges it once checks are green.
+- Agents should branch from and target `development` for issue work, not `main`, unless explicitly asked to cut a release.
 
 ## graphify (codebase knowledge graph)
 
