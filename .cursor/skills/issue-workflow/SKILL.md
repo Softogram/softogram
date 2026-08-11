@@ -1,6 +1,6 @@
 ---
 name: issue-workflow
-description: Pick up, implement, and close Softogram GitHub issues (nomotomo/softogram). Use when asked to "work on an issue", "pick the next issue", "fix issue #N", or to triage the backlog. Covers issue selection order, branch/PR conventions, repo-specific fix guidance, and the E2E verification gate.
+description: Pick up, implement, and close Softogram GitHub issues (Softogram/softogram). Use when asked to "work on an issue", "pick the next issue", "fix issue #N", or to triage the backlog. Covers issue selection order, branch/PR conventions, repo-specific fix guidance, and the E2E verification gate.
 ---
 
 # Softogram issue workflow
@@ -11,8 +11,8 @@ Read root `CLAUDE.md` first for stack, brand, and code conventions.
 ## 1. Pick an issue
 
 ```bash
-npx -y gh-axi issue list --repo=nomotomo/softogram          # full backlog
-npx -y gh-axi issue view <n> --repo=nomotomo/softogram      # details
+npx -y gh-axi issue list --repo=Softogram/softogram          # full backlog
+npx -y gh-axi issue view <n> --repo=Softogram/softogram      # details
 ```
 
 Selection order:
@@ -31,7 +31,7 @@ Read the linked section, it carries evidence and context the issue summarizes.
 
 ## 3. Implement
 
-- Branch from `main`: `fix/issue-<n>-<slug>` or `feat/issue-<n>-<slug>`.
+- Branch from `development` (the default branch, not `main` - `main` is production and protected): `fix/issue-<n>-<slug>` or `feat/issue-<n>-<slug>`.
 - Respect repo conventions: minimal diffs, no `App.js` refactor, no TypeScript/Next.js, `data-testid` on every new interactive element, dark glassmorphism brand preserved.
 - Backend email path: never block the HTTP response on SendGrid; keep the `SENDGRID_HOST` env override intact (the E2E suite depends on it).
 - Never print, commit, or paste secrets (SendGrid key lives only in `backend/.env`).
@@ -49,5 +49,5 @@ python backend_test.py      # legacy API tests (point at local backend)
 ## 5. Land it
 
 - Commit with a plain message describing the change; no co-author lines.
-- Open a PR that links the issue (`Closes #<n>`), lists acceptance criteria as checkboxes with their status, and calls out any human-only steps (DNS records, dashboard toggles, cert renewal) that remain.
+- Open a PR into `development` (not `main`) that links the issue (`Closes #<n>`), lists acceptance criteria as checkboxes with their status, and calls out any human-only steps (DNS records, dashboard toggles, cert renewal) that remain.
 - If the issue is only partially completable from code, keep it open and comment what remains.
