@@ -1,31 +1,55 @@
-# Blog OG crawler worker (issue #41)
+# Blog OG crawler function (issues #41, #74)
 
 Softogram's marketing site is a CRA SPA. Link-preview bots (WhatsApp, LinkedIn, X) do not run JavaScript, so they see the generic homepage meta tags from `index.html` instead of the post's title/image.
 
-This Worker:
+This started as a Cloudflare Worker, but the site's DNS and CDN are on AWS CloudFront, not Cloudflare - deploying a Cloudflare Worker would have meant moving `softogram.in`'s nameservers to Cloudflare, which touches everything under the domain (SES email records, the `api.softogram.in` subdomain, TXT verification) for no real reason. Ported to Lambda@Edge instead, which runs on the CDN the site already uses.
+
+This Lambda function (`index.js`), triggered on CloudFront's `viewer-request` event:
 
 1. Detects known crawler user agents on `/blog/:slug`
 2. Fetches pre-rendered OG HTML from `GET {API_ORIGIN}/api/content/blog/{slug}/share.html`
-3. Returns that HTML to the crawler
-4. Proxies `/rss.xml` to the FastAPI RSS feed (issue #45)
-5. Passes every other request through to `SITE_ORIGIN` (the SPA)
+3. Returns that HTML directly, short-circuiting the normal request entirely
+4. Proxies `/rss.xml` to the FastAPI RSS feed (issue #45) the same way
+5. Passes every other request through unmodified (returns `request` as-is, so CloudFront continues normally)
 
-## Deploy (human)
+**Must be `viewer-request`, not `origin-request`.** First deploy used `origin-request` and silently failed: `origin-request` Lambda@Edge functions only see the headers CloudFront's origin request policy would forward to the origin, which excludes `User-Agent` by default - it arrives as the literal string `"Amazon CloudFront"` instead of the real client's UA, so the crawler check always failed. Confirmed via CloudWatch logs (`/aws/lambda/us-east-1.softogram-blog-og` in whichever region served the request, e.g. `ap-south-1`). `viewer-request` sees the actual request as the client sent it, before any policy filtering.
+
+`viewer-request` has a hard 5-second execution ceiling (vs 30s for `origin-request`), so `index.js` wraps the API fetch in a 3.5s timeout - a slow/hanging backend falls through to normal pass-through rather than risking the Lambda itself timing out.
+
+`/blog/:slug` and `/rss.xml` don't exist as real S3 objects (client-side routing), so S3 always 404s them and CloudFront's custom-error-to-`index.html` substitution has `ErrorCachingMinTTL: 0` - these paths are never actually cache-hit at the edge either way.
+
+Lambda@Edge doesn't support environment variables, so `API_ORIGIN` is a hardcoded constant in `index.js` rather than config.
+
+## Deploy (human, first time only)
+
+Already deployed as of issue #74. To redeploy after editing `index.js`:
 
 ```bash
 cd workers/blog-og
-npx wrangler login
-npx wrangler deploy
+zip function.zip index.js
+aws lambda update-function-code \
+  --region us-east-1 \
+  --function-name softogram-blog-og \
+  --zip-file fileb://function.zip
+aws lambda publish-version --region us-east-1 --function-name softogram-blog-og
 ```
 
-Then attach a route for `softogram.in/*` (and `www` if used) in the Cloudflare dashboard.
-If the site stays on CloudFront without Cloudflare DNS, port the same UA + fetch logic to Lambda@Edge / CloudFront Functions + origin request, pointed at the same `/share.html` API.
+Then update the CloudFront distribution's `DefaultCacheBehavior.LambdaFunctionAssociations` to point at the new version ARN (Lambda@Edge requires a specific published version, not `$LATEST`) - via `aws cloudfront get-distribution-config` / `update-distribution`, or the console.
+
+Reference (as deployed):
+
+- Function: `softogram-blog-og`, `us-east-1` (Lambda@Edge must be in `us-east-1`)
+- Execution role: `softogram-blog-og-lambda-edge` (trusts both `lambda.amazonaws.com` and `edgelambda.amazonaws.com`)
+- Associated with CloudFront distribution `E3GNM6E0RDAH0J`, `DefaultCacheBehavior`, event type `viewer-request`
 
 ## Verify
 
 ```bash
 curl -sA "WhatsApp/2.0" "https://softogram.in/blog/how-we-built-polluxkart" | grep og:title
 # Expect the post title, not the homepage title.
+
+curl -sA "Mozilla/5.0" "https://softogram.in/blog/how-we-built-polluxkart" | grep '<title>'
+# Expect the normal SPA shell - regular visitors are unaffected.
 ```
 
 Also re-check with Facebook Sharing Debugger / X Card Validator after deploy.

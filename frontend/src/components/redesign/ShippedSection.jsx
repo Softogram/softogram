@@ -2,7 +2,16 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Badge from "./Badge";
 import ClaimBlock from "./ClaimBlock";
-import { G, A, DIM, BORDER, CARD, GutterRow, Section, Reveal } from "./homePrimitives";
+import {
+  G,
+  A,
+  DIM,
+  BORDER,
+  CARD,
+  GutterRow,
+  Section,
+  Reveal,
+} from "./homePrimitives";
 
 export const SHIPPED = [
   {
@@ -10,7 +19,8 @@ export const SHIPPED = [
     lang: "Go",
     version: "v0.1.1",
     status: "confirmed",
-    repoUrl: "https://github.com/Softogram/softogram-mcp-spec-migration-checker",
+    repoUrl:
+      "https://github.com/Softogram/softogram-mcp-spec-migration-checker",
     desc: "CLI tool that scans MCP server implementations against spec changes. Emits CONFIRMED / REPORTED findings with file:line references. Cross-platform binary via GitHub Actions.",
     claimOld: "enterprise-grade AI compliance automation platform",
     claimNew: "Go binary, 4 finding types, exit-code aware — v0.1.1 out now",
@@ -25,7 +35,8 @@ export const SHIPPED = [
     status: "confirmed",
     repoUrl: "https://github.com/Softogram/softogram-search-to-markdown",
     desc: "Free, open-source CLI that turns a web search into clean, source-attributed Markdown for an AI agent to read directly. Tavily-powered.",
-    claimOld: "intelligent research automation with enterprise Tavily integration",
+    claimOld:
+      "intelligent research automation with enterprise Tavily integration",
     claimNew: "single-query Tavily → Markdown, Go. Rate-limit retry deferred.",
     honesty:
       "Rate-limit handling incomplete — results silently dropped above free tier. Fix is scoped, not merged.",
@@ -52,9 +63,15 @@ function ShippedCard({ item, lineNum }) {
       >
         <div
           className="flex items-center gap-3 px-5 py-3"
-          style={{ borderBottom: `1px solid ${BORDER}`, background: "rgba(255,255,255,0.02)" }}
+          style={{
+            borderBottom: `1px solid ${BORDER}`,
+            background: "rgba(255,255,255,0.02)",
+          }}
         >
-          <span className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+          <span
+            className="text-xs"
+            style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+          >
             {item.lang}
           </span>
           <span
@@ -172,7 +189,10 @@ export default function ShippedSection({ lineStart = 40 }) {
             >
               <GutterRow lineNum={take()}>
                 <div>
-                  <div className="text-xs mb-1" style={{ color: G, fontFamily: "var(--font-mono)" }}>
+                  <div
+                    className="text-xs mb-1"
+                    style={{ color: G, fontFamily: "var(--font-mono)" }}
+                  >
                     # what we&apos;ve shipped
                   </div>
                   <h2
@@ -214,14 +234,16 @@ export default function ShippedSection({ lineStart = 40 }) {
                     e.currentTarget.style.color = DIM;
                   }}
                 >
-                  → full product listing with reviews
+                  → full product listing
                 </Link>
               </div>
             </GutterRow>
           </div>
           <div
             className="pointer-events-none absolute bottom-0 left-0 right-0 h-14"
-            style={{ background: "linear-gradient(to top, #080c10, transparent)" }}
+            style={{
+              background: "linear-gradient(to top, #080c10, transparent)",
+            }}
           />
         </div>
       </div>

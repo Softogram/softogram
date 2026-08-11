@@ -5,7 +5,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { PRODUCTS, PRODUCT_REVIEWS } from "@/data/products";
-import { G, A, DIM, BORDER, CARD, Reveal } from "@/components/redesign/homePrimitives";
+import {
+  G,
+  A,
+  DIM,
+  BORDER,
+  CARD,
+  Reveal,
+} from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
 
 const BETA = "#38bdf8";
@@ -20,7 +27,13 @@ function StarRating({ rating }) {
   return (
     <div className="flex gap-0.5" aria-label={`${rating} of 5 stars`}>
       {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i} style={{ color: i < rating ? A : "rgba(255,255,255,0.15)", fontSize: 14 }}>
+        <span
+          key={i}
+          style={{
+            color: i < rating ? A : "rgba(255,255,255,0.15)",
+            fontSize: 14,
+          }}
+        >
           ★
         </span>
       ))}
@@ -29,7 +42,9 @@ function StarRating({ rating }) {
 }
 
 function ProductModal({ product, onClose }) {
-  const reviews = PRODUCT_REVIEWS.filter((r) => r.productId === product.id && r.approved);
+  const reviews = PRODUCT_REVIEWS.filter(
+    (r) => r.productId === product.id && r.approved,
+  );
   const accent = statusColor(product.status);
 
   useEffect(() => {
@@ -61,17 +76,29 @@ function ProductModal({ product, onClose }) {
         onClick={(e) => e.stopPropagation()}
         data-testid="product-modal"
       >
-        <div className="relative h-52 overflow-hidden" style={{ background: "#010409" }}>
-          <img src={product.img} alt={product.name} className="w-full h-full object-cover opacity-50" />
+        <div
+          className="relative h-52 overflow-hidden"
+          style={{ background: "#010409" }}
+        >
+          <img
+            src={product.img}
+            alt={product.name}
+            className="w-full h-full object-cover opacity-50"
+          />
           <div
             className="absolute inset-0"
-            style={{ background: `linear-gradient(to bottom, transparent 30%, ${CARD})` }}
+            style={{
+              background: `linear-gradient(to bottom, transparent 30%, ${CARD})`,
+            }}
           />
           <button
             type="button"
             onClick={onClose}
             className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-sm text-white transition-colors duration-200"
-            style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
+            style={{
+              background: "rgba(0,0,0,0.5)",
+              backdropFilter: "blur(8px)",
+            }}
             data-testid="product-modal-close"
             aria-label="Close"
           >
@@ -102,7 +129,10 @@ function ProductModal({ product, onClose }) {
               >
                 {product.name}
               </h2>
-              <span className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+              <span
+                className="text-xs"
+                style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+              >
                 {product.category}
               </span>
             </div>
@@ -137,9 +167,16 @@ function ProductModal({ product, onClose }) {
             >
               Features
             </h4>
-            <div className="grid grid-cols-1 gap-2" data-testid="product-modal-features">
+            <div
+              className="grid grid-cols-1 gap-2"
+              data-testid="product-modal-features"
+            >
               {product.features.map((f) => (
-                <div key={f} className="flex items-center gap-2 text-sm" style={{ color: "#cbd5e1" }}>
+                <div
+                  key={f}
+                  className="flex items-center gap-2 text-sm"
+                  style={{ color: "#cbd5e1" }}
+                >
                   <span style={{ color: G }}>✓</span> {f}
                 </div>
               ))}
@@ -159,11 +196,17 @@ function ProductModal({ product, onClose }) {
                   <div
                     key={r.id}
                     className="p-4 rounded-sm"
-                    style={{ background: "#010409", border: `1px solid ${BORDER}` }}
+                    style={{
+                      background: "#010409",
+                      border: `1px solid ${BORDER}`,
+                    }}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <div className="text-sm font-medium" style={{ color: "#e2e8f0" }}>
+                        <div
+                          className="text-sm font-medium"
+                          style={{ color: "#e2e8f0" }}
+                        >
                           {r.author}
                         </div>
                         <div className="text-xs" style={{ color: DIM }}>
@@ -172,7 +215,10 @@ function ProductModal({ product, onClose }) {
                       </div>
                       <StarRating rating={r.rating} />
                     </div>
-                    <p className="text-sm italic leading-relaxed" style={{ color: DIM }}>
+                    <p
+                      className="text-sm italic leading-relaxed"
+                      style={{ color: DIM }}
+                    >
                       &ldquo;{r.text}&rdquo;
                     </p>
                   </div>
@@ -186,7 +232,11 @@ function ProductModal({ product, onClose }) {
               to="/#contact"
               onClick={onClose}
               className="flex-1 py-3 text-sm font-semibold text-center rounded-sm transition-all duration-200 hover:opacity-90"
-              style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
+              style={{
+                background: G,
+                color: "#0d1117",
+                fontFamily: "var(--font-mono)",
+              }}
               data-testid="product-modal-cta"
             >
               Get started
@@ -197,7 +247,11 @@ function ProductModal({ product, onClose }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 text-sm font-semibold rounded-sm transition-all duration-200"
-                style={{ color: DIM, border: `1px solid ${BORDER}`, fontFamily: "var(--font-mono)" }}
+                style={{
+                  color: DIM,
+                  border: `1px solid ${BORDER}`,
+                  fontFamily: "var(--font-mono)",
+                }}
                 data-testid="product-modal-visit"
               >
                 Visit →
@@ -223,18 +277,25 @@ export default function Products() {
     ...Array.from(new Set(PRODUCTS.map((p) => p.category.split(" · ")[1]))),
   ];
   const filtered =
-    filter === "All" ? PRODUCTS : PRODUCTS.filter((p) => p.category.includes(filter));
+    filter === "All"
+      ? PRODUCTS
+      : PRODUCTS.filter((p) => p.category.includes(filter));
 
   return (
     <>
       <SeoHead
         title="Products | Softogram"
-        description="Softogram in-house products — FlowDesk, AgentKit, and DataPulse. SaaS and AI tools you can adopt directly."
+        description="Open-source tools Softogram builds and ships publicly - real releases, real repos, free to use."
       />
-      {selected && <ProductModal product={selected} onClose={() => setSelected(null)} />}
+      {selected && (
+        <ProductModal product={selected} onClose={() => setSelected(null)} />
+      )}
 
       <div style={{ paddingTop: 80 }} data-testid="products-page">
-        <section className="relative py-24 overflow-hidden" data-testid="products-hero">
+        <section
+          className="relative py-24 overflow-hidden"
+          data-testid="products-hero"
+        >
           <div
             className="absolute inset-0"
             style={{
@@ -247,7 +308,7 @@ export default function Products() {
               className="text-xs font-medium uppercase tracking-widest mb-5"
               style={{ color: G, fontFamily: "var(--font-mono)" }}
             >
-              In-House Products
+              Open Source
             </div>
             <h1
               className="mb-6 leading-tight"
@@ -258,13 +319,17 @@ export default function Products() {
                 color: "#e2e8f0",
               }}
             >
-              Products we{" "}
+              Tools we{" "}
               <span className="italic" style={{ color: G }}>
-                build and sell.
+                build and ship.
               </span>
             </h1>
-            <p className="text-lg max-w-xl mx-auto" style={{ color: DIM, fontWeight: 300 }}>
-              Beyond client work — SaaS tools and AI-agent platforms you can adopt directly.
+            <p
+              className="text-lg max-w-xl mx-auto"
+              style={{ color: DIM, fontWeight: 300 }}
+            >
+              Free, open-source tools we build for ourselves and release
+              publicly - real repos, real releases.
             </p>
           </div>
         </section>
@@ -322,11 +387,20 @@ export default function Products() {
                     data-testid="product-card"
                     data-product-id={p.id}
                   >
-                    <div className="relative h-44 overflow-hidden" style={{ background: "#010409" }}>
-                      <img src={p.img} alt={p.name} className="w-full h-full object-cover opacity-55" />
+                    <div
+                      className="relative h-44 overflow-hidden"
+                      style={{ background: "#010409" }}
+                    >
+                      <img
+                        src={p.img}
+                        alt={p.name}
+                        className="w-full h-full object-cover opacity-55"
+                      />
                       <div
                         className="absolute inset-0"
-                        style={{ background: `linear-gradient(to bottom, transparent 30%, ${CARD})` }}
+                        style={{
+                          background: `linear-gradient(to bottom, transparent 30%, ${CARD})`,
+                        }}
                       />
                       <div
                         className="absolute top-3 right-3 px-2.5 py-1 rounded-sm text-xs font-semibold"
@@ -343,12 +417,18 @@ export default function Products() {
                     </div>
                     <div className="p-6 flex flex-col flex-1">
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+                        <span
+                          className="text-xs"
+                          style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                        >
                           {p.category}
                         </span>
                         <span
                           className="flex items-center gap-1.5 text-xs"
-                          style={{ color: accent, fontFamily: "var(--font-mono)" }}
+                          style={{
+                            color: accent,
+                            fontFamily: "var(--font-mono)",
+                          }}
                         >
                           <span
                             className="w-1.5 h-1.5 rounded-full animate-pulse"
@@ -359,17 +439,29 @@ export default function Products() {
                       </div>
                       <h3
                         className="text-xl font-semibold mb-2"
-                        style={{ color: "#e2e8f0", fontFamily: "var(--font-display)" }}
+                        style={{
+                          color: "#e2e8f0",
+                          fontFamily: "var(--font-display)",
+                        }}
                       >
                         {p.name}
                       </h3>
-                      <p className="text-sm leading-relaxed flex-1 mb-4" style={{ color: DIM }}>
+                      <p
+                        className="text-sm leading-relaxed flex-1 mb-4"
+                        style={{ color: DIM }}
+                      >
                         {p.desc}
                       </p>
-                      <div className="text-xs font-medium" style={{ color: G, fontFamily: "var(--font-mono)" }}>
+                      <div
+                        className="text-xs font-medium"
+                        style={{ color: G, fontFamily: "var(--font-mono)" }}
+                      >
                         {p.price}
                       </div>
-                      <div className="mt-4 text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
+                      <div
+                        className="mt-4 text-xs"
+                        style={{ color: "rgba(255,255,255,0.25)" }}
+                      >
                         Click to explore →
                       </div>
                     </div>

@@ -9,6 +9,7 @@ import ClaimBlock from "@/components/redesign/ClaimBlock";
 import TerminalSection from "@/components/redesign/TerminalSection";
 import BuildLogSection from "@/components/redesign/BuildLog";
 import ShippedSection from "@/components/redesign/ShippedSection";
+import BlogTeaserSection from "@/components/redesign/BlogTeaser";
 import ServicesSection from "@/components/redesign/ServicesSection";
 import {
   G,
@@ -173,8 +174,11 @@ function ContactSection({ lineStart }) {
       const msg =
         status === 429
           ? "Too many requests. Please try again later."
-          : detail || err.response?.data?.message || "Failed to submit. Please try again.";
-      const text = typeof msg === "string" ? msg : "Failed to submit. Please try again.";
+          : detail ||
+            err.response?.data?.message ||
+            "Failed to submit. Please try again.";
+      const text =
+        typeof msg === "string" ? msg : "Failed to submit. Please try again.";
       setError(text);
       capture("contact_form_failed", { reason: status || "network" });
       toast.error(text);
@@ -208,7 +212,10 @@ function ContactSection({ lineStart }) {
                 something real?
               </span>
             </h2>
-            <p className="text-sm" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+            <p
+              className="text-sm"
+              style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+            >
               responds within 24 hours · {SUPPORT_EMAIL}
             </p>
             <div className="flex flex-wrap gap-3 mt-4">
@@ -218,8 +225,14 @@ function ContactSection({ lineStart }) {
                 rel="noopener noreferrer"
                 data-testid="booking-cta"
                 className="px-4 py-2 text-xs font-semibold rounded-sm"
-                style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
-                onClick={() => capture("booking_clicked", { placement: "contact" })}
+                style={{
+                  background: G,
+                  color: "#0d1117",
+                  fontFamily: "var(--font-mono)",
+                }}
+                onClick={() =>
+                  capture("booking_clicked", { placement: "contact" })
+                }
               >
                 Book a free 30-min call →
               </a>
@@ -251,7 +264,10 @@ function ContactSection({ lineStart }) {
                   <div className="text-3xl mb-3" style={{ color: G }}>
                     ✓
                   </div>
-                  <p className="text-sm" style={{ color: "#e2e8f0", fontFamily: "var(--font-mono)" }}>
+                  <p
+                    className="text-sm"
+                    style={{ color: "#e2e8f0", fontFamily: "var(--font-mono)" }}
+                  >
                     received. back to you within 24 hours.
                   </p>
                   <button
@@ -289,12 +305,17 @@ function ContactSection({ lineStart }) {
                       tabIndex={-1}
                       autoComplete="off"
                       value={form.company_website}
-                      onChange={(e) => setForm({ ...form, company_website: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, company_website: e.target.value })
+                      }
                       data-testid="contact-honeypot"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs mb-1" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+                    <label
+                      className="block text-xs mb-1"
+                      style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                    >
                       name
                     </label>
                     <input
@@ -302,7 +323,9 @@ function ContactSection({ lineStart }) {
                       required
                       placeholder="your name"
                       value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
                       className="w-full px-3 py-2 text-sm rounded-sm"
                       style={inputBase}
                       data-testid="contact-name-input"
@@ -316,7 +339,10 @@ function ContactSection({ lineStart }) {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs mb-1" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+                    <label
+                      className="block text-xs mb-1"
+                      style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                    >
                       email
                     </label>
                     <input
@@ -324,7 +350,9 @@ function ContactSection({ lineStart }) {
                       required
                       placeholder="you@org.com"
                       value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, email: e.target.value })
+                      }
                       className="w-full px-3 py-2 text-sm rounded-sm"
                       style={inputBase}
                       data-testid="contact-email-input"
@@ -338,7 +366,10 @@ function ContactSection({ lineStart }) {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-xs mb-1" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+                    <label
+                      className="block text-xs mb-1"
+                      style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                    >
                       phone
                     </label>
                     <input
@@ -346,7 +377,9 @@ function ContactSection({ lineStart }) {
                       required
                       placeholder="+91-9876501234"
                       value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, phone: e.target.value })
+                      }
                       className="w-full px-3 py-2 text-sm rounded-sm"
                       style={inputBase}
                       data-testid="contact-phone-input"
@@ -360,10 +393,16 @@ function ContactSection({ lineStart }) {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-xs mb-1" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
+                    <label
+                      className="block text-xs mb-1"
+                      style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                    >
                       type
                     </label>
-                    <div className="flex flex-wrap gap-2 mb-3" data-testid="contact-service-select">
+                    <div
+                      className="flex flex-wrap gap-2 mb-3"
+                      data-testid="contact-service-select"
+                    >
                       {[
                         { v: "custom", l: "custom project" },
                         { v: "saas", l: "saas" },
@@ -376,7 +415,8 @@ function ContactSection({ lineStart }) {
                           onClick={() => setForm({ ...form, type: o.v })}
                           className="px-3 py-1 text-xs rounded-sm transition-all duration-150"
                           style={{
-                            background: form.type === o.v ? `${G}14` : "transparent",
+                            background:
+                              form.type === o.v ? `${G}14` : "transparent",
                             border: `1px solid ${form.type === o.v ? `${G}44` : BORDER}`,
                             color: form.type === o.v ? G : DIM,
                             fontFamily: "var(--font-mono)",
@@ -393,7 +433,9 @@ function ContactSection({ lineStart }) {
                       rows={4}
                       placeholder="what are you building?"
                       value={form.message}
-                      onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, message: e.target.value })
+                      }
                       className="w-full px-3 py-2 text-sm rounded-sm resize-none"
                       style={{ ...inputBase, resize: "none" }}
                       data-testid="contact-message-textarea"
@@ -420,7 +462,11 @@ function ContactSection({ lineStart }) {
                       type="submit"
                       disabled={loading}
                       className="px-6 py-2 text-sm font-semibold rounded-sm transition-all duration-150 hover:opacity-90 disabled:opacity-60"
-                      style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
+                      style={{
+                        background: G,
+                        color: "#0d1117",
+                        fontFamily: "var(--font-mono)",
+                      }}
                       data-testid="contact-submit-button"
                     >
                       {loading ? "sending…" : "send →"}
@@ -461,7 +507,8 @@ export default function Home() {
               height: "65vw",
               top: "-25%",
               left: "-15%",
-              background: "radial-gradient(circle, rgba(74,222,128,0.06) 0%, transparent 65%)",
+              background:
+                "radial-gradient(circle, rgba(74,222,128,0.06) 0%, transparent 65%)",
               filter: "blur(80px)",
               animation: "aurora1 22s ease-in-out infinite alternate",
             }}
@@ -473,7 +520,8 @@ export default function Home() {
               height: "45vw",
               top: "10%",
               right: "-10%",
-              background: "radial-gradient(circle, rgba(74,222,128,0.04) 0%, transparent 65%)",
+              background:
+                "radial-gradient(circle, rgba(74,222,128,0.04) 0%, transparent 65%)",
               filter: "blur(100px)",
               animation: "aurora2 30s ease-in-out infinite alternate",
             }}
@@ -530,7 +578,10 @@ export default function Home() {
             <Reveal delay={500}>
               <div
                 className="py-1"
-                style={{ opacity: heroActive ? 1 : 0, transition: "opacity 0.7s ease 600ms" }}
+                style={{
+                  opacity: heroActive ? 1 : 0,
+                  transition: "opacity 0.7s ease 600ms",
+                }}
               >
                 <ClaimBlock
                   old="AI-native enterprise software factory delivering transformative digital experiences"
@@ -544,7 +595,12 @@ export default function Home() {
 
           <GutterRow lineNum={ln++} marker="+">
             <Reveal delay={650}>
-              <div style={{ opacity: heroActive ? 1 : 0, transition: "opacity 0.7s ease 750ms" }}>
+              <div
+                style={{
+                  opacity: heroActive ? 1 : 0,
+                  transition: "opacity 0.7s ease 750ms",
+                }}
+              >
                 <ClaimBlock
                   old="98% client retention · 40+ projects · AI-native"
                   replacement="mcp-migration-checker: 4 findings, 3 confirmed, exit 0"
@@ -559,12 +615,19 @@ export default function Home() {
             <Reveal delay={750}>
               <div
                 className="flex flex-wrap gap-3 mt-6"
-                style={{ opacity: heroActive ? 1 : 0, transition: "opacity 0.7s ease 850ms" }}
+                style={{
+                  opacity: heroActive ? 1 : 0,
+                  transition: "opacity 0.7s ease 850ms",
+                }}
               >
                 <a
                   href="#contact"
                   className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-sm transition-all duration-150 hover:opacity-90"
-                  style={{ background: G, color: "#0d1117", fontFamily: "var(--font-mono)" }}
+                  style={{
+                    background: G,
+                    color: "#0d1117",
+                    fontFamily: "var(--font-mono)",
+                  }}
                   data-testid="hero-cta-quote"
                 >
                   get in touch ↓
@@ -574,7 +637,11 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-sm transition-all duration-150"
-                  style={{ color: DIM, border: `1px solid ${BORDER}`, fontFamily: "var(--font-mono)" }}
+                  style={{
+                    color: DIM,
+                    border: `1px solid ${BORDER}`,
+                    fontFamily: "var(--font-mono)",
+                  }}
                   data-testid="hero-cta-work"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = "#e2e8f0";
@@ -603,6 +670,7 @@ export default function Home() {
       <TerminalSection lineStart={ln} />
       <BuildLogSection lineStart={ln + 5} />
       <ShippedSection lineStart={ln + 20} />
+      <BlogTeaserSection />
       <ServicesSection lineStart={ln + 30} />
       <ContactSection lineStart={ln + 40} />
     </>
