@@ -4,6 +4,7 @@
  */
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { Eye, EyeOff } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -71,6 +72,7 @@ const emptyProject = () => ({
 export default function Admin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [authed, setAuthed] = useState(!!getAdminToken());
   const [tab, setTab] = useState("blog");
   const [blogs, setBlogs] = useState([]);
@@ -258,16 +260,28 @@ export default function Admin() {
             className="w-full px-3 py-2 text-sm rounded-sm mb-3"
             style={{ background: "#0d1117", border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
           />
-          <input
-            type="password"
-            data-testid="admin-password"
-            placeholder="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 text-sm rounded-sm mb-3"
-            style={{ background: "#0d1117", border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
-          />
+          <div className="relative mb-3">
+            <input
+              type={showPassword ? "text" : "password"}
+              data-testid="admin-password"
+              placeholder="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 pr-9 text-sm rounded-sm"
+              style={{ background: "#0d1117", border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+            />
+            <button
+              type="button"
+              data-testid="admin-password-toggle"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-2 top-1/2 -translate-y-1/2"
+              style={{ color: DIM }}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
           {error && (
             <p className="text-xs mb-2" style={{ color: "#f85149" }} data-testid="admin-error">
               {error}
