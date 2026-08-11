@@ -1,0 +1,56 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: yarn
+          cache-dependency-path: frontend/yarn.lock
+
+      - name: Install & build
+        working-directory: frontend
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+        env:
+          CI: true
+          # CRA's .env.local (loaded in every build) points REACT_APP_BACKEND_URL at
+          # localhost for local dev. Exported env vars here take precedence over any
+          # .env* file, so this is what actually ships to production - don't rely on
+          # a repo .env file for these.
+          REACT_APP_BACKEND_URL: https://api.softogram.in
+          REACT_APP_POSTHOG_KEY: ${{ secrets.REACT_APP_POSTHOG_KEY }}
+          REACT_APP_POSTHOG_HOST: ${{ secrets.REACT_APP_POSTHOG_HOST }}
+
+      - name: Configure AWS credentials (OIDC, no long-lived keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-south-2
+
+      - name: Sync build to S3
+        run: aws s3 sync frontend/build/ s3://frontend-softogram-ap-south-2/ --delete
+
+      - name: Invalidate CloudFront cache
+        run: aws cloudfront create-invalidation --distribution-id E3GNM6E0RDAH0J --paths "/*"
