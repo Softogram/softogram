@@ -1,0 +1,41 @@
+name: Uptime & TLS
+
+# Issue #49. api.softogram.in's certificate expired once and went unnoticed for
+# weeks because nothing was watching.
+#
+# This is not a replacement for a hosted uptime service. It samples on a
+# schedule, so a short outage between runs is invisible to it, and GitHub's cron
+# is best-effort - runs can be delayed or skipped when the platform is busy. What
+# it does give, for free and with no third-party account, is a red build and an
+# email when the site is down at check time or a certificate is close to expiry.
+# The cert case is the one that actually bit, and a 21-day warning window catches
+# it comfortably.
+#
+# Notifications: GitHub emails the repo owner on a failed scheduled run by
+# default (Settings -> Notifications -> "Actions"). No extra wiring needed.
+
+on:
+  schedule:
+    # Every 30 minutes. Finer than this is not worth it: GitHub does not honour
+    # short crons reliably, so a tighter schedule buys precision the platform
+    # will not actually deliver.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: uptime
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check uptime and TLS expiry
+        run: ./scripts/check-uptime-tls.sh
+        env:
+          # Renewing a certificate needs someone available to do it, so warn
+          # while there is still time to act rather than at the last moment.
+          MIN_CERT_DAYS: "21"
