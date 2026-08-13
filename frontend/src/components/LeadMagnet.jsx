@@ -4,6 +4,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { ClipboardList } from "lucide-react";
 import { capture } from "@/lib/analytics";
 
 const G = "#4ade80";
@@ -105,10 +106,18 @@ export default function LeadMagnet() {
 
   return (
     <>
+      {/*
+        Icon-only below `sm` (issue #81). At 390px the full-text pill was 177px wide -
+        nearly half the viewport - and sat on top of the footer contact block and the
+        booking CTA. Collapsed to a 44px touch target it stacks cleanly above the 60px
+        WhatsApp bubble (which sits at bottom:24px, so it occupies 24-84px); `bottom-24`
+        starts this at 96px and leaves a 12px gap.
+      */}
       <button
         type="button"
         data-testid="lead-magnet-trigger"
-        className="fixed bottom-28 right-6 z-[1050] px-3 py-2 text-xs rounded-sm shadow-lg"
+        aria-label="Free launch checklist"
+        className="fixed bottom-24 right-6 z-[1050] flex items-center justify-center gap-2 rounded-sm shadow-lg h-11 w-11 sm:h-auto sm:w-auto sm:px-3 sm:py-2"
         style={{
           background: CARD,
           border: `1px solid ${BORDER}`,
@@ -117,7 +126,8 @@ export default function LeadMagnet() {
         }}
         onClick={() => openModal("fab")}
       >
-        free launch checklist
+        <ClipboardList size={16} aria-hidden="true" />
+        <span className="hidden sm:inline text-xs">free launch checklist</span>
       </button>
 
       {open && (

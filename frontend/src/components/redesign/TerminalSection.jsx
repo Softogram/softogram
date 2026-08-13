@@ -8,7 +8,7 @@ function DummyToolCard({ title, subtitle, accent, lines, badge }) {
   return (
     <div
       className="shrink-0"
-      style={{ width: 520, maxWidth: "85vw" }}
+      style={{ width: 520, maxWidth: "100%" }}
       data-testid="dummy-tool-card"
     >
       <div
@@ -146,14 +146,20 @@ export default function TerminalSection({ lineStart = 10 }) {
                     color: "#e2e8f0",
                   }}
                 >
-                  Run the actual tool.{" "}
+                  {/*
+                    Issue #83: the old headline was "Run the actual tool." above one live
+                    demo and three labelled stubs, so it promised more than the section
+                    delivers. The Confirmed badge stays attached to the one tool that
+                    actually is confirmed.
+                  */}
+                  Run the real one. Preview the rest.{" "}
                   <Badge
                     tier="confirmed"
                     href="https://github.com/Softogram/softogram-mcp-spec-migration-checker"
                   />
                 </h2>
                 <span className="text-xs" style={{ color: DIM, fontFamily: "var(--font-mono)" }}>
-                  scroll tools ← →
+                  1 live · 3 previews · scroll ← →
                 </span>
               </div>
             </div>
@@ -168,7 +174,14 @@ export default function TerminalSection({ lineStart = 10 }) {
               style={{ overflowX: "auto", overflowY: "hidden" }}
               data-testid="terminal-tools-scroll"
             >
-              <div className="shrink-0" style={{ width: 520, maxWidth: "85vw" }}>
+              {/*
+                maxWidth is 100% of the scroll container, not 85vw (issue #81). The strip
+                sits inside the 48px line-number gutter plus section padding, so at 390px
+                the container is ~294px while 85vw resolves to 331px - every card
+                overflowed the right edge and the first card's "run" button was cut off.
+                Percent tracks the real available width at any viewport; vw does not.
+              */}
+              <div className="shrink-0" style={{ width: 520, maxWidth: "100%" }}>
                 <Terminal />
               </div>
               {DUMMY_TOOLS.map((tool) => (

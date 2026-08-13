@@ -12,7 +12,9 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { G, DIM, BORDER, CARD, Section } from "./homePrimitives";
 
 export default function BlogTeaserSection() {
-  const { ref, visible } = useScrollReveal();
+  // revealWhenReducedMotion:false - `visible` gates a fetch here, not an animation.
+  // Reduced motion must not pull this request onto the hero's critical path.
+  const { ref, visible } = useScrollReveal({ revealWhenReducedMotion: false });
   const [post, setPost] = useState(undefined); // undefined = not yet fetched, null = none available
 
   useEffect(() => {
