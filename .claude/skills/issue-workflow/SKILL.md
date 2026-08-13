@@ -19,7 +19,8 @@ Selection order:
 
 1. `P0` before `P1` before `P2`.
 2. Prefer `agent-ready` labels: those are self-contained with acceptance criteria and need no infra/dashboard access.
-3. Issues labeled `ops` (TLS renewal, DNS, SendGrid dashboard, monitoring signup) need human access to servers/accounts; do the code-side parts and list the human steps in the PR description.
+3. Issues labeled `ops` (TLS renewal, DNS, AWS console, monitoring signup) need human access to servers/accounts; do the code-side parts and list the human steps in the PR description.
+4. Issues labeled `deferred` are intentionally parked and gated on something else; do not pick them up without being asked.
 
 If the user names an issue, skip selection and go to step 2.
 
@@ -27,19 +28,21 @@ If the user names an issue, skip selection and go to step 2.
 
 - Every issue links its audit/plan doc: `docs/audit/security-audit-2026-07.md`, `docs/audit/email-integration-2026-07.md`, `docs/growth/growth-plan-2026-07.md`.
 Read the linked section, it carries evidence and context the issue summarizes.
-- Reproduce the problem first (project rule): for backend issues use the E2E harness in `e2e/` (SendGrid mock included); for UI issues run the app and see it.
+- Reproduce the problem first (project rule): for backend issues use the E2E harness in `e2e/` (AWS SES mock included); for UI issues run the app and see the bug at the width the issue names before changing anything.
 
 ## 3. Implement
 
 - Branch from `development` (the default branch, not `main` - `main` is production and protected): `fix/issue-<n>-<slug>` or `feat/issue-<n>-<slug>`.
-- Respect repo conventions: minimal diffs, no `App.js` refactor, no TypeScript/Next.js, `data-testid` on every new interactive element, dark glassmorphism brand preserved.
-- Backend email path: never block the HTTP response on SendGrid; keep the `SENDGRID_HOST` env override intact (the E2E suite depends on it).
-- Never print, commit, or paste secrets (SendGrid key lives only in `backend/.env`).
+- Respect repo conventions: minimal diffs, no TypeScript/Next.js, `data-testid` on every new interactive element, GitHub-dark green brand preserved (never reintroduce cyan).
+- New pages go in `frontend/src/pages/`, shared sections in `frontend/src/components/redesign/`. `App.js` is a router only; do not grow it.
+- Backend email path: never block the HTTP response on SES; keep the `AWS_SES_ENDPOINT_URL` override intact (the E2E suite points it at `e2e/fixtures/ses-mock.js`).
+- Never print, commit, or paste secrets. SES uses the AWS credential chain, not a key in `.env`.
+- Never invent testimonials, client names, metrics, or shipped-project claims. See the content-honesty rule in `CLAUDE.md`.
 
 ## 4. Verify (mandatory gate)
 
 ```bash
-cd e2e && npm test          # full stack: mock SendGrid + backend + frontend + Playwright
+cd e2e && npm test          # full stack: SES mock + backend + frontend + Playwright
 python backend_test.py      # legacy API tests (point at local backend)
 ```
 
