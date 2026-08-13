@@ -2,20 +2,21 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import SeoHead from "@/components/redesign/SeoHead";
+import { metaFor } from "@/lib/routeMeta";
 
 const SUPPORT = "support@softogram.in";
 
-function PolicyLayout({ title, lastUpdated, children }) {
+function PolicyLayout({ title, route, lastUpdated, children }) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
     <div className="min-h-screen" style={{ background: "#0d1117" }} data-testid="policy-page">
-      <SeoHead
-        title={`${title} | Softogram`}
-        description={`${title} for Softogram — custom software and website solutions.`}
-      />
+      {/* Metadata comes from routeMeta.json so the prerendered HTML matches
+          exactly (issue #80). These pages previously set no canonical at all
+          and inherited the homepage's. */}
+      <SeoHead {...metaFor(route)} />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -57,7 +58,7 @@ function PolicySection({ title, children }) {
 
 export function PrivacyPolicy() {
   return (
-    <PolicyLayout title="Privacy Policy" lastUpdated="March 2026">
+    <PolicyLayout title="Privacy Policy" route="/privacy-policy" lastUpdated="March 2026">
       <PolicySection title="Information We Collect">
         <p>We collect information you provide directly to us, including:</p>
         <ul className="list-disc pl-6 space-y-2">
@@ -118,7 +119,7 @@ export function PrivacyPolicy() {
 
 export function TermsAndConditions() {
   return (
-    <PolicyLayout title="Terms & Conditions" lastUpdated="March 2026">
+    <PolicyLayout title="Terms & Conditions" route="/terms-and-conditions" lastUpdated="March 2026">
       <PolicySection title="Acceptance of Terms">
         <p>
           By engaging Softogram&apos;s services, accessing our website, or entering into any agreement
@@ -153,7 +154,7 @@ export function TermsAndConditions() {
 
 export function RefundPolicy() {
   return (
-    <PolicyLayout title="Refund & Cancellation Policy" lastUpdated="March 2026">
+    <PolicyLayout title="Refund & Cancellation Policy" route="/refund-policy" lastUpdated="March 2026">
       <PolicySection title="Advance Payment">
         <p>
           The initial deposit (40–50% of project cost) is non-refundable once project work has commenced.
@@ -182,7 +183,7 @@ export function RefundPolicy() {
 
 export function CookiePolicy() {
   return (
-    <PolicyLayout title="Cookie Policy" lastUpdated="August 2026">
+    <PolicyLayout title="Cookie Policy" route="/cookie-policy" lastUpdated="August 2026">
       <PolicySection title="What Are Cookies?">
         <p>
           Cookies are small text files stored on your device when you visit a website. They help sites

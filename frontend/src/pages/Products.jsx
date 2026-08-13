@@ -14,6 +14,7 @@ import {
   Reveal,
 } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import { metaFor } from "@/lib/routeMeta";
 import { breadcrumbLd } from "@/lib/seo";
 
 const BETA = "#38bdf8";
@@ -291,9 +292,7 @@ export default function Products() {
         BreadcrumbList carries no claims, so it is safe.
       */}
       <SeoHead
-        title="Products | Softogram"
-        description="Open-source tools Softogram builds and ships publicly - real releases, real repos, free to use."
-        canonical="https://softogram.in/products"
+        {...metaFor("/products")}
         jsonLd={breadcrumbLd([{ name: "Products", path: "/products" }])}
       />
       {selected && (
