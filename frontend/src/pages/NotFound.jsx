@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import SeoHead from "@/components/redesign/SeoHead";
 
 const G = "#4ade80";
 const DIM = "#8b949e";
@@ -11,6 +12,17 @@ export default function NotFound() {
       style={{ paddingTop: 80, background: "#0d1117", color: "#e2e8f0" }}
       data-testid="not-found-page"
     >
+      {/*
+        Issue #79: this page previously rendered no SeoHead at all, so it kept
+        whatever title and canonical the last route had set. The SPA host returns
+        HTTP 200 for unknown paths, so without an explicit noindex every mistyped
+        or stale URL is a crawlable, indexable soft-404.
+      */}
+      <SeoHead
+        title="Page not found | Softogram"
+        description="The route you requested does not exist."
+        robots="noindex, follow"
+      />
       <div
         className="text-6xl font-bold mb-4"
         style={{ fontFamily: "var(--font-display)", color: "#333350" }}

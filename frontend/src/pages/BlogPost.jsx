@@ -15,6 +15,7 @@ import { capture } from "@/lib/analytics";
 import { G, DIM, BORDER, CARD } from "@/components/redesign/homePrimitives";
 import { BOOKING_URL } from "@/data/site";
 import SeoHead from "@/components/redesign/SeoHead";
+import { breadcrumbLd } from "@/lib/seo";
 
 const MARKDOWN_COMPONENTS = {
   h1: ({ children }) => (
@@ -457,7 +458,7 @@ export default function BlogPost() {
   }
 
   const canonical = `https://softogram.in/blog/${post.slug}`;
-  const jsonLd = {
+  const articleLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
@@ -475,6 +476,16 @@ export default function BlogPost() {
     },
     mainEntityOfPage: canonical,
   };
+
+  // A top-level array is valid JSON-LD, so the post keeps its BlogPosting markup
+  // and gains a breadcrumb trail in the same <script> (issue #79).
+  const jsonLd = [
+    breadcrumbLd([
+      { name: "Blog", path: "/blog" },
+      { name: post.title, path: `/blog/${post.slug}` },
+    ]),
+    articleLd,
+  ];
 
   return (
     <div style={{ paddingTop: 80 }} data-testid="blog-post-page">
