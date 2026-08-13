@@ -9,8 +9,22 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
+from dotenv import load_dotenv
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+BACKEND_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(BACKEND_DIR))
+
+# Load backend/.env exactly as server.py does.
+#
+# Without this, `alembic upgrade head` run on its own - which is what the deploy
+# workflow does before restarting the service - saw no DATABASE_URL and fell back
+# to the placeholder credentials in alembic.ini. The running app never hit this
+# because server.py calls load_dotenv() itself, so the API worked while every
+# backend deploy failed at the migration step.
+#
+# load_dotenv does not override variables already present in the environment, so
+# CI and any explicit `DATABASE_URL=... alembic ...` still take precedence.
+load_dotenv(BACKEND_DIR / ".env")
 
 from database import Base  # noqa: E402
 import models  # noqa: E402,F401  (registers all tables on Base.metadata)
