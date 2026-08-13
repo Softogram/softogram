@@ -50,19 +50,39 @@ module.exports = {
         {
           matchingUrlPattern: "http://127.0.0.1:4173/(products|client-work|blog)$",
           assertions: {
-            // Measured locally on this commit: products 0.87, client-work 0.91,
-            // blog 0.86. 0.85 clears all three with margin. The gap to the
-            // homepage is almost entirely colour contrast on intentionally dim
-            // brand text, which is a design decision rather than a bug - see the
-            // note in the accessibility issue before raising this.
+            // Measured in CI: products 0.87, client-work 0.91, blog 0.86. Unlike
+            // performance, accessibility scoring is deterministic rather than
+            // sensitive to runner load, so 0.85 is a safe floor even though blog
+            // clears it by only a point.
+            //
+            // The gap to the homepage is almost entirely colour contrast on
+            // intentionally dim brand text (rgba(255,255,255,0.15-0.35)) plus tap
+            // target sizes on the footer contact links. Both are design decisions
+            // rather than bugs, so they are left alone - raise this floor only
+            // alongside a deliberate decision to change those colours.
             "categories:accessibility": ["error", { minScore: 0.85 }],
 
-            // Warn, not error, on purpose. These routes have never been measured
-            // in CI, and the only local numbers available were taken without a
-            // backend, so cover images and CMS content never rendered - not
-            // representative enough to gate on. This collects honest numbers from
-            // a CI run with the full stack up; flip to "error" with real
-            // thresholds once one green run has reported them. Tracked in #94.
+            // Warn, not error - and deliberately kept that way for now.
+            //
+            // First CI run with the full stack up (PR #101) measured:
+            //
+            //   route          perf   LCP
+            //   /              0.95   2239ms   <- gated as error above
+            //   /products      0.89   3757ms
+            //   /client-work   0.96   2694ms
+            //   /blog          0.64   4527ms
+            //
+            // Three of the four routes miss the 2500ms LCP target the homepage
+            // meets, and /blog misses the performance budget outright. These are
+            // real findings, not measurement noise - the pages had simply never
+            // been measured before.
+            //
+            // Raising these to "error" at the current numbers would bless a
+            // broken page as the standard; setting them at 2500ms/0.85 today
+            // would just make CI permanently red. So they stay as warnings that
+            // surface the numbers on every run, and the underlying slowness is
+            // tracked separately in issue #103. Flip to "error" at the homepage's
+            // budget once that work lands.
             "categories:performance": ["warn", { minScore: 0.85 }],
             "largest-contentful-paint": ["warn", { maxNumericValue: 2500 }],
           },
