@@ -645,6 +645,145 @@ async def public_blog_rss():
     return Response(content=body, media_type="application/rss+xml; charset=utf-8")
 
 
+#: GitHub repo stats proxy (issue #99).
+#:
+#: The homepage used to call api.github.com straight from the visitor's browser.
+#: GitHub rate-limits unauthenticated requests to 60/hour *per client IP*, so
+#: visitors behind shared mobile NAT - common on Indian carriers, a large part of
+#: the audience - got a 403 and silently lost the "12 stars, pushed Aug 8" proof
+#: line. Fetching server-side means one cached request per hour from one IP
+#: instead of one per visitor.
+GITHUB_API = "https://api.github.com"
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+REPO_STATS_TTL_SECONDS = 3600
+
+#: Allowlist rather than an arbitrary `repo` parameter. Proxying any repo the
+#: caller names would turn this into an open request forwarder against GitHub,
+#: attributable to our IP and our token.
+ALLOWED_REPOS = {
+    "Softogram/softogram-mcp-spec-migration-checker",
+    "Softogram/softogram-search-to-markdown",
+    "Softogram/softogram",
+}
+
+#: repo -> (fetched_at_monotonic, payload or None)
+_repo_stats_cache: dict = {}
+
+
+async def _fetch_repo_stats(repo: str) -> Optional[dict]:
+    headers = {"Accept": "application/vnd.github+json"}
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+    try:
+        async with httpx.AsyncClient(timeout=8) as client:
+            res = await client.get(f"{GITHUB_API}/repos/{repo}", headers=headers)
+        if res.status_code != 200:
+            logging.warning("GitHub repo stats for %s returned %s", repo, res.status_code)
+            return None
+        data = res.json()
+        return {
+            "repo": repo,
+            "stars": data.get("stargazers_count"),
+            "issues": data.get("open_issues_count"),
+            "pushedAt": data.get("pushed_at"),
+        }
+    except Exception as exc:  # network, timeout, malformed JSON
+        logging.warning("GitHub repo stats for %s failed: %s", repo, exc)
+        return None
+
+
+@api_router.get("/content/repo-stats")
+async def public_repo_stats(repo: str):
+    """
+    Cached GitHub stats for one of our own repos (issue #99).
+
+    Always 200 with `{"stats": null}` when GitHub is unavailable or rate-limited,
+    rather than an error status. The caller renders a small proof line; a failure
+    there should degrade to hiding it, not surface an error to a visitor.
+    A stale-but-successful cache entry is preferred over a fresh failure.
+    """
+    if repo not in ALLOWED_REPOS:
+        raise HTTPException(status_code=404, detail="Unknown repository")
+
+    now = time.monotonic()
+    cached = _repo_stats_cache.get(repo)
+    if cached and now - cached[0] < REPO_STATS_TTL_SECONDS:
+        return {"stats": cached[1], "cached": True}
+
+    stats = await _fetch_repo_stats(repo)
+    if stats is None and cached is not None:
+        # Serve the previous value rather than blanking the line on a transient
+        # failure; refresh again on the next request past the TTL.
+        return {"stats": cached[1], "cached": True, "stale": True}
+
+    _repo_stats_cache[repo] = (now, stats)
+    return {"stats": stats, "cached": False}
+
+
+#: Routes that exist in the SPA router and are not derived from CMS content.
+#: changefreq/priority are hints, not directives - Google largely ignores them,
+#: but they cost nothing and other crawlers still read them.
+STATIC_SITEMAP_ROUTES = [
+    ("/", "weekly", "1.0"),
+    ("/products", "weekly", "0.8"),
+    ("/client-work", "weekly", "0.8"),
+    ("/blog", "weekly", "0.8"),
+    ("/privacy-policy", "yearly", "0.3"),
+    ("/terms-and-conditions", "yearly", "0.3"),
+    ("/refund-policy", "yearly", "0.3"),
+    ("/cookie-policy", "yearly", "0.3"),
+]
+
+
+@api_router.get("/content/sitemap.xml")
+async def public_sitemap():
+    """
+    sitemap.xml generated from the CMS (issue #78).
+
+    frontend/public/sitemap.xml was hand-maintained, so any post published
+    through /admin stayed invisible to crawlers until someone remembered to
+    edit that file and redeploy the frontend. Generating it here means
+    publishing is the only step.
+
+    Served under /api/content/ like the RSS feed, and surfaced at the apex
+    /sitemap.xml by the Lambda@Edge function - the same proxy path /rss.xml
+    already uses. Crawlers will not accept a sitemap hosted on a different
+    host than the URLs it lists, so the edge proxy is required, not cosmetic.
+    """
+    posts = await content_cms.published_blogs()
+
+    entries = [
+        (f"{SITE_URL}{path}", None, changefreq, priority)
+        for path, changefreq, priority in STATIC_SITEMAP_ROUTES
+    ]
+    for post in posts:
+        lastmod = None
+        raw = post.get("date") or ""
+        if raw:
+            try:
+                lastmod = _parse_post_date(raw).date().isoformat()
+            except Exception:
+                lastmod = None
+        entries.append(
+            (f"{SITE_URL}/blog/{post['slug']}", lastmod, "monthly", "0.7")
+        )
+
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, lastmod, changefreq, priority in entries:
+        parts = [f"<loc>{xml_escape(loc)}</loc>"]
+        if lastmod:
+            parts.append(f"<lastmod>{lastmod}</lastmod>")
+        parts.append(f"<changefreq>{changefreq}</changefreq>")
+        parts.append(f"<priority>{priority}</priority>")
+        lines.append("  <url>" + "".join(parts) + "</url>")
+    lines.append("</urlset>")
+
+    return Response(
+        content="\n".join(lines) + "\n",
+        media_type="application/xml; charset=utf-8",
+    )
+
+
 @api_router.get("/content/blog/{slug}/share.html", response_class=HTMLResponse)
 async def public_blog_share_html(slug: str):
     """Crawler-friendly OG HTML for a post (issue #41). Does not increment view_count."""
