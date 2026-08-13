@@ -52,7 +52,7 @@ test.describe("structured data (issue #79)", () => {
 
   test("blog post carries both BreadcrumbList and BlogPosting", async ({ page }) => {
     await page.goto("/blog");
-    const firstPost = page.getByTestId("blog-featured").or(page.getByTestId("blog-card").first());
+    const firstPost = page.getByTestId("blog-featured").or(page.getByTestId("blog-card")).first();
     await firstPost.click();
     await expect(page.getByTestId("blog-post-page")).toBeVisible();
 
@@ -82,7 +82,7 @@ test.describe("structured data (issue #79)", () => {
 test.describe("content images (issue #79)", () => {
   test("blog cover images have meaningful alt text", async ({ page }) => {
     await page.goto("/blog");
-    await expect(page.getByTestId("blog-featured").or(page.getByTestId("blog-card").first())).toBeVisible();
+    await expect(page.getByTestId("blog-featured").or(page.getByTestId("blog-card")).first()).toBeVisible();
 
     const empty = await page.evaluate(() =>
       [...document.querySelectorAll("img")]
