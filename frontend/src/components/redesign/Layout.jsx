@@ -379,7 +379,14 @@ export default function Layout() {
       <WhatsAppButton />
 
       {/* ── Footer ── */}
-      <footer data-testid="footer" className="py-12" style={{ borderTop: `1px solid ${BORDER}`, background: '#0d1117' }}>
+      {/*
+        Extra bottom padding below `sm` (issue #81): the WhatsApp bubble and the launch
+        checklist button are both `position: fixed` in the bottom-right, occupying up to
+        ~140px from the bottom edge. Without reserved space they land on top of the
+        footer's email/phone block at 390px. Desktop has room already, so this is
+        mobile-only.
+      */}
+      <footer data-testid="footer" className="pt-12 pb-40 sm:pb-12" style={{ borderTop: `1px solid ${BORDER}`, background: '#0d1117' }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-0 mb-8">
             <div
