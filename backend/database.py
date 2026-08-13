@@ -7,8 +7,11 @@ import os
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
+# Port 5433 matches the host mapping in docker-compose.yml, which avoids the
+# common conflict with another project's Postgres already on 5432. CI sets
+# DATABASE_URL explicitly and is unaffected by this default.
 DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql+asyncpg://softogram:softogram@localhost:5432/softogram"
+    "DATABASE_URL", "postgresql+asyncpg://softogram:softogram@localhost:5433/softogram"
 )
 
 engine: AsyncEngine = create_async_engine(DATABASE_URL, pool_pre_ping=True)

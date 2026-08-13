@@ -9,7 +9,14 @@ services:
       POSTGRES_PASSWORD: softogram
       POSTGRES_DB: softogram
     ports:
-      - "5432:5432"
+      # Host port 5433, not 5432 (issue: local port conflict).
+      # 5432 is commonly already taken by another project's Postgres, and the
+      # symptom is confusing: the container starts fine, but every connection
+      # hits the *other* server and fails with "password authentication failed
+      # for user softogram" - a role that does not exist over there. Only the
+      # host side moves; inside the container Postgres still listens on 5432.
+      # Override with POSTGRES_HOST_PORT if 5433 is taken too.
+      - "${POSTGRES_HOST_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres-init:/docker-entrypoint-initdb.d:ro

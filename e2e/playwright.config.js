@@ -76,7 +76,7 @@ module.exports = defineConfig({
         RECIPIENT_EMAIL: "e2e-inbox@softogram.test",
         CORS_ORIGINS: FRONTEND_URL,
         DATABASE_URL:
-          process.env.DATABASE_URL || "postgresql+asyncpg://softogram:softogram@localhost:5432/softogram_e2e",
+          process.env.DATABASE_URL || "postgresql+asyncpg://softogram:softogram@localhost:5433/softogram_e2e",
         ALLOW_E2E_CLIENT_ID: "1",
         CONTACT_RATE_LIMIT_PER_MINUTE: "30",
         CONTACT_RATE_LIMIT_PER_HOUR: "200",
