@@ -22,6 +22,7 @@ import {
   Reveal,
 } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import { metaFor } from "@/lib/routeMeta";
 import { capture } from "@/lib/analytics";
 import { BOOKING_URL, SUPPORT_EMAIL } from "@/data/site";
 
@@ -501,10 +502,7 @@ export default function Home() {
 
   return (
     <>
-      <SeoHead
-        title="Softogram | Software that actually ships"
-        description="Softogram builds real tools and client software — Go binaries, changelogs, and production systems. No roadmap theater."
-      />
+      <SeoHead {...metaFor("/")} />
       <Section id="hero" bg="#0d1117" testId="hero-section">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div

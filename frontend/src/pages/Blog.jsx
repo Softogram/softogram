@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { fetchPublishedBlogs, blogRssUrl } from "@/lib/cmsApi";
 import { G, DIM, BORDER, CARD, Reveal } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import { metaFor } from "@/lib/routeMeta";
 import { breadcrumbLd } from "@/lib/seo";
 import { coverImageProps } from "@/lib/images";
 
@@ -39,9 +40,7 @@ export default function Blog() {
   return (
     <div style={{ paddingTop: 80 }} data-testid="blog-page">
       <SeoHead
-        title="Blog | Softogram"
-        description="Engineering insights, buying guides, and launch checklists from Softogram."
-        canonical="https://softogram.in/blog"
+        {...metaFor("/blog")}
         jsonLd={breadcrumbLd([{ name: "Blog", path: "/blog" }])}
         rssUrl={blogRssUrl()}
       />

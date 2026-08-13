@@ -1,0 +1,37 @@
+{
+  "_comment": "Single source of truth for per-route SEO metadata (issue #80). Consumed at runtime by each page's SeoHead and at build time by scripts/prerender.js, so the raw HTML a non-JS crawler receives cannot drift from what React renders. JSON rather than a module so plain Node can read it without a build step. Blog posts are deliberately absent: they are CMS content and are handled by the Lambda@Edge share.html path.",
+  "routes": {
+    "/": {
+      "title": "Softogram | Software that actually ships",
+      "description": "Softogram builds real tools and client software — Go binaries, changelogs, and production systems. No roadmap theater."
+    },
+    "/products": {
+      "title": "Products | Softogram",
+      "description": "Open-source tools Softogram builds and ships publicly - real releases, real repos, free to use."
+    },
+    "/client-work": {
+      "title": "Client Work | Softogram",
+      "description": "Real client work, open-source tools, and in-house products from Softogram — every project links to a live site or a GitHub release."
+    },
+    "/blog": {
+      "title": "Blog | Softogram",
+      "description": "Engineering insights, buying guides, and launch checklists from Softogram."
+    },
+    "/privacy-policy": {
+      "title": "Privacy Policy | Softogram",
+      "description": "Privacy Policy for Softogram — custom software and website solutions."
+    },
+    "/terms-and-conditions": {
+      "title": "Terms & Conditions | Softogram",
+      "description": "Terms & Conditions for Softogram — custom software and website solutions."
+    },
+    "/refund-policy": {
+      "title": "Refund & Cancellation Policy | Softogram",
+      "description": "Refund & Cancellation Policy for Softogram — custom software and website solutions."
+    },
+    "/cookie-policy": {
+      "title": "Cookie Policy | Softogram",
+      "description": "Cookie Policy for Softogram — custom software and website solutions."
+    }
+  }
+}

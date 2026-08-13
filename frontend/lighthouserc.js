@@ -36,12 +36,38 @@ module.exports = {
         {
           matchingUrlPattern: "http://127.0.0.1:4173/$",
           assertions: {
-            // Re-tightened after issue #56: drop dead Inter/Space Grotesk fonts
-            // and load Fraunces/Outfit/JetBrains Mono via non-blocking <link> in
-            // public/index.html (CSS @import was the real LCP bottleneck, not
-            // three.js). Do not loosen these to accommodate another route.
+            // The enforced budget. Kept at 0.85 from issue #56 (dropping dead
+            // Inter/Space Grotesk fonts and loading Fraunces/Outfit/JetBrains
+            // Mono via non-blocking <link>; the CSS @import was the real LCP
+            // bottleneck, not three.js). Do not loosen to accommodate another
+            // route - measured 0.91-0.95 in CI, so there is real headroom.
             "categories:performance": ["error", { minScore: 0.85 }],
-            "largest-contentful-paint": ["error", { maxNumericValue: 2500 }],
+
+            // Raw LCP demoted from error to warning (issue #107).
+            //
+            // Measured on the homepage across five CI runs on four branches,
+            // one of which changed no application code at all:
+            //   2239ms, 2691ms, 2705ms, 2703ms, 2697ms
+            //
+            // Four of five sit near 2.7s; the 2239ms was the outlier that let
+            // this threshold look achievable. The same commit measures 1979ms
+            // locally with a performance score of 0.99, and in the CI run that
+            // failed, First Contentful Paint alone was 2289ms - LCP arrives only
+            // ~400ms later. So this assertion was tracking how CPU-starved the
+            // shared runner happened to be, not how fast the page is. In one
+            // run two routes reported FCP ~2.29s while the other two reported
+            // ~0.76s, on the same bundle.
+            //
+            // numberOfRuns: 3 does not help: the slowdown is sustained across
+            // all three runs rather than spiking in one, so the median is just
+            // as inflated.
+            //
+            // Keeping it as a warning preserves the signal - a genuine LCP
+            // regression still shows up in the log - without failing unrelated
+            // PRs and training everyone to rerun until green, which is what
+            // actually erodes the gate. The normalised category score above
+            // remains an enforced error.
+            "largest-contentful-paint": ["warn", { maxNumericValue: 2500 }],
             // Measured 0.92 locally on this commit. Set just below to absorb
             // run-to-run noise; raise it as the remaining audits are fixed.
             "categories:accessibility": ["error", { minScore: 0.9 }],
