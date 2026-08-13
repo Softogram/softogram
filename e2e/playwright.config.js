@@ -40,7 +40,18 @@ module.exports = defineConfig({
   projects: [
     {
       name: "chromium",
+      // Mobile specs carry their own narrow-viewport project below; running them
+      // at desktop width would assert nothing meaningful.
+      testIgnore: /mobile-.*\.spec\.js/,
       use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      // 390x844 is the iPhone 12/13/14 CSS viewport and the exact width the
+      // layout bugs in issue #81 were reported at. Scoped by testMatch so the
+      // rest of the suite does not silently double in runtime.
+      name: "mobile",
+      testMatch: /mobile-.*\.spec\.js/,
+      use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 } },
     },
   ],
   webServer: [
