@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { fetchPublishedBlogs, blogRssUrl } from "@/lib/cmsApi";
 import { G, DIM, BORDER, CARD, Reveal } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import { breadcrumbLd } from "@/lib/seo";
 
 function slugify(s) {
   return s.toLowerCase().replace(/\s+/g, "-");
@@ -40,6 +41,7 @@ export default function Blog() {
         title="Blog | Softogram"
         description="Engineering insights, buying guides, and launch checklists from Softogram."
         canonical="https://softogram.in/blog"
+        jsonLd={breadcrumbLd([{ name: "Blog", path: "/blog" }])}
         rssUrl={blogRssUrl()}
       />
 
@@ -117,7 +119,7 @@ export default function Blog() {
               data-testid="blog-featured"
             >
               <div className="grid md:grid-cols-2">
-                <img src={featured.coverImage} alt="" className="h-64 w-full object-cover opacity-80" />
+                <img src={featured.coverImage} alt={featured.title} className="h-64 w-full object-cover opacity-80" />
                 <div className="p-6 flex flex-col justify-center">
                   <h2 className="text-2xl font-bold mb-3" style={{ color: "#e2e8f0", fontFamily: "var(--font-display)" }}>
                     {featured.title}
@@ -142,7 +144,7 @@ export default function Blog() {
                 style={{ background: CARD, border: `1px solid ${BORDER}` }}
                 data-testid="blog-card"
               >
-                <img src={p.coverImage} alt="" className="h-40 w-full object-cover opacity-70" />
+                <img src={p.coverImage} alt={p.title} className="h-40 w-full object-cover opacity-70" />
                 <div className="p-5">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: "#e2e8f0" }}>
                     {p.title}

@@ -6,6 +6,7 @@ import { INDUSTRIES } from "@/data/clientProjects";
 import { fetchPublishedProjects } from "@/lib/cmsApi";
 import { G, DIM, BORDER, CARD, Reveal } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import { breadcrumbLd } from "@/lib/seo";
 
 function slugify(s) {
   return s.toLowerCase().replace(/\s+/g, "-");
@@ -204,6 +205,8 @@ export default function ClientWork() {
       <SeoHead
         title="Client Work | Softogram"
         description="Real client work, open-source tools, and in-house products from Softogram — every project links to a live site or a GitHub release."
+        canonical="https://softogram.in/client-work"
+        jsonLd={breadcrumbLd([{ name: "Client Work", path: "/client-work" }])}
       />
       {selected && <ProjectModal project={selected} onClose={() => setSelected(null)} />}
 
