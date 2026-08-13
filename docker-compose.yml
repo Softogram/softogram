@@ -9,14 +9,24 @@ services:
       POSTGRES_PASSWORD: softogram
       POSTGRES_DB: softogram
     ports:
-      # Host port 5433, not 5432 (issue: local port conflict).
-      # 5432 is commonly already taken by another project's Postgres, and the
-      # symptom is confusing: the container starts fine, but every connection
-      # hits the *other* server and fails with "password authentication failed
-      # for user softogram" - a role that does not exist over there. Only the
-      # host side moves; inside the container Postgres still listens on 5432.
-      # Override with POSTGRES_HOST_PORT if 5433 is taken too.
-      - "${POSTGRES_HOST_PORT:-5433}:5432"
+      # Default stays 5432 so it matches backend/database.py, alembic.ini and
+      # production. Do not change this default to work around a local conflict -
+      # the code defaults are what the EC2 host actually connects with, and
+      # moving them took the production API down until the deploy's health check
+      # rolled it back.
+      #
+      # If another project already holds 5432 on your machine, override it
+      # locally instead - nothing shared changes:
+      #
+      #   echo 'POSTGRES_HOST_PORT=5433' >> .env          # compose reads this
+      #   # then point backend/.env at the same port:
+      #   DATABASE_URL=postgresql+asyncpg://softogram:softogram@localhost:5433/softogram
+      #
+      # The conflict is worth recognising because the symptom is misleading: the
+      # container reports healthy while every connection reaches the *other*
+      # server and fails with "password authentication failed for user
+      # softogram" - a role that does not exist over there.
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres-init:/docker-entrypoint-initdb.d:ro
