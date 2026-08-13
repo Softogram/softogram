@@ -130,17 +130,28 @@ test.describe("mobile layout at 390px", () => {
     expect(overflow).toBeLessThanOrEqual(1);
   });
 
-  // The contract: within SETTLE_MS of arriving somewhere, nothing that is on screen
-  // is still invisible. An instant scrollTo is the worst case - it teleports past
-  // the observer's pre-trigger margin, so the fade only begins on arrival. Real
-  // scrolling and anchor jumps are both covered by holding this bound.
+  // Time allowed for the reveal state to flip after arriving somewhere. This is
+  // NOT the fade duration - see the note in the test about why the assertion
+  // deliberately does not wait for the animation.
   const SETTLE_MS = 250;
 
   test("no blank reveal gaps while scrolling (issue #82)", async ({ page }) => {
     await page.goto("/");
     await acceptCookies(page);
 
-    // Sample shortly after each jump, approximating what a fast scroller sees.
+    // Asserts the reveal *state*, not the animation's progress.
+    //
+    // This originally compared computed opacity, which made it CPU-dependent and
+    // it duly failed in CI: worst-case time-to-visible is an 80ms stagger plus a
+    // 320ms transition = 400ms, sampled at 250ms. That bound can never hold, and
+    // tightening the sample window only trades one flake for another - the same
+    // mistake as asserting a raw millisecond LCP figure (#107).
+    //
+    // The actual bug in #82 was that reveals never flipped to visible at all,
+    // leaving content permanently blank. `data-reveal-visible` captures exactly
+    // that, deterministically: once it is "true", CSS guarantees full opacity
+    // within a bounded 400ms with no test involvement.
+    //
     // [data-reveal] targets the scroll-reveal primitive only - the hero has its
     // own deliberately delayed intro animation that is not this bug.
     const blanks = await page.evaluate(async (settleMs) => {
@@ -161,9 +172,7 @@ test.describe("mobile layout at 390px", () => {
         await new Promise((r) => setTimeout(r, settleMs));
         const reveals = inViewReveals();
         seen += reveals.length;
-        blank += reveals.filter(
-          (d) => parseFloat(getComputedStyle(d).opacity) < 0.05
-        ).length;
+        blank += reveals.filter((d) => d.dataset.revealVisible !== "true").length;
       }
       return { blank, seen };
     }, SETTLE_MS);
