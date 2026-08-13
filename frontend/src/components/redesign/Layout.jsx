@@ -197,7 +197,10 @@ export default function Layout() {
 
   // Determine which week branch is active (if any)
   const activeWeek = (() => {
-    const found = WEEK_BRANCHES.find(b => activeHash === `#${b.label.replace('week-', 'week-')}` || activeHash === `#${b.label}`)
+    // Was `b.label.replace('week-', 'week-')`, which replaces a string with
+    // itself - so that comparison was identical to the one after the `||` and
+    // the whole first branch was dead. Flagged by CodeQL as js/identity-replacement.
+    const found = WEEK_BRANCHES.find(b => activeHash === `#${b.label}`)
     return found ? found.label : ''
   })()
 
