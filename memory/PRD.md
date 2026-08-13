@@ -1,99 +1,85 @@
 # Softogram Website - PRD
 
-> Technical architecture, file map, and agent memory: see [`memory/PROJECT.md`](./PROJECT.md).
+> Technical architecture and file map: see [`memory/PROJECT.md`](./PROJECT.md).
 > Agent briefing: see [`CLAUDE.md`](../CLAUDE.md) at repo root.
+> **The live backlog is GitHub issues on `Softogram/softogram`, not this file.**
 
-## Original Problem Statement
-Build a premium, dark-themed website for Softogram software company with:
-- Brand Identity: Pure black (#000000), cyan (#00F5FF), violet (#7C3AED) accents
-- Tagline: "Your idea. Our code. Delivered."
-- Fonts: Space Grotesk (headings), Inter (body)
-- Style: Dark glassmorphism, neon glow effects, dot pattern background
-- Sections: Hero, Stats, Services (8), Pricing, Portfolio, Testimonials, Why Choose Us, Contact, Footer
-- Contact form with SendGrid email integration + Budget Range dropdown
-- WhatsApp floating button
+## What this document is
 
-## User Personas
-1. **SMB Owners** - Small/medium business owners in India looking for software development services
-2. **Startup Founders** - Tech-savvy founders needing custom web applications
-3. **E-commerce Merchants** - Business owners looking for online stores
-4. **Enterprise Clients** - Companies needing AI automation, game development, enterprise tools
+Product framing and history: who the site is for, and how it got to where it is.
+It is deliberately not a task list.
+An earlier version of this file carried its own P0/P1/P2 lists, which drifted out of sync with the GitHub issues until the two disagreed about what was already built.
+Priorities now live in one place only.
 
-## Core Requirements (Static)
-- Premium dark theme with futuristic aesthetic
-- Responsive design for all devices
-- Smooth scroll navigation
-- Glassmorphism cards with cyan neon glow on hover
-- Contact form with email notification + budget range
-- WhatsApp quick contact option
+## Product
 
-## Architecture
-- **Frontend**: React 19 with Tailwind CSS, Framer Motion, shadcn/ui
-- **Backend**: FastAPI with PostgreSQL (SQLAlchemy async + Alembic)
-- **Email**: SendGrid (configurable via environment variables)
+Marketing site for Softogram, a software development company.
+Tagline: **"Your idea. Our code. Delivered."**
 
-## What's Been Implemented
-### December 2025 - v2 (Premium Dark Theme)
-- [x] Premium pure black design with cyan/violet accents
-- [x] Hero with dot pattern background and typing code animation
-- [x] Stats counter with 4 metrics (15+ projects, 10+ clients, 3+ years, 100%)
-- [x] Services grid expanded to 8 services (added Game Dev, AI Automation, Enterprise Tools, Scalability)
-- [x] Pricing cards with "Most Popular" cyan glow badge
-- [x] Portfolio grid (3 projects with tech tags)
-- [x] Testimonials marquee with avatar initials
-- [x] Why Choose Us (4 features)
-- [x] Contact form with Budget Range dropdown + SendGrid integration
-- [x] WhatsApp floating button with pulse animation
-- [x] Glassmorphism navbar with sticky behavior
-- [x] Footer with gradient border top
-- [x] Space Grotesk + Inter fonts
-- [x] Backend API: POST /api/contact
+The positioning is verifiable honesty: every claim on the site should link to something a visitor can check for themselves - a live site, a GitHub release, a real commit.
+This is a product constraint, not a style preference.
+Multiple commits (`10ef6ad`, `a4353f9`) exist purely to strip fabricated testimonials, case studies, portfolio stats and product reviews that contradicted it.
 
-### December 2025 - v3 (Case Studies + Policy Pages)
-- [x] New redesigned logo with abstract S shape and cyan "gram" highlight
-- [x] Fixed navbar gap from top (top-6)
-- [x] Case Studies section with Polluxkart deep dive
-- [x] Architecture breakdown: Frontend, API Gateway, Microservices, Database Layer, Infrastructure
-- [x] Tech stack display: React.js, FastAPI, Node.js, PostgreSQL, Redis, Docker, AWS, GitHub Actions
-- [x] Instagram and Facebook social icons added
-- [x] Privacy Policy page (/privacy-policy)
-- [x] Terms & Conditions page (/terms-and-conditions)
-- [x] Refund Policy page (/refund-policy)
-- [x] Cookie Policy page (/cookie-policy)
-- [x] Footer Legal column with all policy links
-- [x] Policy pages with dark theme and cyan left border on headings
+## User personas
 
-## Environment Variables
-```
-# Backend (.env)
-SENDGRID_API_KEY=your_sendgrid_api_key_here
-SENDER_EMAIL=support@softogram.com
-RECIPIENT_EMAIL=support@softogram.com
-```
+1. **SMB owners** - small and medium business owners in India looking for software development services
+2. **Startup founders** - technically literate founders needing custom web applications
+3. **E-commerce merchants** - business owners looking for online stores
+4. **Enterprise clients** - companies needing AI automation, developer tooling, and internal systems
 
-## Prioritized Backlog
+## Current architecture
 
-### P0 - Critical (For Production)
-- [ ] Add actual SendGrid API key for email notifications
-- [ ] Update placeholder phone numbers
-- [ ] Add real social media URLs
+| Layer | Stack |
+|-------|-------|
+| Frontend | React 19 (JavaScript, not TypeScript), Tailwind CSS 3, shadcn/ui, Framer Motion, React Router 7, built with CRA via CRACO |
+| Backend | FastAPI, Pydantic v2, SQLAlchemy 2.0 async, Alembic, Postgres |
+| Email | **AWS SES** via `boto3` (`sesv2`) |
+| Edge | CloudFront + S3, with a Lambda@Edge `viewer-request` function for crawler HTML and RSS |
+| Testing | Playwright end-to-end suite in `e2e/` |
 
-### P1 - Important
-- [ ] Add SEO meta tags (title, description, OG tags)
-- [ ] Add favicon and site icons
-- [ ] Implement actual project links in portfolio
-- [ ] Add Google Analytics integration
+SendGrid was removed in `03bd2db`.
+It appears in this document only as history.
 
-### P2 - Nice to Have
-- [ ] Add loading states/skeleton screens
-- [ ] Implement blog section (route exists with static placeholder cards; needs CMS or MD pipeline)
-- [ ] Add cookie consent banner
-- [ ] Add live chat widget (Intercom/Drift)
-- [ ] Implement dark/light mode toggle
+## Current brand
 
-## Next Tasks
-1. Configure SendGrid API key for production
-2. Update contact phone number and WhatsApp number
-3. Add actual social media profile URLs
-4. Implement SEO optimizations
-5. Add Google Analytics tracking
+Green GitHub-dark, shipped August 2026.
+Background `#09090e`, accent green `#4ADE80`, amber `#FB923C`, card `#0d1117`.
+Fonts: Fraunces (display), Outfit (body), JetBrains Mono (code and diff).
+
+This **supersedes** the original cyan/violet glassmorphism brand described in the history below.
+Cyan `#00F5FF` and violet `#7C3AED` are gone from the bundle entirely and must not be reintroduced.
+
+## What is built
+
+Public routes: `/`, `/products`, `/client-work`, `/blog`, `/blog/:slug`, four policy pages, and an admin dashboard at `/admin`.
+`/case-studies` is a permanent redirect to `/client-work`.
+
+- Contact form posting to FastAPI, emailing through SES, with leads persisted to Postgres
+- Newsletter lead magnet and Cal.com booking
+- **Blog and projects CMS** backed by Postgres, authored through `/admin`, with comments, moderation and an RSS feed
+- Admin authentication with argon2 password hashing and hashed bearer sessions (Phase 11)
+- Cookie consent, PostHog analytics, per-route SEO metadata and structured data
+- CI/CD deploying to S3/CloudFront and EC2 on push to `main`
+
+## History
+
+Kept because it explains why some code looks the way it does.
+None of it describes the current visual design.
+
+### December 2025 - v2, premium dark theme
+Pure black with cyan and violet accents, dot-pattern hero, stats counter, eight services, pricing cards, portfolio grid, testimonials marquee, glassmorphism navbar, Space Grotesk and Inter fonts.
+Several of these sections carried invented numbers and testimonials, which were later removed.
+
+### December 2025 - v3, case studies and policy pages
+Redesigned logo, case studies section, the four legal policy pages, and social links.
+
+### August 2026 - redesign
+Ported `Redesign-Softogram-Website/` into the CRA app.
+Replaced the cyan glassmorphism design entirely with the green GitHub-dark brand, restructured the monolithic `App.js` into `pages/` and `components/redesign/`, and added the products and client-work routes.
+
+## Backlog
+
+Tracked as GitHub issues on `Softogram/softogram`, labelled `P0`/`P1`/`P2` plus `security`, `growth`, `seo`, `performance`, `testing`, `ops` and `agent-ready`.
+
+Do not maintain a duplicate list here.
+If this file and the issues ever disagree, the issues are correct.
