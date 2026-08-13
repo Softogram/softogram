@@ -14,6 +14,8 @@ import {
   Reveal,
 } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import { metaFor } from "@/lib/routeMeta";
+import { breadcrumbLd } from "@/lib/seo";
 
 const BETA = "#38bdf8";
 
@@ -283,9 +285,15 @@ export default function Products() {
 
   return (
     <>
+      {/*
+        No Product/Offer schema here on purpose (issue #79 explicitly defers it).
+        The fabricated product claims were stripped in a4353f9, and encoding
+        numeric claims into structured data is exactly how they would creep back.
+        BreadcrumbList carries no claims, so it is safe.
+      */}
       <SeoHead
-        title="Products | Softogram"
-        description="Open-source tools Softogram builds and ships publicly - real releases, real repos, free to use."
+        {...metaFor("/products")}
+        jsonLd={breadcrumbLd([{ name: "Products", path: "/products" }])}
       />
       {selected && (
         <ProductModal product={selected} onClose={() => setSelected(null)} />

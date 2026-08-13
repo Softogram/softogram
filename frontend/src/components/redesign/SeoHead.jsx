@@ -22,10 +22,22 @@ export default function SeoHead({
   type = "website",
   jsonLd,
   rssUrl,
+  robots,
 }) {
   useEffect(() => {
     if (title) document.title = title;
     if (description) upsertMeta("name", "description", description);
+
+    // Only pages that opt in get a robots directive (the 404, issue #79). The tag
+    // is removed rather than left behind when navigating to a normal page, since
+    // this SPA mutates one shared <head> across every route - a stale
+    // "noindex" would otherwise follow the user onto real content.
+    const robotsEl = document.querySelector('meta[name="robots"]');
+    if (robots) {
+      upsertMeta("name", "robots", robots);
+    } else if (robotsEl) {
+      robotsEl.remove();
+    }
 
     const url = canonical || (typeof window !== "undefined" ? window.location.href : "");
     upsertMeta("property", "og:title", title);
@@ -75,7 +87,7 @@ export default function SeoHead({
     } else if (script) {
       script.remove();
     }
-  }, [title, description, canonical, image, type, jsonLd, rssUrl]);
+  }, [title, description, canonical, image, type, jsonLd, rssUrl, robots]);
 
   return null;
 }

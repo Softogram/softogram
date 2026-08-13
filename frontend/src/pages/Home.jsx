@@ -22,6 +22,7 @@ import {
   Reveal,
 } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import { metaFor } from "@/lib/routeMeta";
 import { capture } from "@/lib/analytics";
 import { BOOKING_URL, SUPPORT_EMAIL } from "@/data/site";
 
@@ -34,23 +35,30 @@ const SERVICE_BY_TYPE = {
   tooling: "CLI & Dev Tooling",
 };
 
+/**
+ * Repo stats for the "N stars, pushed <date>" proof line.
+ *
+ * Goes through our own API rather than calling api.github.com from the browser
+ * (issue #99). GitHub rate-limits unauthenticated requests to 60/hour per client
+ * IP, so visitors behind shared mobile NAT hit a 403 and silently lost this line
+ * without ever having visited before. Server-side it is one cached request per
+ * hour from one IP.
+ *
+ * Still fails soft: no stats simply means the line is not rendered.
+ */
 function useRepoStats(repo) {
   const [stats, setStats] = useState(null);
   useEffect(() => {
-    fetch(`https://api.github.com/repos/${repo}`, {
-      headers: { Accept: "application/vnd.github.v3+json" },
-    })
-      .then((r) => r.json())
+    let cancelled = false;
+    fetch(`${API}/content/repo-stats?repo=${encodeURIComponent(repo)}`)
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (d.id) {
-          setStats({
-            stars: d.stargazers_count,
-            issues: d.open_issues_count,
-            pushedAt: d.pushed_at,
-          });
-        }
+        if (!cancelled && d?.stats) setStats(d.stats);
       })
       .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, [repo]);
   return stats;
 }
@@ -494,10 +502,7 @@ export default function Home() {
 
   return (
     <>
-      <SeoHead
-        title="Softogram | Software that actually ships"
-        description="Softogram builds real tools and client software — Go binaries, changelogs, and production systems. No roadmap theater."
-      />
+      <SeoHead {...metaFor("/")} />
       <Section id="hero" bg="#0d1117" testId="hero-section">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div

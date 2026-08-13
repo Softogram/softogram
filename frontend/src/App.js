@@ -7,6 +7,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import Layout from "@/components/redesign/Layout";
+import SkipLink from "@/components/SkipLink";
 import ConsentBanner from "@/components/ConsentBanner";
 import LeadMagnet from "@/components/LeadMagnet";
 import ScrollToHash from "@/components/ScrollToHash";
@@ -48,6 +49,9 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <ScrollToHash />
+        {/* First focusable element in the document - must stay above the consent
+            banner and lead magnet, both of which render before <Routes>. */}
+        <SkipLink />
         <Toaster position="top-center" richColors theme="dark" />
         <ConsentBanner />
         <LeadMagnet />
