@@ -7,12 +7,14 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <!--
-          CMS cover images are served from Unsplash. The browser cannot discover
-          them until React has rendered content fetched from the API, so without
-          this the TLS handshake starts only once the LCP image is already needed
-          (issue #103).
+          Deliberately NO preconnect to images.unsplash.com.
+          Tried it for issue #103 and measured it as a regression: index.html is
+          shared by every route, but the homepage has no Unsplash image above the
+          fold - its only one is the below-the-fold blog teaser. The early
+          DNS/TCP/TLS handshake competed with fonts and JS on the critical path
+          and pushed homepage LCP from ~2.2s to ~2.7s in CI, past its budget.
+          Right-sizing the images was the change that actually helped.
         -->
-        <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
         <!-- Non-blocking font CSS: preload-scanner starts fetch; media=print avoids render-block until onload. -->
         <link
             rel="stylesheet"
