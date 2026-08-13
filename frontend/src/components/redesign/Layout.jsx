@@ -233,7 +233,18 @@ export default function Layout() {
       >
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-4">
           {/* Logo mark */}
-          <Link to="/" className="shrink-0 flex items-center" style={{ lineHeight: 0 }} data-testid="logo-link">
+          {/*
+            aria-label because the only child is an SVG mark. Without it a screen
+            reader announces this as an unnamed "link" and there is no way to tell
+            it goes home (issue #93).
+          */}
+          <Link
+            to="/"
+            className="shrink-0 flex items-center"
+            style={{ lineHeight: 0 }}
+            data-testid="logo-link"
+            aria-label="Softogram home"
+          >
             <LogoMono size={26} color={G} />
           </Link>
 
@@ -373,8 +384,18 @@ export default function Layout() {
         </div>
       </nav>
 
-      {/* ── Page ── */}
-      <Outlet />
+      {/*
+        Single <main> landmark for every route. Screen reader and keyboard users
+        rely on it to jump past the nav; before this the only <main> in the app
+        was inside the admin dashboard, so no public page had one.
+
+        tabIndex={-1} makes it a valid focus target: without it, following the
+        skip link moves the scroll position but leaves focus stranded in the
+        header, so the next Tab continues through the nav anyway.
+      */}
+      <main id="main" tabIndex={-1} style={{ outline: 'none' }}>
+        <Outlet />
+      </main>
 
       <WhatsAppButton />
 
