@@ -60,6 +60,33 @@ exports.handler = async (event) => {
     return request;
   }
 
+  // /sitemap.xml proxied to the CMS-generated sitemap (issue #78). Same shape as
+  // /rss.xml above. Crawlers reject a sitemap served from a different host than
+  // the URLs it lists, so this cannot simply live on api.softogram.in - it has to
+  // appear at the apex. On any failure it falls through and CloudFront serves the
+  // static frontend/public/sitemap.xml, which stays in place as the fallback.
+  if (request.uri === "/sitemap.xml") {
+    try {
+      const res = await fetchWithTimeout(`${API_ORIGIN}/api/content/sitemap.xml`, {
+        headers: { Accept: "application/xml, text/xml, */*" },
+      });
+      if (res.ok) {
+        const body = await res.text();
+        return {
+          status: "200",
+          statusDescription: "OK",
+          headers: {
+            "content-type": [{ key: "Content-Type", value: "application/xml; charset=utf-8" }],
+          },
+          body,
+        };
+      }
+    } catch (e) {
+      // Fetch failed or timed out - fall through to the static object in S3.
+    }
+    return request;
+  }
+
   const match = request.uri.match(/^\/blog\/([^/]+)\/?$/);
   if (match && CRAWLER_UA.test(ua)) {
     const slug = decodeURIComponent(match[1]);
