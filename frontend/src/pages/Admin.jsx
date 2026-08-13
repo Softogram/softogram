@@ -460,7 +460,12 @@ export default function Admin() {
               </button>
             ))}
           </aside>
-          <main className="p-6 overflow-auto">
+          {/*
+            Was <main>. Layout now provides the single page-level <main>
+            landmark and /admin renders inside it, so keeping one here would
+            nest two mains - invalid HTML and an accessibility violation.
+          */}
+          <div className="p-6 overflow-auto">
             {!selected && (
               <p className="text-sm" style={{ color: DIM }}>
                 Select an item or create a new one.
@@ -655,7 +660,7 @@ export default function Admin() {
               </label>
             </div>
             )}
-          </main>
+          </div>
         </div>
       )}
 
