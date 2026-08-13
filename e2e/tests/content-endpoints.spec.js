@@ -94,7 +94,17 @@ test.describe("the homepage no longer calls GitHub directly (issue #99)", () => 
   test("no browser request reaches api.github.com", async ({ page }) => {
     const githubRequests = [];
     page.on("request", (r) => {
-      if (r.url().includes("api.github.com")) githubRequests.push(r.url());
+      // Compare the parsed hostname, not a substring of the URL. A substring
+      // test also matches hosts like "api.github.com.example.com", so it can
+      // both false-positive and be trivially evaded - CodeQL flags it as
+      // incomplete URL sanitization.
+      let host;
+      try {
+        host = new URL(r.url()).hostname;
+      } catch {
+        return; // data: / blob: and friends have no hostname
+      }
+      if (host === "api.github.com") githubRequests.push(r.url());
     });
 
     await page.goto("/");
