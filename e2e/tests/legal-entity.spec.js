@@ -88,20 +88,16 @@ test.describe("legal entity footer", () => {
       await expect(page.getByTestId("consent-banner")).toBeHidden();
     }
 
-    // Lazy images keep growing the document, so one scrollTo can land short and
-    // leave the footer off screen - which would make this assert nothing.
-    await page.evaluate(async () => {
-      let last = -1;
-      for (let i = 0; i < 25; i++) {
-        window.scrollTo(0, document.body.scrollHeight);
-        await new Promise((r) => setTimeout(r, 150));
-        const y = Math.round(window.scrollY);
-        if (y === last) return;
-        last = y;
-      }
-    });
-
-    await expect(page.getByTestId("footer-brand-note")).toBeInViewport();
+    // Scroll-reveal sections and lazy images keep growing the document, so one
+    // scroll to the bottom lands short of it and the footer stays off screen -
+    // which would quietly turn the coverage check below into a no-op. Waiting
+    // longer does not help on its own, because nothing scrolls again while the
+    // wait runs; the re-scroll has to be inside the retry. This failed in CI
+    // exactly that way while passing locally, where the page settles sooner.
+    await expect(async () => {
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await expect(page.getByTestId("footer-brand-note")).toBeInViewport({ timeout: 1000 });
+    }).toPass({ timeout: 30_000 });
 
     const covered = await page.evaluate(() => {
       const overlays = [
