@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import LogoMono from './LogoMono'
 import WhatsAppButton from './WhatsAppButton'
-import { BOOKING_URL, TRUST_BADGES, SUPPORT_EMAIL, PHONE_TEL, PHONE_DISPLAY } from '@/data/site'
+import { BOOKING_URL, TRUST_BADGES, SUPPORT_EMAIL, PHONE_TEL, PHONE_DISPLAY, LEGAL_ENTITY } from '@/data/site'
 import { capture } from '@/lib/analytics'
 
 const G      = '#4ade80'
@@ -469,6 +469,67 @@ export default function Layout() {
                     </a>
                   ))}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/*
+            Registered-entity block. "Softogram" is a brand name; the company that
+            signs contracts, files tax and holds the app store developer accounts is
+            Opengram Labs Private Limited. Anyone verifying the business - an app
+            store reviewer, a client's finance team - has the legal name on their
+            paperwork and this site in their browser, so the two have to be tied
+            together here or they read as unrelated organisations. It lives in
+            Layout, so it is on every route rather than only the homepage.
+          */}
+          <div className="flex gap-0" data-testid="footer-legal">
+            <div
+              className="shrink-0 text-right pr-3"
+              style={{ width: 48, borderRight: `1px solid ${BORDER}`, fontFamily: "'JetBrains Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.12)', paddingTop: 18 }}
+            >
+              —
+            </div>
+            {/*
+              One left-aligned column rather than the two-column split the row above
+              uses. The launch-checklist button and the WhatsApp bubble are both fixed
+              to the bottom-right of the viewport, so anything sitting in the footer's
+              bottom-right corner is behind them once the page is scrolled to the end -
+              which is exactly where a reviewer looks. Keeping every registration detail
+              on the left keeps it readable. Capped width so the lines stay scannable on
+              a wide screen instead of stretching across the whole page.
+            */}
+            <div
+              className="flex-1 pl-5 pt-4 text-xs"
+              style={{
+                borderTop: `1px solid ${BORDER}`,
+                color: DIM,
+                fontFamily: "'JetBrains Mono', monospace",
+                lineHeight: 1.9,
+              }}
+            >
+              <div style={{ maxWidth: '46rem' }}>
+                <div style={{ color: '#e2e8f0' }} data-testid="footer-legal-name">
+                  {LEGAL_ENTITY.name}
+                </div>
+                <div data-testid="footer-legal-address">{LEGAL_ENTITY.address}</div>
+                <div>
+                  <span data-testid="footer-legal-cin">CIN: {LEGAL_ENTITY.cin}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.18)' }}> · </span>
+                  <span data-testid="footer-legal-gstin">GSTIN: {LEGAL_ENTITY.gstin}</span>
+                </div>
+                <div>
+                  <a href={`mailto:${LEGAL_ENTITY.email}`} style={{ color: DIM }} data-testid="footer-legal-email">
+                    {LEGAL_ENTITY.email}
+                  </a>
+                  <span style={{ color: 'rgba(255,255,255,0.18)' }}> · </span>
+                  <a href={LEGAL_ENTITY.phoneTel} style={{ color: DIM }} data-testid="footer-legal-phone">
+                    {LEGAL_ENTITY.phoneDisplay}
+                  </a>
+                </div>
+                {/* The line that explains the brand/company name difference. */}
+                <p className="mt-4" data-testid="footer-brand-note">
+                  {LEGAL_ENTITY.brandNote}
+                </p>
               </div>
             </div>
           </div>
