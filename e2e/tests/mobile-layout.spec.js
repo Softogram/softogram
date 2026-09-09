@@ -82,6 +82,10 @@ test.describe("mobile layout at 390px", () => {
     // The footer phone number was the specific casualty in the report. Assert it is
     // genuinely in the viewport, otherwise the coverage check below tests nothing.
     await expect(page.getByTestId("footer-phone")).toBeInViewport();
+
+    // The brand note sits below the phone number, so it is now the lowest text in
+    // the footer and the first thing the fixed buttons would cover.
+    await expect(page.getByTestId("footer-brand-note")).toBeInViewport();
     expect(await coveredFooterText(page)).toEqual([]);
   });
 
