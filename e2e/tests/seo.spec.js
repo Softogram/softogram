@@ -43,4 +43,28 @@ test.describe("seo", () => {
     await expect(page).toHaveTitle(/privacy/i);
     await expect(page.getByTestId("policy-page")).toBeVisible();
   });
+
+  /**
+   * Google Search Console ownership check.
+   *
+   * Google fetches this exact path and expects the token as the whole body. It
+   * has to keep working forever, not just until verification passes: Google
+   * re-checks periodically and silently drops the property when the file goes
+   * missing, taking indexing controls and search data with it. Nothing else in
+   * the app references the file, so without this test deleting it looks
+   * harmless right up until search data stops arriving weeks later.
+   *
+   * The exact-body check matters too. The site serves index.html for unknown
+   * paths, so a missing file would come back as a 200 with a page of HTML
+   * rather than a 404 - a status-only assertion would pass while verification
+   * fails.
+   */
+  test("Google Search Console verification file is served verbatim", async ({ request }) => {
+    const res = await request.get("/google9b483326c284b34c.html");
+
+    expect(res.status()).toBe(200);
+    expect((await res.text()).trim()).toBe(
+      "google-site-verification: google9b483326c284b34c.html"
+    );
+  });
 });
