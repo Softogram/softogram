@@ -4,6 +4,21 @@ const { urls } = require("../playwright.config");
 
 const API = `${urls.BACKEND_URL}/api`;
 
+// Kept as one list so the route count below can't drift from what's actually
+// checked - a hardcoded "8 + posts.length" here once went stale silently the
+// moment a ninth static route (/spicecraft/privacy) was added.
+const STATIC_ROUTES = [
+  "/",
+  "/products",
+  "/client-work",
+  "/blog",
+  "/privacy-policy",
+  "/terms-and-conditions",
+  "/refund-policy",
+  "/cookie-policy",
+  "/spicecraft/privacy",
+];
+
 test.describe("sitemap.xml from the CMS (issue #78)", () => {
   test("lists every static route and every published post", async ({ request }) => {
     const res = await request.get(`${API}/content/sitemap.xml`);
@@ -14,16 +29,7 @@ test.describe("sitemap.xml from the CMS (issue #78)", () => {
     expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
     expect(xml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
 
-    for (const path of [
-      "/",
-      "/products",
-      "/client-work",
-      "/blog",
-      "/privacy-policy",
-      "/terms-and-conditions",
-      "/refund-policy",
-      "/cookie-policy",
-    ]) {
+    for (const path of STATIC_ROUTES) {
       expect(xml, `missing static route ${path}`).toContain(
         `<loc>https://softogram.in${path}</loc>`
       );
@@ -43,7 +49,7 @@ test.describe("sitemap.xml from the CMS (issue #78)", () => {
     const urlCount = (xml.match(/<url>/g) || []).length;
     const locCount = (xml.match(/<loc>/g) || []).length;
     expect(urlCount).toBe(locCount);
-    expect(urlCount).toBe(8 + posts.length);
+    expect(urlCount).toBe(STATIC_ROUTES.length + posts.length);
   });
 
   test("is well-formed XML", async ({ request }) => {
