@@ -32,6 +32,10 @@
     "/cookie-policy": {
       "title": "Cookie Policy | Softogram",
       "description": "Cookie Policy for Softogram — custom software and website solutions."
+    },
+    "/spicecraft/privacy": {
+      "title": "SpiceCraft Privacy Policy | Softogram",
+      "description": "Privacy policy for SpiceCraft, the spice-sorting puzzle game by Softogram — what Google AdMob collects to show ads, and what the game does not collect."
     }
   }
 }
