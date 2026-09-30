@@ -9,6 +9,7 @@ const routes = [
   { path: "/terms-and-conditions", expectText: /terms/i },
   { path: "/refund-policy", expectText: /refund/i },
   { path: "/cookie-policy", expectText: /cookie/i },
+  { path: "/spicecraft/privacy", expectText: /spicecraft privacy policy/i },
 ];
 
 test.describe("routes", () => {

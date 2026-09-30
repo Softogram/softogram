@@ -732,6 +732,7 @@ STATIC_SITEMAP_ROUTES = [
     ("/terms-and-conditions", "yearly", "0.3"),
     ("/refund-policy", "yearly", "0.3"),
     ("/cookie-policy", "yearly", "0.3"),
+    ("/spicecraft/privacy", "yearly", "0.3"),
 ]
 
 
