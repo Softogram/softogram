@@ -1,8 +1,9 @@
-// Ryup posts 6 and 7: unpublished drafts. Hidden from the public, previewable by
-// a signed-in admin at /blog/<slug>. Content comes from backend/content/blog_packs/.
+// Ryup posts 6 and 7 (scoring engine, recommendations): added as posts by
+// migration 0004, published by 0005. Also covers the admin draft preview.
+// Content comes from backend/content/blog_packs/.
 const { test, expect } = require("@playwright/test");
 const { BACKEND_URL, adminToken } = require("../fixtures/helpers");
-const drafts = require("../../backend/content/blog_packs/2026-10-19-ryup-series-part-2.json");
+const posts = require("../../backend/content/blog_packs/2026-10-19-ryup-series-part-2.json");
 const published = require("../../backend/content/blog_packs/2026-10-19-ryup-series.json");
 
 const PLAY = "https://play.google.com/store/apps/details?id=com.softogram.ryup_app";
@@ -21,30 +22,25 @@ async function signInAsAdmin(page, request) {
   await page.addInitScript((t) => sessionStorage.setItem("softogram_admin_token", t), token);
 }
 
-test.describe("Ryup drafts 6 and 7", () => {
-  test("drafts are hidden from the public: index, post page, sitemap, RSS and share page", async ({
-    page,
-    request,
-  }) => {
-    for (const post of drafts) expect(post.published).toBe(false);
+test.describe("Ryup posts 6 and 7", () => {
+  test("both posts are public: index, API, sitemap, RSS and share page", async ({ page, request }) => {
+    for (const post of posts) expect(post.published).toBe(true);
 
     await page.goto("/blog");
-    await expect(page.getByTestId("blog-featured")).toBeVisible();
-    for (const post of drafts) await expect(page.getByTestId("blog-page")).not.toContainText(post.title);
-
-    for (const post of drafts) {
-      await page.goto(`/blog/${post.slug}`);
-      await expect(page.getByTestId("blog-post-not-found")).toBeVisible();
-    }
+    for (const post of posts) await expect(page.getByTestId("blog-page")).toContainText(post.title);
 
     const list = await (await request.get(`${BACKEND_URL}/api/content/blog`)).json();
     const sitemap = await (await request.get(`${BACKEND_URL}/api/content/sitemap.xml`)).text();
     const rss = await (await request.get(`${BACKEND_URL}/api/content/blog/rss.xml`)).text();
-    for (const post of drafts) {
-      expect(list.map((p) => p.slug)).not.toContain(post.slug);
-      expect(sitemap).not.toContain(post.slug);
-      expect(rss).not.toContain(post.slug);
-      expect((await request.get(`${BACKEND_URL}/api/content/blog/${post.slug}/share.html`)).status()).toBe(404);
+    for (const post of posts) {
+      expect(list.map((p) => p.slug)).toContain(post.slug);
+      expect(sitemap).toContain(`<loc>https://softogram.in/blog/${post.slug}</loc>`);
+      expect(rss).toContain(`https://softogram.in/blog/${post.slug}`);
+      const share = await request.get(`${BACKEND_URL}/api/content/blog/${post.slug}/share.html`);
+      expect(share.status()).toBe(200);
+      expect(await share.text()).toContain(
+        `<meta property="og:image" content="https://softogram.in${post.shareImage}" />`,
+      );
     }
   });
 
@@ -52,15 +48,14 @@ test.describe("Ryup drafts 6 and 7", () => {
     { name: "desktop", width: 1280, height: 900 },
     { name: "phone", width: 390, height: 844 },
   ]) {
-    for (const post of drafts) {
-      test(`${post.slug} previews fully for an admin (${viewport.name})`, async ({ page, request }) => {
+    for (const post of posts) {
+      test(`${post.slug} renders fully for any visitor (${viewport.name})`, async ({ page }) => {
         const want = expectations(post);
-        await signInAsAdmin(page, request);
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
         await page.goto(`/blog/${post.slug}`);
 
-        await expect(page.getByTestId("blog-post-draft-banner")).toContainText("Draft preview, not public");
-        await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+        await expect(page.getByTestId("blog-post-draft-banner")).toHaveCount(0);
+        await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
         await expect(page.getByTestId("blog-post-title")).toHaveText(post.title);
         await expect(page.getByTestId("blog-post-page")).toContainText(post.tags[0]);
         await expect(page.getByTestId("blog-post-page")).toContainText(`${post.date} · ${post.readTime} min`);
@@ -110,10 +105,9 @@ test.describe("Ryup drafts 6 and 7", () => {
     }
   }
 
-  test("every internal link in the drafts works for an admin, in the same tab", async ({ page, request }) => {
-    const known = new Set([...drafts, ...published].map((p) => p.slug));
-    await signInAsAdmin(page, request);
-    for (const post of drafts) {
+  test("every internal link in the posts works, in the same tab", async ({ page }) => {
+    const known = new Set([...posts, ...published].map((p) => p.slug));
+    for (const post of posts) {
       const { internal } = expectations(post);
       expect(internal).toContain(
         post.slug === "how-ryup-scores-your-morning-scoring-engine"
@@ -134,11 +128,39 @@ test.describe("Ryup drafts 6 and 7", () => {
 
   test("all seven diagrams and both share images are served", async ({ request }) => {
     const paths = new Set();
-    for (const post of drafts) {
+    for (const post of posts) {
       paths.add(post.shareImage);
       for (const { src } of expectations(post).images) paths.add(src);
     }
     expect(paths.size).toBe(9);
     for (const path of paths) expect((await request.get(path)).status(), path).toBe(200);
+  });
+
+  test("draft preview: an unpublished post is visible only to a signed-in admin", async ({ page, request }) => {
+    const token = await adminToken(request);
+    const headers = { Authorization: `Bearer ${token}` };
+    const original = await (await request.get(`${BACKEND_URL}/api/admin/blog`, { headers })).json();
+    const draft = {
+      ...posts[0],
+      id: "e2e-draft-preview",
+      slug: "e2e-draft-preview",
+      title: "E2E draft preview",
+      published: false,
+    };
+    try {
+      expect((await request.put(`${BACKEND_URL}/api/admin/blog`, { headers, data: [...original, draft] })).ok()).toBe(true);
+
+      await page.goto(`/blog/${draft.slug}`);
+      await expect(page.getByTestId("blog-post-not-found")).toBeVisible();
+      expect((await request.get(`${BACKEND_URL}/api/content/blog/${draft.slug}`)).status()).toBe(404);
+
+      await signInAsAdmin(page, request);
+      await page.goto(`/blog/${draft.slug}`);
+      await expect(page.getByTestId("blog-post-draft-banner")).toContainText("Draft preview, not public");
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+      await expect(page.getByTestId("blog-post-title")).toHaveText(draft.title);
+    } finally {
+      await request.put(`${BACKEND_URL}/api/admin/blog`, { headers, data: original });
+    }
   });
 });
