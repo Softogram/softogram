@@ -13,6 +13,11 @@ export const SERVICES = [
     tags: ["MCP", "LLM APIs", "Go"],
   },
   {
+    title: "Cloud & GPU for AI",
+    desc: "Cloud hosting and GPU machines for AI agents and AI workloads, on NxtGen Cloud's India-based infrastructure, set up and run by Softogram as an official NxtGen partner.",
+    tags: ["NxtGen Cloud", "GPU", "AI agents"],
+  },
+  {
     title: "SaaS Platforms",
     desc: "Full-stack SaaS: auth, billing, multi-tenancy, and infra that scales past MVP without rewrites.",
     tags: ["Stripe", "Postgres", "Auth"],

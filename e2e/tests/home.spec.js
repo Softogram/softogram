@@ -88,4 +88,16 @@ test.describe("landing page", () => {
     await page.getByTestId("consent-accept").click();
     await expect(page.getByTestId("consent-banner")).toHaveCount(0);
   });
+
+  test("company milestones and the NxtGen partnership are on the page", async ({ page }) => {
+    await page.goto("/");
+    const titles = page.getByTestId("build-log-title");
+    await expect(titles.first()).toContainText("official NxtGen Cloud partner");
+    await expect(titles.nth(1)).toContainText("SpiceCraft submitted");
+    await expect(page.getByTestId("build-log-section")).toContainText(
+      "Incorporated as Opengram Labs Private Limited",
+    );
+    await expect(page.getByTestId("build-log-section")).toContainText("Ryup sent to Google Play review");
+    await expect(page.getByTestId("services-section")).toContainText("official NxtGen partner");
+  });
 });
