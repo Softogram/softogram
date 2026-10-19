@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 470" width="1000" height="470" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">Morning tiers, decay and the strict rating lane</title><desc id="d">A morning qualifies if the ring was between 4 and 8 AM and the activity finished within 15 minutes. Tiers add bonus points. Missed days use freeze credits or a gentle decay ladder. Ratings use only the strict score.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="1000" height="470" rx="16" fill="#FFF3EA"/>
+<text x="500" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#22110C">A qualifying morning: ring 04:00 to 08:00, finished within 15 minutes</text>
+<rect x="20" y="60" width="160" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="100.0" y="85.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Tier A</text>
+<text x="100.0" y="104.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">04:00-04:59</text>
+<text x="100.0" y="123.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">bonus +15</text>
+<rect x="190" y="60" width="160" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="270.0" y="85.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Tier B</text>
+<text x="270.0" y="104.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">05:00-05:59</text>
+<text x="270.0" y="123.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">bonus +10</text>
+<rect x="360" y="60" width="160" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="440.0" y="85.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Tier C</text>
+<text x="440.0" y="104.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">06:00-06:59</text>
+<text x="440.0" y="123.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">bonus +5</text>
+<rect x="530" y="60" width="160" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="610.0" y="85.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Tier D</text>
+<text x="610.0" y="104.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">07:00-08:00</text>
+<text x="610.0" y="123.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">bonus +0</text>
+<rect x="710" y="60" width="270" height="80" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="845.0" y="95.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Morning points</text>
+<text x="845.0" y="114.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">0.85 x score + tier bonus</text>
+<line x1="680" y1="100" x2="710" y2="100" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="500" y="185" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">A missed day</text>
+<rect x="20" y="205" width="230" height="80" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="135.0" y="240.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Freeze credit left?</text>
+<text x="135.0" y="259.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">score does not move</text>
+<rect x="290" y="205" width="150" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="365.0" y="240.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">1st miss</text>
+<text x="365.0" y="259.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">-1%</text>
+<rect x="450" y="205" width="150" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="525.0" y="240.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">2nd miss</text>
+<text x="525.0" y="259.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">-2%</text>
+<rect x="610" y="205" width="150" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="685.0" y="240.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">3rd miss</text>
+<text x="685.0" y="259.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">-5%</text>
+<rect x="770" y="205" width="210" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="875.0" y="240.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">4th and more</text>
+<text x="875.0" y="259.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">-10% each</text>
+<line x1="250" y1="245" x2="290" y2="245" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="270.0" y="235.0" text-anchor="middle" font-size="13" fill="#6B4A40">none left</text>
+<line x1="440" y1="245" x2="450" y2="245" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="600" y1="245" x2="610" y2="245" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="760" y1="245" x2="770" y2="245" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="500" y="318" text-anchor="middle" font-size="13" font-weight="400" fill="#6B4A40">Floor: never below 40% of your best. A missed day can never raise a score. Each qualifying morning steps one rung back down.</text>
+<rect x="20" y="350" width="450" height="90" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="245.0" y="390.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Shown score</text>
+<text x="245.0" y="409.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">kind to newcomers, shown to you</text>
+<rect x="530" y="350" width="450" height="90" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="755.0" y="390.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Strict score</text>
+<text x="755.0" y="409.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">only this feeds ratings and comparisons</text>
+<text x="500" y="458" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Show lenient, compete strict</text>
+</svg>

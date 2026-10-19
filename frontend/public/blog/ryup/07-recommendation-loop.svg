@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" width="1000" height="430" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">The recommendation loop</title><desc id="d">At onboarding the person picks content types. Each morning the backend builds a plan from stored taste scores. After the session reactions are saved as events and the scores are updated, which shapes tomorrow&#x27;s plan.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="1000" height="430" rx="16" fill="#FFF3EA"/>
+<text x="500" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#22110C">Nothing smart runs during the live activity: before and after only</text>
+<rect x="20" y="90" width="270" height="110" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="155.0" y="130.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">1  Onboarding</text>
+<text x="155.0" y="150.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">pick content types</text>
+<text x="155.0" y="170.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">each starts with a warm score</text>
+<rect x="365" y="90" width="270" height="110" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="500.0" y="130.25" text-anchor="middle" font-size="15" font-weight="700" fill="#FFFFFF">2  Every morning</text>
+<text x="500.0" y="150.25" text-anchor="middle" font-size="15" font-weight="400" fill="#FFFFFF">build the plan from taste scores</text>
+<text x="500.0" y="170.25" text-anchor="middle" font-size="15" font-weight="400" fill="#FFFFFF">save it, send it to the app</text>
+<rect x="710" y="90" width="270" height="110" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="845.0" y="130.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">3  After the session</text>
+<text x="845.0" y="150.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">save reactions as events</text>
+<text x="845.0" y="170.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">update the taste scores</text>
+<line x1="290" y1="145" x2="365" y2="145" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="635" y1="145" x2="710" y2="145" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="20" y="270" width="450" height="90" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="245.0" y="310.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Event log (the truth)</text>
+<text x="245.0" y="330.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">append-only: every reaction, forever</text>
+<rect x="530" y="270" width="450" height="90" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="755.0" y="310.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Taste scores (a cache)</text>
+<text x="755.0" y="330.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">rebuilt from the log if ever damaged</text>
+<line x1="845" y1="200" x2="845" y2="270" stroke="#FA5E41" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#a)"/>
+<line x1="470" y1="315" x2="530" y2="315" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="750" y1="270" x2="500" y2="200" stroke="#FA5E41" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#a)"/>
+<text x="500" y="400" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Pure Go package: no network, no database, no clock. Randomness is seeded.</text>
+</svg>
