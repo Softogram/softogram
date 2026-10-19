@@ -18,7 +18,7 @@ export const BUILD_LOG = [
     status: "confirmed",
     title: "SpiceCraft submitted to the App Store and Google Play",
     detail:
-      "Sort-puzzle game set in a spice mill, built in Unity for iOS and Android. Both stores are reviewing it, so it is not downloadable yet.",
+      "Sort-puzzle game set in a spice mill, built in Unity for iOS and Android. Now live on Google Play; the iPhone version is still in App Store review.",
   },
   {
     date: "2026-09-16",
