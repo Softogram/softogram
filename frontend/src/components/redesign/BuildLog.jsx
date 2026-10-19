@@ -5,6 +5,30 @@ import { G, A, DIM, GutterRow, Section } from "./homePrimitives";
 
 export const BUILD_LOG = [
   {
+    date: "2026-10-16",
+    week: "latest",
+    status: "confirmed",
+    title: "SpiceCraft submitted to the App Store and Google Play",
+    detail:
+      "Sort-puzzle game set in a spice mill, built in Unity for iOS and Android. Both stores are reviewing it, so it is not downloadable yet.",
+  },
+  {
+    date: "2026-09-16",
+    week: "latest",
+    status: "confirmed",
+    title: "Ryup sent to Google Play review",
+    detail:
+      "An alarm clock that wakes you with a short spoken activity: read a story aloud, react to a joke, catch the day's headline. Flutter app with a Go backend. Not downloadable yet.",
+  },
+  {
+    date: "2026-08-25",
+    week: "latest",
+    status: "confirmed",
+    title: "Incorporated as Opengram Labs Private Limited",
+    detail:
+      "Softogram is a brand of Opengram Labs Private Limited (CIN U62011UP2026PTC251899), registered in Prayagraj, Uttar Pradesh. The CIN is public record on India's Ministry of Corporate Affairs site.",
+  },
+  {
     date: "2026-08-07",
     week: "week-2",
     status: "confirmed",
@@ -204,6 +228,20 @@ export default function BuildLogSection({ lineStart = 20 }) {
                 </div>
               </GutterRow>
             </div>
+
+            <div id="latest" />
+            {BUILD_LOG.filter((e) => e.week === "latest").map((entry, i) => (
+              <BuildLogRow key={`latest-${i}`} entry={entry} lineNum={take()} />
+            ))}
+
+            <GutterRow lineNum={take()} dimmed>
+              <div
+                className="py-1 text-xs"
+                style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-mono)" }}
+              >
+                ── week-2 ──────────────────────────────────
+              </div>
+            </GutterRow>
 
             <div id="week-2" />
             {BUILD_LOG.filter((e) => e.week === "week-2").map((entry, i) => (
