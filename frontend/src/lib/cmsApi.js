@@ -82,6 +82,20 @@ export async function adminLogin(email, password) {
   return data.token;
 }
 
+/**
+ * Draft preview: a signed-in admin can open an unpublished post at its normal
+ * /blog/<slug> address. Returns null for everyone else, or if the post is missing.
+ */
+export async function fetchDraftBlogForAdmin(slug) {
+  if (!getAdminToken()) return null;
+  try {
+    const all = await adminFetchBlogs();
+    return all.find((p) => p.slug === slug && !p.published) || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function adminFetchBlogs() {
   const { data } = await axios.get(`${API}/admin/blog`, { headers: adminHeaders() });
   return data;

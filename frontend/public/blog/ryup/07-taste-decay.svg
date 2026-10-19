@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 440" width="1000" height="440" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">How a thumbs up fades</title><desc id="d">A thumbs up is worth 10 points. With a half-life of 30 days it is worth 5 after 30 days and 2.5 after 60 days. It drops under the favourite line of 3 after about 52 days of silence.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="1000" height="440" rx="16" fill="#FFF3EA"/>
+<text x="500" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#22110C">A thumbs up (+10) fades with a 30 day half-life</text>
+<line x1="90" y1="360" x2="940" y2="360" stroke="#C9604A" stroke-width="2"/>
+<line x1="90" y1="360" x2="90" y2="70" stroke="#C9604A" stroke-width="2"/>
+<polyline points="90.0,80.0 108.9,92.6 127.8,104.7 146.7,116.2 165.6,127.3 184.4,137.8 203.3,147.8 222.2,157.4 241.1,166.5 260.0,175.3 278.9,183.6 297.8,191.6 316.7,199.2 335.6,206.4 354.4,213.4 373.3,220.0 392.2,226.3 411.1,232.4 430.0,238.1 448.9,243.6 467.8,248.9 486.7,253.9 505.6,258.7 524.4,263.3 543.3,267.6 562.2,271.8 581.1,275.8 600.0,279.6 618.9,283.2 637.8,286.7 656.7,290.0 675.6,293.2 694.4,296.2 713.3,299.1 732.2,301.8 751.1,304.4 770.0,306.9 788.9,309.3 807.8,311.6 826.7,313.8 845.6,315.9 864.4,317.9 883.3,319.8 902.2,321.6 921.1,323.3 940.0,325.0" fill="none" stroke="#FA5E41" stroke-width="4"/>
+<line x1="90" y1="276.0" x2="940" y2="276.0" stroke="#C9604A" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="940" y="268.0" text-anchor="end" font-size="13" font-weight="400" fill="#6B4A40">favourite line = 3</text>
+<text x="90.0" y="384" text-anchor="middle" font-size="13" font-weight="400" fill="#6B4A40">day 0</text>
+<text x="373.3333333333333" y="384" text-anchor="middle" font-size="13" font-weight="400" fill="#6B4A40">day 30</text>
+<text x="656.6666666666666" y="384" text-anchor="middle" font-size="13" font-weight="400" fill="#6B4A40">day 60</text>
+<text x="940.0" y="384" text-anchor="middle" font-size="13" font-weight="400" fill="#6B4A40">day 90</text>
+<circle cx="90.0" cy="80.0" r="6" fill="#22110C"/>
+<text x="118.0" y="66.0" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">10</text>
+<circle cx="373.3" cy="220.0" r="6" fill="#22110C"/>
+<text x="373.3333333333333" y="206.0" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">5</text>
+<circle cx="656.7" cy="290.0" r="6" fill="#22110C"/>
+<text x="682.6666666666666" y="310.0" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">2.5</text>
+<circle cx="582.1" cy="276.0" r="7" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="522.0555555555555" y="320.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">about day 52: no longer a favourite</text>
+<text x="500" y="410" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">No cleanup job needed: the faded value is calculated whenever it is read</text>
+</svg>

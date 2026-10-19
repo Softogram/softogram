@@ -4,6 +4,7 @@
  */
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import {
   LineChart,
@@ -655,6 +656,18 @@ export default function Admin() {
                   />
                   published
                 </label>
+                {!selected.published && selected.slug && (
+                  // Same tab on purpose: the admin token lives in sessionStorage,
+                  // which browsers do not copy into a new tab opened from a link.
+                  <Link
+                    to={`/blog/${selected.slug}`}
+                    className="inline-block text-xs underline"
+                    style={{ color: G, fontFamily: "var(--font-mono)" }}
+                    data-testid="admin-blog-preview"
+                  >
+                    preview draft (save first) →
+                  </Link>
+                )}
               </div>
             )}
             {selected && tab === "projects" && (
