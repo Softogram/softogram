@@ -16,6 +16,7 @@ import { G, DIM, BORDER, CARD } from "@/components/redesign/homePrimitives";
 import { BOOKING_URL } from "@/data/site";
 import SeoHead from "@/components/redesign/SeoHead";
 import { breadcrumbLd } from "@/lib/seo";
+import { isDiagramCover, shareImageFor } from "@/lib/images";
 
 const MARKDOWN_COMPONENTS = {
   h1: ({ children }) => (
@@ -52,16 +53,23 @@ const MARKDOWN_COMPONENTS = {
       {children}
     </li>
   ),
-  a: ({ children, href }) => (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{ color: G, textDecoration: "underline" }}
-    >
-      {children}
-    </a>
-  ),
+  // Links inside the site (/blog/other-post) stay in this tab via the router;
+  // everything else opens in a new tab.
+  a: ({ children, href }) =>
+    typeof href === "string" && href.startsWith("/") ? (
+      <Link to={href} style={{ color: G, textDecoration: "underline" }}>
+        {children}
+      </Link>
+    ) : (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: G, textDecoration: "underline" }}
+      >
+        {children}
+      </a>
+    ),
   strong: ({ children }) => (
     <strong style={{ color: "#e2e8f0", fontWeight: 600 }}>{children}</strong>
   ),
@@ -458,12 +466,14 @@ export default function BlogPost() {
   }
 
   const canonical = `https://softogram.in/blog/${post.slug}`;
+  const shareImage = shareImageFor(post);
+  const diagram = isDiagramCover(post);
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
-    image: post.coverImage,
+    image: shareImage,
     datePublished: post.date,
     author: { "@type": "Organization", name: post.author || "Softogram" },
     publisher: {
@@ -493,28 +503,30 @@ export default function BlogPost() {
         title={`${post.title} | Softogram Blog`}
         description={post.excerpt}
         canonical={canonical}
-        image={post.coverImage}
+        image={shareImage}
         type="article"
         jsonLd={jsonLd}
       />
 
-      <div
-        className="relative h-64 md:h-96 overflow-hidden"
-        style={{ background: "#010409" }}
-      >
-        <img
-          src={post.coverImage}
-          alt={post.title}
-          className="w-full h-full object-cover opacity-40"
-        />
+      {!diagram && (
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(7,7,13,0.3) 0%, #0d1117 100%)",
-          }}
-        />
-      </div>
+          className="relative h-64 md:h-96 overflow-hidden"
+          style={{ background: "#010409" }}
+        >
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            className="w-full h-full object-cover opacity-40"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(7,7,13,0.3) 0%, #0d1117 100%)",
+            }}
+          />
+        </div>
+      )}
 
       <div className="max-w-3xl mx-auto px-6 pb-28">
         <div
@@ -560,6 +572,37 @@ export default function BlogPost() {
           </div>
           <ShareRow post={post} canonical={canonical} />
         </div>
+
+        {diagram && (
+          // A diagram is part of the article, so it is shown whole. Below about
+          // 720px wide its labels would shrink past readable, so on phones it
+          // keeps that width and scrolls sideways instead, with a full-size link.
+          <figure className="pt-10" data-testid="blog-post-diagram">
+            <div className="overflow-x-auto rounded-sm">
+              <img
+                src={post.coverImage}
+                alt={post.coverAlt || post.title}
+                className="block w-full h-auto"
+                style={{ minWidth: 720 }}
+              />
+            </div>
+            <figcaption
+              className="mt-2 text-xs"
+              style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+            >
+              <span className="md:hidden">swipe sideways to see it all · </span>
+              <a
+                href={post.coverImage}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: G, textDecoration: "underline" }}
+                data-testid="blog-post-diagram-open"
+              >
+                open full size
+              </a>
+            </figcaption>
+          </figure>
+        )}
 
         <article className="pt-10 space-y-3" data-testid="blog-post-content">
           <ReactMarkdown components={MARKDOWN_COMPONENTS}>

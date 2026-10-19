@@ -76,3 +76,22 @@ export function coverImageProps(url, { width, height, priority = false } = {}) {
     fetchPriority: priority ? "high" : "auto",
   };
 }
+
+/**
+ * Absolute URL for an image that crawlers or other sites will fetch (og:image,
+ * JSON-LD). CMS images may be site-relative, like /blog/ryup/01-x.png.
+ */
+export function absoluteImageUrl(url, origin = "https://softogram.in") {
+  if (typeof url === "string" && url.startsWith("/")) return `${origin}${url}`;
+  return url;
+}
+
+/** Image for link previews: the share image if set, else the cover. */
+export function shareImageFor(post) {
+  return absoluteImageUrl(post.shareImage || post.coverImage);
+}
+
+/** Diagram covers are content: shown whole and at full strength, never cropped. */
+export function isDiagramCover(post) {
+  return post.coverLayout === "diagram";
+}
