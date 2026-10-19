@@ -1,14 +1,15 @@
-// Products catalog (Phase 5) - static seeds + modal. Real open-source tools only (issue #73).
+// Products catalog (Phase 5) - static seeds + modal. Real products only (issue #73):
+// two open-source tools plus two mobile apps marked "Coming soon".
 const { test, expect } = require("@playwright/test");
 
 test.describe("products page", () => {
-  test("catalog renders two real product cards", async ({ page }) => {
+  test("catalog renders four real product cards", async ({ page }) => {
     await page.goto("/products");
     await expect(page.getByTestId("products-page")).toBeVisible();
     await expect(page.getByTestId("products-hero")).toContainText(
       /build and ship/i,
     );
-    await expect(page.getByTestId("product-card")).toHaveCount(2);
+    await expect(page.getByTestId("product-card")).toHaveCount(4);
     await expect(page.getByTestId("placeholder-page")).toHaveCount(0);
   });
 
@@ -16,8 +17,10 @@ test.describe("products page", () => {
     await page.goto("/products");
     await page.getByTestId("products-filter-open-source").click();
     await expect(page.getByTestId("product-card")).toHaveCount(2);
-    await page.getByTestId("products-filter-all").click();
+    await page.getByTestId("products-filter-mobile-app").click();
     await expect(page.getByTestId("product-card")).toHaveCount(2);
+    await page.getByTestId("products-filter-all").click();
+    await expect(page.getByTestId("product-card")).toHaveCount(4);
   });
 
   test("card opens modal with features; close dismisses it", async ({
@@ -63,5 +66,20 @@ test.describe("products page", () => {
       "href",
       /^https:\/\/github\.com\/Softogram\//,
     );
+  });
+
+  test("mobile apps are marked Coming soon and offer no download link", async ({
+    page,
+  }) => {
+    await page.goto("/products");
+    await page.getByTestId("products-filter-mobile-app").click();
+    for (const i of [0, 1]) {
+      await page.getByTestId("product-card").nth(i).click();
+      const modal = page.getByTestId("product-modal");
+      await expect(modal).toContainText("Coming soon");
+      await expect(page.getByTestId("product-modal-visit")).toHaveCount(0);
+      await page.getByTestId("product-modal-close").click();
+      await expect(modal).toHaveCount(0);
+    }
   });
 });

@@ -85,7 +85,7 @@ function ProductModal({ product, onClose }) {
           <img
             src={product.img}
             alt={product.name}
-            className="w-full h-full object-cover opacity-50"
+            className={`w-full h-full ${product.imgFit === "contain" ? "object-contain p-6" : "object-cover"} opacity-50`}
           />
           <div
             className="absolute inset-0"
@@ -316,7 +316,7 @@ export default function Products() {
               className="text-xs font-medium uppercase tracking-widest mb-5"
               style={{ color: G, fontFamily: "var(--font-mono)" }}
             >
-              Open Source
+              Products
             </div>
             <h1
               className="mb-6 leading-tight"
@@ -327,7 +327,7 @@ export default function Products() {
                 color: "#e2e8f0",
               }}
             >
-              Tools we{" "}
+              Things we{" "}
               <span className="italic" style={{ color: G }}>
                 build and ship.
               </span>
@@ -336,8 +336,8 @@ export default function Products() {
               className="text-lg max-w-xl mx-auto"
               style={{ color: DIM, fontWeight: 300 }}
             >
-              Free, open-source tools we build for ourselves and release
-              publicly - real repos, real releases.
+              Free, open-source developer tools and our own mobile apps.
+              Every status on this page is true today.
             </p>
           </div>
         </section>
@@ -402,7 +402,7 @@ export default function Products() {
                       <img
                         src={p.img}
                         alt={p.name}
-                        className="w-full h-full object-cover opacity-55"
+                        className={`w-full h-full ${p.imgFit === "contain" ? "object-contain p-6" : "object-cover"} opacity-55`}
                       />
                       <div
                         className="absolute inset-0"
