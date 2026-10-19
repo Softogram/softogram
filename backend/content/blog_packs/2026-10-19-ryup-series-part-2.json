@@ -14,7 +14,7 @@
     "coverAlt": "Diagram: voice recordings are transcribed, moderated and judged by an AI model, turned into five components, combined with weights, capped by gates, reduced by a retry penalty, softened for newcomers and saved as one score.",
     "coverLayout": "diagram",
     "shareImage": "/blog/ryup/06-scoring-pipeline.png",
-    "published": false,
+    "published": true,
     "readTime": 14
   },
   {
@@ -32,7 +32,7 @@
     "coverAlt": "Diagram: the recommendation loop. Onboarding seeds taste scores, each morning a plan is built from those scores, and after the session reactions are saved as events that update the scores.",
     "coverLayout": "diagram",
     "shareImage": "/blog/ryup/07-recommendation-loop.png",
-    "published": false,
+    "published": true,
     "readTime": 14
   }
 ]
