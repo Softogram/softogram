@@ -27,6 +27,10 @@ from models import AdminSession, AdminUser, BlogComment, BlogPost, Project
 ROOT = Path(__file__).parent
 SEED_BLOGS = ROOT / "content" / "seed_blogs.json"
 SEED_PROJECTS = ROOT / "content" / "seed_projects.json"
+# Post series published later than the first seed. Each file is also inserted into
+# an existing database by its own data migration (see migrations/versions), so a
+# brand-new database (local dev, e2e) and production end up with the same posts.
+BLOG_PACKS = ROOT / "content" / "blog_packs"
 
 SESSION_TTL_SEC = 60 * 60 * 12
 _pwd = CryptContext(schemes=["argon2"], deprecated="auto")
@@ -49,6 +53,13 @@ def _load_seed(path: Path) -> list[dict[str, Any]]:
         return data if isinstance(data, list) else []
 
 
+def load_blog_packs() -> list[dict[str, Any]]:
+    items: list[dict[str, Any]] = []
+    for path in sorted(BLOG_PACKS.glob("*.json")):
+        items.extend(_load_seed(path))
+    return items
+
+
 def _blog_to_dict(row: BlogPost) -> dict[str, Any]:
     return {
         "id": row.id,
@@ -60,6 +71,9 @@ def _blog_to_dict(row: BlogPost) -> dict[str, Any]:
         "date": row.date,
         "tags": row.tags or [],
         "coverImage": row.cover_image,
+        "coverAlt": row.cover_alt,
+        "coverLayout": row.cover_layout,
+        "shareImage": row.share_image,
         "published": row.published,
         "readTime": row.read_time,
         "viewCount": row.view_count,
@@ -94,6 +108,9 @@ def _blog_row(item: dict[str, Any]) -> BlogPost:
         date=item.get("date", ""),
         tags=item.get("tags", []),
         cover_image=item.get("coverImage", ""),
+        cover_alt=item.get("coverAlt", ""),
+        cover_layout=item.get("coverLayout", "banner"),
+        share_image=item.get("shareImage", ""),
         published=item.get("published", True),
         read_time=item.get("readTime", 5),
     )
@@ -122,7 +139,7 @@ async def ensure_seeded() -> None:
     async with AsyncSessionLocal() as session:
         has_blogs = (await session.execute(select(BlogPost.id).limit(1))).first()
         if has_blogs is None:
-            for item in _load_seed(SEED_BLOGS):
+            for item in _load_seed(SEED_BLOGS) + load_blog_packs():
                 session.add(_blog_row(item))
 
         has_projects = (await session.execute(select(Project.id).limit(1))).first()
@@ -175,7 +192,10 @@ async def save_projects(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 async def published_blogs() -> list[dict[str, Any]]:
-    return [b for b in await get_blogs() if b.get("published")]
+    """Newest first. Posts sharing a date keep id order, so a series published on
+    one day (ryup-01..ryup-05) reads part 1 first. Dates are stored YYYY-MM-DD."""
+    posts = sorted((b for b in await get_blogs() if b.get("published")), key=lambda b: b["id"])
+    return sorted(posts, key=lambda b: b.get("date") or "", reverse=True)
 
 
 async def published_projects() -> list[dict[str, Any]]:

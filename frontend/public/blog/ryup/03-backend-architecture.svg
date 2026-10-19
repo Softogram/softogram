@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" width="960" height="460" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">Ryup backend architecture</title><desc id="d">The phone talks over HTTPS to a Go API. The API uses Postgres, object storage for voice, a speech-to-text service and an AI scorer. Scheduled jobs run in the same program.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="960" height="460" rx="16" fill="#FFF3EA"/>
+<rect x="30" y="170" width="140" height="90" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="100.0" y="210.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Ryup app</text>
+<text x="100.0" y="230.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">iPhone + Android</text>
+<rect x="230" y="170" width="150" height="90" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="305.0" y="210.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Caddy</text>
+<text x="305.0" y="230.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">HTTPS front door</text>
+<rect x="440" y="150" width="190" height="130" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="535.0" y="190.25" text-anchor="middle" font-size="15" font-weight="700" fill="#FFFFFF">Go API (Gin)</text>
+<text x="535.0" y="210.25" text-anchor="middle" font-size="15" font-weight="400" fill="#FFFFFF">sign-in check</text>
+<text x="535.0" y="230.25" text-anchor="middle" font-size="15" font-weight="400" fill="#FFFFFF">load limit</text>
+<text x="535.0" y="250.25" text-anchor="middle" font-size="15" font-weight="400" fill="#FFFFFF">routes + rules</text>
+<rect x="700" y="30" width="230" height="70" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="815.0" y="60.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Postgres</text>
+<text x="815.0" y="80.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">users, alarms, scores</text>
+<rect x="700" y="130" width="230" height="70" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="815.0" y="160.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Object storage</text>
+<text x="815.0" y="180.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">voice clips, 7 days</text>
+<rect x="700" y="230" width="230" height="70" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="815.0" y="260.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Speech to text</text>
+<text x="815.0" y="280.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">turns voice into words</text>
+<rect x="700" y="330" width="230" height="70" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="815.0" y="360.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">AI scorer</text>
+<text x="815.0" y="380.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">grades the answer</text>
+<line x1="170" y1="215" x2="230" y2="215" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="380" y1="215" x2="440" y2="215" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="630" y1="215" x2="700" y2="65" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="630" y1="215" x2="700" y2="165" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="630" y1="215" x2="700" y2="265" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="630" y1="215" x2="700" y2="365" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="440" y="330" width="190" height="80" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="535.0" y="356.55" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">Scheduled jobs</text>
+<text x="535.0" y="374.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">reminders, cleanup,</text>
+<text x="535.0" y="392.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">streak checks</text>
+<line x1="535" y1="330" x2="535" y2="280" stroke="#FA5E41" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#a)"/>
+</svg>

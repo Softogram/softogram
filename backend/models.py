@@ -62,6 +62,13 @@ class BlogPost(Base):
     date: Mapped[str] = mapped_column(String(40), default="")
     tags: Mapped[list] = mapped_column(JSON, default=list)
     cover_image: Mapped[str] = mapped_column(String(500), default="")
+    # Alt text for the cover. "banner" covers are decorative photos shown faded behind
+    # the title; "diagram" covers are content, shown in full under the title.
+    cover_alt: Mapped[str] = mapped_column(String(500), default="")
+    cover_layout: Mapped[str] = mapped_column(String(20), default="banner")
+    # Link-preview image (og:image). Social networks ignore SVG, so a diagram post
+    # points this at a PNG copy; empty means "use cover_image".
+    share_image: Mapped[str] = mapped_column(String(500), default="")
     published: Mapped[bool] = mapped_column(Boolean, default=True)
     read_time: Mapped[int] = mapped_column(Integer, default=5)
     view_count: Mapped[int] = mapped_column(Integer, default=0)

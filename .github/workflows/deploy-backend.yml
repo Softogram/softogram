@@ -8,6 +8,8 @@ on:
       # Seed JSON only read once, to auto-populate an empty DB (see cms.py's
       # docstring) - once Postgres has real content, these are never read
       # again, so changing them has zero effect on the running service.
+      # Blog pack files are read by data migrations, but a new pack always
+      # ships with its migration under backend/migrations/, which does trigger.
       - "!backend/content/**"
   workflow_dispatch:
 

@@ -10,7 +10,7 @@ import shutil
 from collections import defaultdict, deque
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
-from typing import List, Optional
+from typing import List, Literal, Optional
 from contextlib import asynccontextmanager
 from email.utils import format_datetime
 from xml.sax.saxutils import escape as xml_escape
@@ -520,6 +520,9 @@ class BlogPostModel(BaseModel):
     date: str = Field(default="", max_length=40)
     tags: List[str] = Field(default_factory=list)
     coverImage: str = Field(default="", max_length=500)
+    coverAlt: str = Field(default="", max_length=500)
+    coverLayout: Literal["banner", "diagram"] = "banner"
+    shareImage: str = Field(default="", max_length=500)
     published: bool = True
     readTime: int = Field(default=5, ge=1, le=120)
 
@@ -573,11 +576,40 @@ def _parse_post_date(date_str: str) -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _absolute_url(url: str) -> str:
+    """Site-relative paths (/blog/ryup/x.png) become absolute; crawlers need full URLs."""
+    if url.startswith("/"):
+        return f"{SITE_URL}{url}"
+    return url
+
+
 def _blog_share_html(post: dict) -> str:
     title = html.escape(f"{post.get('title', '')} | Softogram Blog")
     description = html.escape(post.get("excerpt") or "")
-    image = html.escape(post.get("coverImage") or f"{SITE_URL}/og-banner.png")
-    canonical = html.escape(f"{SITE_URL}/blog/{post.get('slug', '')}")
+    raw_image = post.get("shareImage") or post.get("coverImage") or "/og-banner.png"
+    image = html.escape(_absolute_url(raw_image))
+    canonical_raw = f"{SITE_URL}/blog/{post.get('slug', '')}"
+    canonical = html.escape(canonical_raw)
+    # BlogPosting structured data, mirroring what the SPA renders client-side, so
+    # crawlers served this page (Googlebot included) still see it. "</" is escaped
+    # so post text can never close the script tag early.
+    article_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post.get("title") or "",
+            "description": post.get("excerpt") or "",
+            "image": _absolute_url(raw_image),
+            "datePublished": post.get("date") or "",
+            "author": {"@type": "Organization", "name": post.get("author") or "Softogram"},
+            "publisher": {
+                "@type": "Organization",
+                "name": "Softogram",
+                "logo": {"@type": "ImageObject", "url": f"{SITE_URL}/softogram-logo.png"},
+            },
+            "mainEntityOfPage": canonical_raw,
+        }
+    ).replace("</", "<\\/")
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -594,6 +626,7 @@ def _blog_share_html(post: dict) -> str:
   <meta name="twitter:title" content="{title}" />
   <meta name="twitter:description" content="{description}" />
   <meta name="twitter:image" content="{image}" />
+  <script type="application/ld+json">{article_ld}</script>
 </head>
 <body>
   <h1>{html.escape(post.get("title") or "")}</h1>
