@@ -20,7 +20,7 @@ import { breadcrumbLd } from "@/lib/seo";
 const BETA = "#38bdf8";
 
 function statusColor(status) {
-  if (status === "Live") return G;
+  if (status.startsWith("Live")) return G;
   if (status === "Beta") return BETA;
   return A;
 }
@@ -226,6 +226,55 @@ function ProductModal({ product, onClose }) {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {product.stores && (
+            <div
+              className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2"
+              data-testid="product-modal-stores"
+            >
+              {product.stores.googlePlay && (
+                // Google's official badge, unaltered; its built-in transparent
+                // margin is the clear space Google's badge rules ask for.
+                <a
+                  href={product.stores.googlePlay}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                  data-testid="product-modal-google-play"
+                >
+                  <img
+                    src="/badges/google-play-badge.png"
+                    alt={`Get ${product.name} on Google Play`}
+                    width={646}
+                    height={250}
+                    style={{ height: 64, width: "auto" }}
+                  />
+                </a>
+              )}
+              {product.stores.appStore ? (
+                <a
+                  href={product.stores.appStore}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm underline"
+                  style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                  data-testid="product-modal-app-store"
+                >
+                  Get {product.name} on the App Store
+                </a>
+              ) : (
+                product.stores.iosNote && (
+                  <span
+                    className="text-sm"
+                    style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                    data-testid="product-modal-ios-note"
+                  >
+                    {product.stores.iosNote}
+                  </span>
+                )
+              )}
             </div>
           )}
 

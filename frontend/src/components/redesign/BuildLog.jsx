@@ -26,7 +26,7 @@ export const BUILD_LOG = [
     status: "confirmed",
     title: "Ryup sent to Google Play review",
     detail:
-      "An alarm clock that wakes you with a short spoken activity: read a story aloud, react to a joke, catch the day's headline. Flutter app with a Go backend. Not downloadable yet.",
+      "An alarm clock that wakes you with a short spoken activity: read a story aloud, react to a joke, catch the day's headline. Flutter app with a Go backend. Now live on Google Play; the iPhone version is coming soon.",
   },
   {
     date: "2026-08-25",

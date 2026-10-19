@@ -1,7 +1,8 @@
 /** Static product catalog seeds (Phase 5). No localStorage / admin.
  * Real products only - see issue #73. Every status must be true today:
- * "Live" means anyone can use it now; "Coming soon" means submitted to the
- * app stores but not yet downloadable. Never invent reviews or numbers.
+ * "Live" means anyone can use it now ("Live on Android" when only one store
+ * has it); "Coming soon" means submitted but not yet downloadable.
+ * stores: optional official store links, shown as badges in the product modal. Never invent reviews or numbers.
  * imgFit: "contain" shows a square app icon whole instead of cropping it. */
 
 export const PRODUCTS = [
@@ -51,8 +52,8 @@ export const PRODUCTS = [
     category: "Alarm Clock · Mobile App",
     desc: "An alarm clock that will not let you drift back to sleep. It rings, then asks you to actually do something - read a short story aloud, react to a joke, catch the day's headline.",
     longDesc:
-      "Ryup is an alarm clock for people who switch alarms off in their sleep. When it rings, you wake yourself up properly with a short spoken activity - reading a story aloud, reacting to a joke, or catching the day's headline. Built with Flutter on the phone and a Go backend, with iOS and Android treated as equal from day one. Submitted to the app stores; not downloadable yet.",
-    status: "Coming soon",
+      "Ryup is an alarm clock for people who switch alarms off in their sleep. When it rings, you wake yourself up properly with a short spoken activity - reading a story aloud, reacting to a joke, or catching the day's headline. Built with Flutter on the phone and a Go backend, with iOS and Android treated as equal from day one. Live on Google Play; the iPhone version is coming soon.",
+    status: "Live on Android",
     badge: "iOS & Android",
     img: "/products/ryup-icon.png",
     imgFit: "contain",
@@ -62,9 +63,15 @@ export const PRODUCTS = [
       "A short spoken activity to get you properly awake",
       "iOS and Android, built as equals",
       "Flutter app with a Go backend",
-      "In app store review",
+      "Live on Google Play, iPhone coming soon",
     ],
-    price: "Coming soon",
+    price: "On Google Play",
+    // Store links. When the iPhone version goes live, add
+    // appStore: "<App Store URL>" and the note below is replaced by a link.
+    stores: {
+      googlePlay: "https://play.google.com/store/apps/details?id=com.softogram.ryup_app",
+      iosNote: "iPhone version coming soon",
+    },
   },
   {
     id: "spicecraft",
