@@ -5,11 +5,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   fetchBlogBySlug,
   fetchBlogComments,
   submitBlogComment,
   fetchPublishedBlogs,
+  fetchDraftBlogForAdmin,
 } from "@/lib/cmsApi";
 import { capture } from "@/lib/analytics";
 import { G, DIM, BORDER, CARD } from "@/components/redesign/homePrimitives";
@@ -17,6 +19,39 @@ import { BOOKING_URL } from "@/data/site";
 import SeoHead from "@/components/redesign/SeoHead";
 import { breadcrumbLd } from "@/lib/seo";
 import { isDiagramCover, shareImageFor } from "@/lib/images";
+
+/**
+ * A diagram shown whole. Below about 720px wide its labels would shrink past
+ * readable, so on phones it keeps that width and scrolls sideways instead,
+ * with a link to the full-size file. Used for diagram covers and for images
+ * inside a post's body.
+ */
+function DiagramFigure({ src, alt, testId = "blog-post-diagram" }) {
+  return (
+    <figure className="py-4" data-testid={testId}>
+      <div className="overflow-x-auto rounded-sm">
+        <img src={src} alt={alt} className="block w-full h-auto" style={{ minWidth: 720 }} />
+      </div>
+      <figcaption
+        className="mt-2 text-xs"
+        style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+      >
+        <span className="md:hidden">swipe sideways to see it all · </span>
+        <a
+          href={src}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: G, textDecoration: "underline" }}
+          data-testid={`${testId}-open`}
+        >
+          open full size
+        </a>
+      </figcaption>
+    </figure>
+  );
+}
+
+const CELL = { border: `1px solid ${BORDER}`, padding: "6px 10px", textAlign: "left", verticalAlign: "top" };
 
 const MARKDOWN_COMPONENTS = {
   h1: ({ children }) => (
@@ -37,11 +72,28 @@ const MARKDOWN_COMPONENTS = {
       {children}
     </h4>
   ),
-  p: ({ children }) => (
-    <p className="text-sm leading-relaxed" style={{ color: "#cbd5e1" }}>
-      {children}
-    </p>
+  // A paragraph holding only an image is a diagram: render the figure on its
+  // own, since a <figure> may not sit inside a <p>.
+  p: ({ node, children }) =>
+    node?.children?.length === 1 && node.children[0].tagName === "img" ? (
+      <>{children}</>
+    ) : (
+      <p className="text-sm leading-relaxed" style={{ color: "#cbd5e1" }}>
+        {children}
+      </p>
+    ),
+  img: ({ src, alt }) => <DiagramFigure src={src} alt={alt || ""} testId="blog-body-diagram" />,
+  table: ({ children }) => (
+    <div className="overflow-x-auto py-2" data-testid="blog-table">
+      <table className="w-full text-xs border-collapse" style={{ color: "#cbd5e1" }}>
+        {children}
+      </table>
+    </div>
   ),
+  th: ({ children }) => (
+    <th style={{ ...CELL, color: "#e2e8f0", background: "#161b22", fontWeight: 600 }}>{children}</th>
+  ),
+  td: ({ children }) => <td style={CELL}>{children}</td>,
   ul: ({ children }) => (
     <ul className="list-disc space-y-1 pl-5">{children}</ul>
   ),
@@ -395,7 +447,7 @@ export default function BlogPost() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const data = await fetchBlogBySlug(slug);
+      const data = (await fetchBlogBySlug(slug)) || (await fetchDraftBlogForAdmin(slug));
       if (!cancelled) setPost(data);
     })();
     return () => {
@@ -467,7 +519,13 @@ export default function BlogPost() {
 
   const canonical = `https://softogram.in/blog/${post.slug}`;
   const shareImage = shareImageFor(post);
-  const diagram = isDiagramCover(post);
+  // Drafts are only ever reached by a signed-in admin (see fetchDraftBlogForAdmin).
+  const isDraft = post.published === false;
+  // A post that already shows its cover diagram in the body skips the cover
+  // figure, so the same diagram never appears twice in a row.
+  const diagram =
+    isDiagramCover(post) && !(post.content || "").includes(`](${post.coverImage})`);
+  const coverFigure = isDiagramCover(post);
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -506,9 +564,24 @@ export default function BlogPost() {
         image={shareImage}
         type="article"
         jsonLd={jsonLd}
+        robots={isDraft ? "noindex, nofollow" : undefined}
       />
 
-      {!diagram && (
+      {isDraft && (
+        <div
+          className="max-w-3xl mx-auto px-6 pt-6"
+          data-testid="blog-post-draft-banner"
+        >
+          <div
+            className="text-xs px-3 py-2 rounded-sm"
+            style={{ color: "#fb923c", border: "1px solid #fb923c55", background: "#fb923c14", fontFamily: "var(--font-mono)" }}
+          >
+            Draft preview, not public. Only signed-in admins can see this page.
+          </div>
+        </div>
+      )}
+
+      {!coverFigure && (
         <div
           className="relative h-64 md:h-96 overflow-hidden"
           style={{ background: "#010409" }}
@@ -574,38 +647,13 @@ export default function BlogPost() {
         </div>
 
         {diagram && (
-          // A diagram is part of the article, so it is shown whole. Below about
-          // 720px wide its labels would shrink past readable, so on phones it
-          // keeps that width and scrolls sideways instead, with a full-size link.
-          <figure className="pt-10" data-testid="blog-post-diagram">
-            <div className="overflow-x-auto rounded-sm">
-              <img
-                src={post.coverImage}
-                alt={post.coverAlt || post.title}
-                className="block w-full h-auto"
-                style={{ minWidth: 720 }}
-              />
-            </div>
-            <figcaption
-              className="mt-2 text-xs"
-              style={{ color: DIM, fontFamily: "var(--font-mono)" }}
-            >
-              <span className="md:hidden">swipe sideways to see it all · </span>
-              <a
-                href={post.coverImage}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: G, textDecoration: "underline" }}
-                data-testid="blog-post-diagram-open"
-              >
-                open full size
-              </a>
-            </figcaption>
-          </figure>
+          <div className="pt-6">
+            <DiagramFigure src={post.coverImage} alt={post.coverAlt || post.title} />
+          </div>
         )}
 
         <article className="pt-10 space-y-3" data-testid="blog-post-content">
-          <ReactMarkdown components={MARKDOWN_COMPONENTS}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={MARKDOWN_COMPONENTS}>
             {post.content || ""}
           </ReactMarkdown>
         </article>

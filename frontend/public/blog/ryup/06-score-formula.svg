@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">The order of the scoring rules</title><desc id="d">The weighted average comes first, then the honest-behaviour gates, then the retry penalty, then the newcomer curve, then the abuse caps. Abuse caps come last so leniency never softens them.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="1000" height="420" rx="16" fill="#FFF3EA"/>
+<text x="500" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#22110C">Order matters: it decides who each rule hurts</text>
+<rect x="15" y="70" width="184" height="150" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="107.0" y="130.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">1  Average</text>
+<text x="107.0" y="149.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">weight x confidence</text>
+<text x="107.0" y="168.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">over measured parts</text>
+<line x1="199" y1="145" x2="213" y2="145" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="214" y="70" width="184" height="150" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="306.0" y="121.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">2  Gates</text>
+<text x="306.0" y="140.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">cap, never subtract</text>
+<text x="306.0" y="159.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">no affirmation: 70</text>
+<text x="306.0" y="178.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">under 20s speech: 40</text>
+<line x1="398" y1="145" x2="412" y2="145" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="413" y="70" width="184" height="150" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="505.0" y="130.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">3  Retry penalty</text>
+<text x="505.0" y="149.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">-5 per extra ring</text>
+<text x="505.0" y="168.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">at most -15</text>
+<line x1="597" y1="145" x2="611" y2="145" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="612" y="70" width="184" height="150" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="704.0" y="130.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">4  Newcomer curve</text>
+<text x="704.0" y="149.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">shown = 100 - (100 - x) * s</text>
+<text x="704.0" y="168.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">s starts at 0.65</text>
+<line x1="796" y1="145" x2="810" y2="145" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="811" y="70" width="184" height="150" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="903.0" y="130.9" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">5  Abuse caps</text>
+<text x="903.0" y="149.9" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">replay: 25</text>
+<text x="903.0" y="168.9" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">flagged content: 10</text>
+<rect x="15" y="270" width="470" height="100" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="250.0" y="315.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Honest behaviour is softened for newcomers</text>
+<text x="250.0" y="334.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">Gates, retries and rough mornings all pass through the curve</text>
+<rect x="515" y="270" width="470" height="100" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="750.0" y="315.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Cheating and abuse never are</text>
+<text x="750.0" y="334.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">Abuse caps apply after the curve, so leniency cannot cushion them</text>
+<line x1="300" y1="220" x2="300" y2="270" stroke="#FA5E41" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#a)"/>
+<line x1="790" y1="220" x2="790" y2="270" stroke="#FA5E41" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#a)"/>
+<text x="500" y="400" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Two outputs: shown score for you, strict score for comparisons</text>
+</svg>

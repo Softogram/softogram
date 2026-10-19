@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="1000" height="520" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">The morning plan and the discovery ladder</title><desc id="d">The plan has ten slots: seven from favourites and three from a four step discovery ladder, shuffled by weight, then a permanent free choice slot. The ladder steps are lapsed favourites, trending, similar categories and never tried types.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="1000" height="520" rx="16" fill="#FFF3EA"/>
+<text x="500" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#22110C">Ten slots, weighted-shuffled, then a free choice that always works</text>
+<rect x="20" y="60" width="300" height="90" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="170.0" y="90.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">7 personal slots</text>
+<text x="170.0" y="110.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">drawn from your favourites</text>
+<text x="170.0" y="130.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">max 3 per type, repeat guard</text>
+<rect x="340" y="60" width="300" height="90" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="490.0" y="90.25" text-anchor="middle" font-size="15" font-weight="700" fill="#FFFFFF">3 discovery slots</text>
+<text x="490.0" y="110.25" text-anchor="middle" font-size="15" font-weight="400" fill="#FFFFFF">one from each ladder rung,</text>
+<text x="490.0" y="130.25" text-anchor="middle" font-size="15" font-weight="400" fill="#FFFFFF">rolling down if a rung is empty</text>
+<rect x="660" y="60" width="320" height="90" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="820.0" y="90.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Weighted shuffle</text>
+<text x="820.0" y="110.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">seed = person + local date</text>
+<text x="820.0" y="130.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">same day: same plan</text>
+<line x1="320" y1="105" x2="340" y2="105" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="640" y1="105" x2="660" y2="105" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="500" y="190" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">The discovery ladder</text>
+<rect x="20" y="210" width="230" height="110" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="135.0" y="242.55" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">1  Lapsed favourite</text>
+<text x="135.0" y="260.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">loved before, nothing</text>
+<text x="135.0" y="278.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">positive for 14 days</text>
+<text x="135.0" y="296.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">refused: wait 30/60/120 days</text>
+<rect x="265" y="210" width="230" height="110" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="380.0" y="242.55" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">2  Trending</text>
+<text x="380.0" y="260.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">most liked this week</text>
+<text x="380.0" y="278.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">across everyone</text>
+<text x="380.0" y="296.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">not already your favourite</text>
+<rect x="510" y="210" width="230" height="110" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="625.0" y="242.55" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">3  Similar</text>
+<text x="625.0" y="260.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">by meaning, between</text>
+<text x="625.0" y="278.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">categories. Planned: empty</text>
+<text x="625.0" y="296.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">today, slot rolls down</text>
+<rect x="755" y="210" width="230" height="110" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="870.0" y="242.55" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">4  Never tried type</text>
+<text x="870.0" y="260.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">a type you never picked</text>
+<text x="870.0" y="278.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">or touched</text>
+<text x="870.0" y="296.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">ranked by popularity</text>
+<line x1="250" y1="265" x2="265" y2="265" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="495" y1="265" x2="510" y2="265" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="740" y1="265" x2="755" y2="265" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="20" y="360" width="470" height="90" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="255.0" y="400.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Each slot carries 10 items</text>
+<text x="255.0" y="419.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">unseen first, then longest unseen, new items get a bonus</text>
+<rect x="510" y="360" width="470" height="90" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="745.0" y="400.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Free choice</text>
+<text x="745.0" y="419.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">never shuffled, never empty: the way out</text>
+<text x="500" y="485" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Every stored slot records its source, so we can measure which part earns its place</text>
+</svg>
