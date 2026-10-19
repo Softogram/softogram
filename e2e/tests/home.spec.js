@@ -92,7 +92,8 @@ test.describe("landing page", () => {
   test("company milestones and the NxtGen partnership are on the page", async ({ page }) => {
     await page.goto("/");
     const titles = page.getByTestId("build-log-title");
-    await expect(titles.first()).toContainText("SpiceCraft submitted");
+    await expect(titles.first()).toContainText("official NxtGen Cloud partner");
+    await expect(titles.nth(1)).toContainText("SpiceCraft submitted");
     await expect(page.getByTestId("build-log-section")).toContainText(
       "Incorporated as Opengram Labs Private Limited",
     );

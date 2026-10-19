@@ -5,6 +5,14 @@ import { G, A, DIM, GutterRow, Section } from "./homePrimitives";
 
 export const BUILD_LOG = [
   {
+    date: "2026-10-19",
+    week: "latest",
+    status: "confirmed",
+    title: "Announced: official NxtGen Cloud partner",
+    detail:
+      "Softogram can now set up and run cloud hosting and GPU machines for AI agents and AI workloads on NxtGen Cloud's India-based infrastructure, not just write the code that runs on them.",
+  },
+  {
     date: "2026-10-16",
     week: "latest",
     status: "confirmed",
