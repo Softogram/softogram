@@ -1,14 +1,15 @@
-// Products catalog (Phase 5) - static seeds + modal. Real open-source tools only (issue #73).
+// Products catalog (Phase 5) - static seeds + modal. Real products only (issue #73):
+// two open-source tools plus two mobile apps marked "Coming soon".
 const { test, expect } = require("@playwright/test");
 
 test.describe("products page", () => {
-  test("catalog renders two real product cards", async ({ page }) => {
+  test("catalog renders four real product cards", async ({ page }) => {
     await page.goto("/products");
     await expect(page.getByTestId("products-page")).toBeVisible();
     await expect(page.getByTestId("products-hero")).toContainText(
       /build and ship/i,
     );
-    await expect(page.getByTestId("product-card")).toHaveCount(2);
+    await expect(page.getByTestId("product-card")).toHaveCount(4);
     await expect(page.getByTestId("placeholder-page")).toHaveCount(0);
   });
 
@@ -16,8 +17,10 @@ test.describe("products page", () => {
     await page.goto("/products");
     await page.getByTestId("products-filter-open-source").click();
     await expect(page.getByTestId("product-card")).toHaveCount(2);
-    await page.getByTestId("products-filter-all").click();
+    await page.getByTestId("products-filter-mobile-app").click();
     await expect(page.getByTestId("product-card")).toHaveCount(2);
+    await page.getByTestId("products-filter-all").click();
+    await expect(page.getByTestId("product-card")).toHaveCount(4);
   });
 
   test("card opens modal with features; close dismisses it", async ({
@@ -64,4 +67,46 @@ test.describe("products page", () => {
       /^https:\/\/github\.com\/Softogram\//,
     );
   });
+
+  test("SpiceCraft is Coming soon and offers no download link", async ({ page }) => {
+    await page.goto("/products");
+    await page.getByTestId("product-card").filter({ hasText: "SpiceCraft" }).click();
+    const modal = page.getByTestId("product-modal");
+    await expect(modal).toContainText("Coming soon");
+    await expect(page.getByTestId("product-modal-visit")).toHaveCount(0);
+    await expect(page.getByTestId("product-modal-stores")).toHaveCount(0);
+  });
+
+  for (const viewport of [
+    { name: "desktop", width: 1280, height: 900 },
+    { name: "phone", width: 390, height: 844 },
+  ]) {
+    test(`Ryup shows the official Google Play badge (${viewport.name})`, async ({ page }) => {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.goto("/products");
+      await page.getByTestId("product-card").filter({ hasText: "Ryup" }).click();
+      const modal = page.getByTestId("product-modal");
+      await expect(modal).toContainText("Live on Android");
+
+      const play = page.getByTestId("product-modal-google-play");
+      await expect(play).toHaveAttribute(
+        "href",
+        "https://play.google.com/store/apps/details?id=com.softogram.ryup_app",
+      );
+      await expect(play).toHaveAttribute("target", "_blank");
+      await expect(play).toHaveAttribute("rel", "noopener noreferrer");
+      const badge = play.getByRole("img", { name: "Get Ryup on Google Play" });
+      await badge.scrollIntoViewIfNeeded();
+      await expect(badge).toBeVisible();
+      // The image actually loaded, and is big enough to tap comfortably.
+      expect(await badge.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+      const box = await badge.boundingBox();
+      expect(box.height).toBeGreaterThanOrEqual(48);
+
+      await expect(page.getByTestId("product-modal-ios-note")).toHaveText(
+        "iPhone version coming soon",
+      );
+      await expect(page.getByTestId("product-modal-app-store")).toHaveCount(0);
+    });
+  }
 });

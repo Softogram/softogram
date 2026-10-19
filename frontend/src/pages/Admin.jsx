@@ -50,6 +50,9 @@ const emptyPost = () => ({
   date: new Date().toISOString().slice(0, 10),
   tags: [],
   coverImage: "",
+  coverAlt: "",
+  coverLayout: "banner",
+  shareImage: "",
   published: true,
   readTime: 5,
 });
@@ -513,6 +516,39 @@ export default function Admin() {
                       />
                     </label>
                   </div>
+                </label>
+                <label className="block text-xs" style={{ color: DIM }}>
+                  coverAlt (what the image shows, for screen readers)
+                  <input
+                    className="mt-1 w-full px-3 py-2 text-sm rounded-sm"
+                    style={{ background: CARD, border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+                    value={selected.coverAlt || ""}
+                    onChange={(e) => updateSelected({ coverAlt: e.target.value })}
+                    data-testid="admin-blog-coverAlt"
+                  />
+                </label>
+                <label className="block text-xs" style={{ color: DIM }}>
+                  coverLayout
+                  <select
+                    className="mt-1 w-full px-3 py-2 text-sm rounded-sm"
+                    style={{ background: CARD, border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+                    value={selected.coverLayout || "banner"}
+                    onChange={(e) => updateSelected({ coverLayout: e.target.value })}
+                    data-testid="admin-blog-coverLayout"
+                  >
+                    <option value="banner">banner - decorative photo behind the title</option>
+                    <option value="diagram">diagram - shown in full under the title</option>
+                  </select>
+                </label>
+                <label className="block text-xs" style={{ color: DIM }}>
+                  shareImage (PNG/JPG for link previews; empty = coverImage)
+                  <input
+                    className="mt-1 w-full px-3 py-2 text-sm rounded-sm"
+                    style={{ background: CARD, border: `1px solid ${BORDER}`, color: "#e2e8f0" }}
+                    value={selected.shareImage || ""}
+                    onChange={(e) => updateSelected({ shareImage: e.target.value })}
+                    data-testid="admin-blog-shareImage"
+                  />
                 </label>
                 <label className="block text-xs" style={{ color: DIM }}>
                   tags (comma-separated)

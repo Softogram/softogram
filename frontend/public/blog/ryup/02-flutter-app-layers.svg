@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" width="960" height="470" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">Layers of the Ryup Flutter app</title><desc id="d">Screens talk to controllers, controllers talk to repositories, repositories talk to the network, a local database and platform services.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="960" height="470" rx="16" fill="#FFF3EA"/>
+<rect x="160" y="40" width="640" height="70" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="480.0" y="70.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Screens and widgets</text>
+<text x="480.0" y="90.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">What you see. They show state and send taps. No decisions.</text>
+<rect x="160" y="140" width="640" height="70" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="480.0" y="170.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Controllers (Riverpod)</text>
+<text x="480.0" y="190.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">Hold the screen&#x27;s state and make the decisions, like plan limits.</text>
+<rect x="160" y="240" width="640" height="70" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="480.0" y="270.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Repositories</text>
+<text x="480.0" y="290.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">Fetch and save data. They return a result, never throw a surprise.</text>
+<rect x="160" y="340" width="640" height="70" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="480.0" y="370.25" text-anchor="middle" font-size="15" font-weight="700" fill="#22110C">Data sources</text>
+<text x="480.0" y="390.25" text-anchor="middle" font-size="15" font-weight="400" fill="#22110C">Network (Dio) | Local database (Drift) | Phone features (platform services)</text>
+<line x1="480" y1="110" x2="480" y2="140" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="480" y1="210" x2="480" y2="240" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<line x1="480" y1="310" x2="480" y2="340" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="30" y="60" width="100" height="260" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="80.0" y="113.55" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">One folder</text>
+<text x="80.0" y="131.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">per feature</text>
+<text x="80.0" y="149.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C"></text>
+<text x="80.0" y="167.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">alarms</text>
+<text x="80.0" y="185.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">auth</text>
+<text x="80.0" y="203.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">billing</text>
+<text x="80.0" y="221.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">home</text>
+<text x="80.0" y="239.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">profile</text>
+<text x="80.0" y="257.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">progress</text>
+<text x="80.0" y="275.55" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">wake-up</text>
+<text x="480" y="445" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">The rule: a screen never decides, and a repository never leaks a raw error upward</text>
+</svg>

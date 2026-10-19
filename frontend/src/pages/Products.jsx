@@ -20,7 +20,7 @@ import { breadcrumbLd } from "@/lib/seo";
 const BETA = "#38bdf8";
 
 function statusColor(status) {
-  if (status === "Live") return G;
+  if (status.startsWith("Live")) return G;
   if (status === "Beta") return BETA;
   return A;
 }
@@ -85,7 +85,7 @@ function ProductModal({ product, onClose }) {
           <img
             src={product.img}
             alt={product.name}
-            className="w-full h-full object-cover opacity-50"
+            className={`w-full h-full ${product.imgFit === "contain" ? "object-contain p-6" : "object-cover"} opacity-50`}
           />
           <div
             className="absolute inset-0"
@@ -229,6 +229,55 @@ function ProductModal({ product, onClose }) {
             </div>
           )}
 
+          {product.stores && (
+            <div
+              className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2"
+              data-testid="product-modal-stores"
+            >
+              {product.stores.googlePlay && (
+                // Google's official badge, unaltered; its built-in transparent
+                // margin is the clear space Google's badge rules ask for.
+                <a
+                  href={product.stores.googlePlay}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                  data-testid="product-modal-google-play"
+                >
+                  <img
+                    src="/badges/google-play-badge.png"
+                    alt={`Get ${product.name} on Google Play`}
+                    width={646}
+                    height={250}
+                    style={{ height: 64, width: "auto" }}
+                  />
+                </a>
+              )}
+              {product.stores.appStore ? (
+                <a
+                  href={product.stores.appStore}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm underline"
+                  style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                  data-testid="product-modal-app-store"
+                >
+                  Get {product.name} on the App Store
+                </a>
+              ) : (
+                product.stores.iosNote && (
+                  <span
+                    className="text-sm"
+                    style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                    data-testid="product-modal-ios-note"
+                  >
+                    {product.stores.iosNote}
+                  </span>
+                )
+              )}
+            </div>
+          )}
+
           <div className="mt-8 flex gap-3">
             <Link
               to="/#contact"
@@ -316,7 +365,7 @@ export default function Products() {
               className="text-xs font-medium uppercase tracking-widest mb-5"
               style={{ color: G, fontFamily: "var(--font-mono)" }}
             >
-              Open Source
+              Products
             </div>
             <h1
               className="mb-6 leading-tight"
@@ -327,7 +376,7 @@ export default function Products() {
                 color: "#e2e8f0",
               }}
             >
-              Tools we{" "}
+              Things we{" "}
               <span className="italic" style={{ color: G }}>
                 build and ship.
               </span>
@@ -336,8 +385,8 @@ export default function Products() {
               className="text-lg max-w-xl mx-auto"
               style={{ color: DIM, fontWeight: 300 }}
             >
-              Free, open-source tools we build for ourselves and release
-              publicly - real repos, real releases.
+              Free, open-source developer tools and our own mobile apps.
+              Every status on this page is true today.
             </p>
           </div>
         </section>
@@ -402,7 +451,7 @@ export default function Products() {
                       <img
                         src={p.img}
                         alt={p.name}
-                        className="w-full h-full object-cover opacity-55"
+                        className={`w-full h-full ${p.imgFit === "contain" ? "object-contain p-6" : "object-cover"} opacity-55`}
                       />
                       <div
                         className="absolute inset-0"

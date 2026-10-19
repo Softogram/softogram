@@ -8,10 +8,25 @@ import { G, DIM, BORDER, CARD, Reveal } from "@/components/redesign/homePrimitiv
 import SeoHead from "@/components/redesign/SeoHead";
 import { metaFor } from "@/lib/routeMeta";
 import { breadcrumbLd } from "@/lib/seo";
-import { coverImageProps } from "@/lib/images";
+import { coverImageProps, isDiagramCover } from "@/lib/images";
 
 function slugify(s) {
   return s.toLowerCase().replace(/\s+/g, "-");
+}
+
+/** Category, date and reading time, the same facts a post page shows. */
+function PostMeta({ post }) {
+  return (
+    <div
+      className="text-xs"
+      style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+      data-testid="blog-card-meta"
+    >
+      {[(post.tags || [])[0], post.date, `${post.readTime || 5} min read`]
+        .filter(Boolean)
+        .join(" · ")}
+    </div>
+  );
 }
 
 export default function Blog() {
@@ -172,8 +187,8 @@ export default function Blog() {
                 */}
                 <img
                   {...coverImageProps(featured.coverImage, { width: 800, height: 256, priority: true })}
-                  alt={featured.title}
-                  className="h-64 w-full object-cover opacity-80"
+                  alt={isDiagramCover(featured) ? featured.coverAlt || featured.title : featured.title}
+                  className={`h-64 w-full ${isDiagramCover(featured) ? "object-contain p-3" : "object-cover opacity-80"}`}
                 />
                 <div className="p-6 flex flex-col justify-center">
                   <h2 className="text-2xl font-bold mb-3" style={{ color: "#e2e8f0", fontFamily: "var(--font-display)" }}>
@@ -182,6 +197,7 @@ export default function Blog() {
                   <p className="text-sm mb-4" style={{ color: DIM }}>
                     {featured.excerpt}
                   </p>
+                  <PostMeta post={featured} />
                   <span className="text-xs" style={{ color: G, fontFamily: "var(--font-mono)" }}>
                     read →
                   </span>
@@ -201,16 +217,17 @@ export default function Blog() {
               >
                 <img
                   {...coverImageProps(p.coverImage, { width: 600, height: 160 })}
-                  alt={p.title}
-                  className="h-40 w-full object-cover opacity-70"
+                  alt={isDiagramCover(p) ? p.coverAlt || p.title : p.title}
+                  className={`h-40 w-full ${isDiagramCover(p) ? "object-contain p-2" : "object-cover opacity-70"}`}
                 />
                 <div className="p-5">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: "#e2e8f0" }}>
                     {p.title}
                   </h3>
-                  <p className="text-xs" style={{ color: DIM }}>
+                  <p className="text-xs mb-3" style={{ color: DIM }}>
                     {p.excerpt}
                   </p>
+                  <PostMeta post={p} />
                 </div>
               </Link>
             </Reveal>

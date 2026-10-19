@@ -18,16 +18,22 @@ async function acceptCookies(page) {
  * document keeps growing, so the first jump can land hundreds of pixels short and
  * leave the footer off screen entirely - which silently turns any footer assertion
  * into a no-op. Repeat until the offset stops moving.
+ *
+ * The page itself is lazy-loaded, so right after navigation the document can still
+ * be exactly one viewport tall. Scrolling then moves nothing, the offset reads 0 twice,
+ * and the loop used to stop before the real content had rendered. So wait for the
+ * footer first, and only stop once both the offset and the page height hold still.
  */
 async function scrollToBottom(page) {
+  await page.getByTestId("footer").waitFor();
   await page.evaluate(async () => {
-    let last = -1;
-    for (let i = 0; i < 25; i++) {
+    let last = "";
+    for (let i = 0; i < 40; i++) {
       window.scrollTo(0, document.body.scrollHeight);
       await new Promise((r) => setTimeout(r, 150));
-      const y = Math.round(window.scrollY);
-      if (y === last) return;
-      last = y;
+      const now = `${Math.round(window.scrollY)}:${document.body.scrollHeight}`;
+      if (now === last && window.scrollY > 0) return;
+      last = now;
     }
   });
 }
