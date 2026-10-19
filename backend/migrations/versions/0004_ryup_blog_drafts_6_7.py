@@ -1,8 +1,8 @@
 """add Ryup blog posts 6 and 7 as unpublished drafts
 
-Both posts go in with published=false: hidden from /blog, the sitemap and RSS,
-and previewable at /blog/<slug> by a signed-in admin. Publish them later by
-ticking 'published' in /admin (or a follow-up migration), not by editing this file.
+Both posts went in with published=false (hidden from /blog, the sitemap and RSS,
+previewable at /blog/<slug> by a signed-in admin). Migration 0005 published them,
+and the pack file now says published: true so fresh databases match.
 
 Posts live in Postgres and are normally written through /admin, so a reviewed
 pull request adds them with this data migration. It reads the frozen pack
