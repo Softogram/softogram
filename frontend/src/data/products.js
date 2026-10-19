@@ -79,8 +79,8 @@ export const PRODUCTS = [
     category: "Puzzle Game · Mobile App",
     desc: "A sort puzzle set in a spice mill. Tap a jar, tap another, and the first jar pours its spice in. Get every jar down to a single spice.",
     longDesc:
-      "SpiceCraft is a sort-puzzle game set in a spice mill. Tap one jar, then another, and the spice pours across; the goal is to leave every jar holding a single spice. Built in Unity for iOS and Android, free to play and supported by ads. Submitted to the app stores; not downloadable yet.",
-    status: "Coming soon",
+      "SpiceCraft is a sort-puzzle game set in a spice mill. Tap one jar, then another, and the spice pours across; the goal is to leave every jar holding a single spice. Built in Unity for iOS and Android, free to play and supported by ads. Live on Google Play; the iPhone version is coming soon.",
+    status: "Live on Android",
     badge: "iOS & Android",
     img: "/products/spicecraft-icon.png",
     imgFit: "contain",
@@ -90,9 +90,13 @@ export const PRODUCTS = [
       "Four puzzle twists that change the rules, not just the look",
       "Built in Unity for iOS and Android",
       "Free to play",
-      "In app store review",
+      "Live on Google Play, iPhone coming soon",
     ],
-    price: "Free · Coming soon",
+    price: "Free on Google Play",
+    stores: {
+      googlePlay: "https://play.google.com/store/apps/details?id=com.softogram.spicecraft",
+      iosNote: "iPhone version coming soon",
+    },
   },
 ];
 
