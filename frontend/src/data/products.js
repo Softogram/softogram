@@ -1,5 +1,9 @@
 /** Static product catalog seeds (Phase 5). No localStorage / admin.
- * Real, shipped open-source tools only - see issue #73. */
+ * Real products only - see issue #73. Every status must be true today:
+ * "Live" means anyone can use it now ("Live on Android" when only one store
+ * has it); "Coming soon" means submitted but not yet downloadable.
+ * stores: optional official store links, shown as badges in the product modal. Never invent reviews or numbers.
+ * imgFit: "contain" shows a square app icon whole instead of cropping it. */
 
 export const PRODUCTS = [
   {
@@ -41,6 +45,54 @@ export const PRODUCTS = [
       "v0.1.1 released",
     ],
     price: "Free & open source",
+  },
+  {
+    id: "ryup",
+    name: "Ryup",
+    category: "Alarm Clock · Mobile App",
+    desc: "An alarm clock that will not let you drift back to sleep. It rings, then asks you to actually do something - read a short story aloud, react to a joke, catch the day's headline.",
+    longDesc:
+      "Ryup is an alarm clock for people who switch alarms off in their sleep. When it rings, you wake yourself up properly with a short spoken activity - reading a story aloud, reacting to a joke, or catching the day's headline. Built with Flutter on the phone and a Go backend, with iOS and Android treated as equal from day one. Live on Google Play; the iPhone version is coming soon.",
+    status: "Live on Android",
+    badge: "iOS & Android",
+    img: "/products/ryup-icon.png",
+    imgFit: "contain",
+    link: "#",
+    features: [
+      "Rings from a locked phone, even with the app closed",
+      "A short spoken activity to get you properly awake",
+      "iOS and Android, built as equals",
+      "Flutter app with a Go backend",
+      "Live on Google Play, iPhone coming soon",
+    ],
+    price: "On Google Play",
+    // Store links. When the iPhone version goes live, add
+    // appStore: "<App Store URL>" and the note below is replaced by a link.
+    stores: {
+      googlePlay: "https://play.google.com/store/apps/details?id=com.softogram.ryup_app",
+      iosNote: "iPhone version coming soon",
+    },
+  },
+  {
+    id: "spicecraft",
+    name: "SpiceCraft",
+    category: "Puzzle Game · Mobile App",
+    desc: "A sort puzzle set in a spice mill. Tap a jar, tap another, and the first jar pours its spice in. Get every jar down to a single spice.",
+    longDesc:
+      "SpiceCraft is a sort-puzzle game set in a spice mill. Tap one jar, then another, and the spice pours across; the goal is to leave every jar holding a single spice. Built in Unity for iOS and Android, free to play and supported by ads. Submitted to the app stores; not downloadable yet.",
+    status: "Coming soon",
+    badge: "iOS & Android",
+    img: "/products/spicecraft-icon.png",
+    imgFit: "contain",
+    link: "#",
+    features: [
+      "Tap-to-pour sort puzzles",
+      "Four puzzle twists that change the rules, not just the look",
+      "Built in Unity for iOS and Android",
+      "Free to play",
+      "In app store review",
+    ],
+    price: "Free · Coming soon",
   },
 ];
 
