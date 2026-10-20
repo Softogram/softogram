@@ -20,20 +20,18 @@ function expectations(p) {
 }
 
 test.describe("Ryup post 8: the retry ladder", () => {
-  test("is public and newest: featured on the index, in the API, sitemap, RSS and share page", async ({
-    page,
-    request,
-  }) => {
+  test("is public: on the index, in the API, sitemap, RSS and share page", async ({ page, request }) => {
     expect(post.published).toBe(true);
 
+    // Newer posts may sit above it, so find its card rather than assuming it is featured.
     await page.goto("/blog");
-    await expect(page.getByTestId("blog-featured")).toContainText(post.title);
-    await expect(page.getByTestId("blog-featured").getByTestId("blog-card-meta")).toContainText(
+    const card = page.locator('[data-testid="blog-featured"], [data-testid="blog-card"]').filter({ hasText: post.title });
+    await expect(card.getByTestId("blog-card-meta")).toContainText(
       `${post.tags[0]} · ${post.date} · ${post.readTime} min read`,
     );
 
     const list = await (await request.get(`${BACKEND_URL}/api/content/blog`)).json();
-    expect(list[0].slug).toBe(post.slug);
+    expect(list.map((p) => p.slug)).toContain(post.slug);
     const sitemap = await (await request.get(`${BACKEND_URL}/api/content/sitemap.xml`)).text();
     expect(sitemap).toContain(`<loc>https://softogram.in/blog/${post.slug}</loc>`);
     const rss = await (await request.get(`${BACKEND_URL}/api/content/blog/rss.xml`)).text();

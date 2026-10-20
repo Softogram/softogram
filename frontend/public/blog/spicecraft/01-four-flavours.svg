@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 360" width="1000" height="360" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">Four flavours, each changing what fails or what the goal is</title><desc id="d">SpiceCraft's four mechanics. Jars of 3, 4 or 5 change what counts as finished. Ceramic jars hide what is under the top spice, changing what you know. Masala recipe bowls change the goal from pure jars to a sequence. A move budget instead of a timer changes what fails.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B5542A"/></marker></defs>
+<rect width="1000" height="360" rx="16" fill="#FBF5EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22180F">A theme gets the install. A rule change keeps the player.</text>
+<rect x="20" y="70" width="220" height="90" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="130.0" y="110.2" text-anchor="middle" font-size="15" font-weight="700" fill="#FAF0DC">Jars of 3, 4 or 5</text>
+<text x="130.0" y="130.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">drawn at real height</text>
+<line x1="130" y1="160" x2="130" y2="196" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="20" y="198" width="220" height="70" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="130.0" y="228.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Changes</text>
+<text x="130.0" y="247.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">what counts as finished</text>
+<rect x="265" y="70" width="220" height="90" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="375.0" y="110.2" text-anchor="middle" font-size="15" font-weight="700" fill="#FAF0DC">Ceramic jars</text>
+<text x="375.0" y="130.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">you see only the top spice</text>
+<line x1="375" y1="160" x2="375" y2="196" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="265" y="198" width="220" height="70" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="375.0" y="228.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Changes</text>
+<text x="375.0" y="247.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">what you know</text>
+<rect x="510" y="70" width="220" height="90" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="620.0" y="110.2" text-anchor="middle" font-size="15" font-weight="700" fill="#FAF0DC">Masala recipe bowl</text>
+<text x="620.0" y="130.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">spices in a set order</text>
+<line x1="620" y1="160" x2="620" y2="196" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="510" y="198" width="220" height="70" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="620.0" y="228.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Changes</text>
+<text x="620.0" y="247.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">the goal itself</text>
+<rect x="755" y="70" width="220" height="90" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="865.0" y="110.2" text-anchor="middle" font-size="15" font-weight="700" fill="#FAF0DC">Move budget</text>
+<text x="865.0" y="130.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">never a timer</text>
+<line x1="865" y1="160" x2="865" y2="196" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="755" y="198" width="220" height="70" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="865.0" y="228.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Changes</text>
+<text x="865.0" y="247.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">what fails</text>
+<rect x="20" y="290" width="960" height="46" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="317.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Rule for every feature: change what fails, or what the goal is. Never just what things look like.</text>
+</svg>

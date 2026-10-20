@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 360" width="1000" height="360" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">SpiceCraft's eight spice colours and the floor</title><desc id="d">SpiceCraft's eight spice colours in their dealing order, saffron, crimson, jade, cobalt, ember, violet, teal and pepper, with the rule that every pair must be at least 15 apart on the CIEDE2000 colour-difference scale. The closest pair, cobalt and violet, measures 15.7.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B5542A"/></marker></defs>
+<rect width="1000" height="360" rx="16" fill="#FBF5EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22180F">Eight spices, ordered by difference, never by hue</text>
+<rect x="28" y="62" width="104" height="22" rx="4" fill="#FDD030"/>
+<rect x="28" y="84" width="104" height="50" rx="0" fill="#E0A808"/>
+<rect x="28" y="134" width="104" height="22" rx="4" fill="#9E7400"/>
+<text x="80" y="176" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">1. Saffron</text>
+<rect x="148" y="62" width="104" height="22" rx="4" fill="#FF2D50"/>
+<rect x="148" y="84" width="104" height="50" rx="0" fill="#D01030"/>
+<rect x="148" y="134" width="104" height="22" rx="4" fill="#860016"/>
+<text x="200" y="176" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">2. Crimson</text>
+<rect x="268" y="62" width="104" height="22" rx="4" fill="#20E060"/>
+<rect x="268" y="84" width="104" height="50" rx="0" fill="#10A838"/>
+<rect x="268" y="134" width="104" height="22" rx="4" fill="#087028"/>
+<text x="320" y="176" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">3. Jade</text>
+<rect x="388" y="62" width="104" height="22" rx="4" fill="#4068FC"/>
+<rect x="388" y="84" width="104" height="50" rx="0" fill="#1E38E0"/>
+<rect x="388" y="134" width="104" height="22" rx="4" fill="#0E1EA0"/>
+<text x="440" y="176" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">4. Cobalt</text>
+<rect x="508" y="62" width="104" height="22" rx="4" fill="#FF801C"/>
+<rect x="508" y="84" width="104" height="50" rx="0" fill="#F06A00"/>
+<rect x="508" y="134" width="104" height="22" rx="4" fill="#9B4400"/>
+<text x="560" y="176" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">5. Ember</text>
+<rect x="628" y="62" width="104" height="22" rx="4" fill="#CB42FF"/>
+<rect x="628" y="84" width="104" height="50" rx="0" fill="#9A22C8"/>
+<rect x="628" y="134" width="104" height="22" rx="4" fill="#5D0081"/>
+<text x="680" y="176" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">6. Violet</text>
+<rect x="748" y="62" width="104" height="22" rx="4" fill="#20D8C8"/>
+<rect x="748" y="84" width="104" height="50" rx="0" fill="#0EA89A"/>
+<rect x="748" y="134" width="104" height="22" rx="4" fill="#087068"/>
+<text x="800" y="176" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">7. Teal</text>
+<rect x="868" y="62" width="104" height="22" rx="4" fill="#887878"/>
+<rect x="868" y="84" width="104" height="50" rx="0" fill="#3C3434"/>
+<rect x="868" y="134" width="104" height="22" rx="4" fill="#1C1010"/>
+<text x="920" y="176" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">8. Pepper</text>
+<rect x="20" y="196" width="470" height="70" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="255.0" y="226.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FAF0DC">Floor: every pair at least 15 apart</text>
+<text x="255.0" y="245.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FAF0DC">CIEDE2000; closest pair cobalt and violet at 15.7</text>
+<rect x="510" y="196" width="470" height="70" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="745.0" y="226.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">CIE76 misled us</text>
+<text x="745.0" y="245.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">cobalt/violet 30.8 (really 15.7); jade/teal 53 (really 21.7)</text>
+<rect x="20" y="284" width="470" height="56" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="255.0" y="316.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Enforced at runtime: a failing palette is refused</text>
+<rect x="510" y="284" width="470" height="56" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="745.0" y="316.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">And in a test that writes the number 15 out literally</text>
+</svg>

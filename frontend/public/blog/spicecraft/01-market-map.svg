@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 450" width="1000" height="450" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">Three kinds of crowded</title><desc id="d">Mobile puzzle categories in three groups. Crowded and growing, which is enterable: block, sort, screw, merge, jigsaw, tile match. Crowded and flat, which looks open but is not: sudoku, nonogram, mahjong, classic solitaire, mature match-3. Crowded with a moat: solitaire, where one company holds 63% of spend.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B5542A"/></marker></defs>
+<rect width="1000" height="450" rx="16" fill="#FBF5EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22180F">Saturation only means something relative to growth</text>
+<rect x="20" y="60" width="310" height="64" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="175.0" y="87.2" text-anchor="middle" font-size="15" font-weight="700" fill="#FAF0DC">Crowded and growing</text>
+<text x="175.0" y="107.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">new players with no favourite yet</text>
+<rect x="40" y="140" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="175.0" y="159.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Block puzzle</text>
+<rect x="40" y="178" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="175.0" y="197.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Sort puzzle</text>
+<rect x="40" y="216" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="175.0" y="235.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Screw puzzle</text>
+<rect x="40" y="254" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="175.0" y="273.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Merge</text>
+<rect x="40" y="292" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="175.0" y="311.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Jigsaw</text>
+<rect x="40" y="330" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="175.0" y="349.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Tile-match</text>
+<rect x="20" y="382" width="310" height="48" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="175.0" y="410.6" text-anchor="middle" font-size="13" font-weight="700" fill="#FAF0DC">Enterable: the charts reshuffle</text>
+<rect x="345" y="60" width="310" height="64" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="87.2" text-anchor="middle" font-size="15" font-weight="700" fill="#22180F">Crowded and flat</text>
+<text x="500.0" y="107.2" text-anchor="middle" font-size="15" font-weight="400" fill="#22180F">no new demand arriving</text>
+<rect x="365" y="140" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="159.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Sudoku</text>
+<rect x="365" y="178" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="197.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Nonogram</text>
+<rect x="365" y="216" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="235.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Mahjong</text>
+<rect x="365" y="254" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="273.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Classic solitaire</text>
+<rect x="365" y="292" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="311.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Mature match-3</text>
+<rect x="345" y="382" width="310" height="48" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="410.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Looks open, is not: rankings are permanent</text>
+<rect x="670" y="60" width="310" height="64" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="825.0" y="87.2" text-anchor="middle" font-size="15" font-weight="700" fill="#22180F">Crowded with a moat</text>
+<text x="825.0" y="107.2" text-anchor="middle" font-size="15" font-weight="400" fill="#22180F">one funded leader</text>
+<rect x="690" y="140" width="270" height="30" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="825.0" y="159.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Solitaire</text>
+<rect x="690" y="182" width="270" height="60" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="825.0" y="207.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">One company holds</text>
+<text x="825.0" y="225.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">63% of all solitaire spend</text>
+<rect x="670" y="382" width="310" height="48" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="825.0" y="410.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Visible, at least</text>
+<text x="500" y="444" text-anchor="middle" font-size="12" font-weight="400" fill="#22180F">Sort sits in the first group, and its leader holds only 18% of the subgenre's revenue (Naavik).</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" width="1000" height="400" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">How the room for mistakes ring is computed</title><desc id="d">A level with a 20-move budget and a proven minimum of 10 starts with 10 moves of room, shown as 100%. After four pours, one of them wasted, there are 16 moves left and the board still needs at least 7, so the room is 9 and the ring reads 90%.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B5542A"/></marker></defs>
+<rect width="1000" height="400" rx="16" fill="#FBF5EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22180F">Room for mistakes = moves left minus what the board still needs</text>
+<rect x="20" y="64" width="460" height="140" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="250.0" y="109.2" text-anchor="middle" font-size="15" font-weight="700" fill="#22180F">At the start</text>
+<text x="250.0" y="129.2" text-anchor="middle" font-size="15" font-weight="400" fill="#22180F">budget 20, proven minimum 10</text>
+<text x="250.0" y="149.2" text-anchor="middle" font-size="15" font-weight="400" fill="#22180F">room = 20 - 10 = 10 moves</text>
+<text x="250.0" y="169.2" text-anchor="middle" font-size="15" font-weight="400" fill="#22180F">ring: 100%</text>
+<rect x="520" y="64" width="460" height="140" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="750.0" y="109.2" text-anchor="middle" font-size="15" font-weight="700" fill="#FAF0DC">After 4 pours, 1 of them wasted</text>
+<text x="750.0" y="129.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">moves left 16, board still needs 7</text>
+<text x="750.0" y="149.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">room = 16 - 7 = 9 moves</text>
+<text x="750.0" y="169.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">ring: 9 / 10 = 90%</text>
+<line x1="480" y1="134" x2="520" y2="134" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="20" y="232" width="310" height="84" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="175.0" y="259.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Drop</text>
+<text x="175.0" y="278.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">needs proof the board</text>
+<text x="175.0" y="297.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">needs more pours</text>
+<rect x="345" y="232" width="310" height="84" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="259.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Rise</text>
+<text x="500.0" y="278.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">needs a route the game</text>
+<text x="500.0" y="297.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">has actually found</text>
+<rect x="670" y="232" width="310" height="84" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="825.0" y="259.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Unsure</text>
+<text x="825.0" y="278.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">the search ran out:</text>
+<text x="825.0" y="297.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">the ring holds</text>
+<rect x="20" y="336" width="960" height="46" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="363.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">0% and 100% each mean exactly one thing. A proven-lost board reads 0% at once: "no way to win".</text>
+</svg>

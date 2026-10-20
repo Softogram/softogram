@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 360" width="1000" height="360" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">How the solver decides two positions are the same</title><desc id="d">Jars are grouped by size and kind (glass 3, glass 4, ceramic 4, glass 5, bowl), sorted only within each group, then joined into one key. Sorting all jars together would wrongly treat a 3-jar and a 5-jar holding the same spice as interchangeable.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B5542A"/></marker></defs>
+<rect width="1000" height="360" rx="16" fill="#FBF5EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22180F">What counts as "the same position"?</text>
+<rect x="20" y="60" width="460" height="120" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="250.0" y="96.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Wrong: sort all jars together</text>
+<text x="250.0" y="115.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">a 3-jar and a 5-jar can swap contents</text>
+<text x="250.0" y="134.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">and still match, so a real position</text>
+<text x="250.0" y="153.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">gets skipped</text>
+<rect x="520" y="60" width="460" height="120" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="750.0" y="96.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FAF0DC">Right: sort within groups only</text>
+<text x="750.0" y="115.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FAF0DC">same size AND same kind,</text>
+<text x="750.0" y="134.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FAF0DC">the bowl in a group of its own,</text>
+<text x="750.0" y="153.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FAF0DC">then join the groups in a fixed order</text>
+<rect x="20" y="206" width="176" height="56" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="108.0" y="229.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Glass 3</text>
+<text x="108.0" y="247.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">sorted inside</text>
+<line x1="196" y1="234" x2="216" y2="234" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="216" y="206" width="176" height="56" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="304.0" y="229.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Glass 4</text>
+<text x="304.0" y="247.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">sorted inside</text>
+<line x1="392" y1="234" x2="412" y2="234" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="412" y="206" width="176" height="56" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="229.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Ceramic 4</text>
+<text x="500.0" y="247.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">sorted inside</text>
+<line x1="588" y1="234" x2="608" y2="234" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="608" y="206" width="176" height="56" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="696.0" y="229.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Glass 5</text>
+<text x="696.0" y="247.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">sorted inside</text>
+<line x1="784" y1="234" x2="804" y2="234" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="804" y="206" width="176" height="56" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="892.0" y="229.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Bowl</text>
+<text x="892.0" y="247.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">sorted inside</text>
+<rect x="20" y="284" width="960" height="52" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="314.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Left out on purpose: which hidden layers are revealed. That is what the player knows, not the puzzle.</text>
+</svg>
