@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 470" width="1000" height="470" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">One Ryup morning: the retry ladder</title><desc id="d">A morning is up to three rings. An unanswered ring lasts up to 90 seconds, then the phone waits 5 minutes and rings again. Tapping in opens an activity window of 10 minutes from your last action. Finishing ends the morning; stopping or ignoring every ring uses up the attempts and the morning is marked missed.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="1000" height="470" rx="16" fill="#FFF3EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22110C">No snooze. An unanswered alarm climbs a ladder instead</text>
+<rect x="20" y="70" width="140" height="76" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="90.0" y="103.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Ring 1</text>
+<text x="90.0" y="122.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">up to 90 s</text>
+<line x1="160" y1="108" x2="180" y2="108" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="180" y="70" width="140" height="76" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="250.0" y="103.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Wait 5 min</text>
+<text x="250.0" y="122.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">nobody answered</text>
+<line x1="320" y1="108" x2="340" y2="108" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="340" y="70" width="140" height="76" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="410.0" y="103.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Ring 2</text>
+<text x="410.0" y="122.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">up to 90 s</text>
+<line x1="480" y1="108" x2="500" y2="108" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="500" y="70" width="140" height="76" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="570.0" y="103.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Wait 5 min</text>
+<text x="570.0" y="122.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">nobody answered</text>
+<line x1="640" y1="108" x2="660" y2="108" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="660" y="70" width="140" height="76" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="730.0" y="103.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Ring 3</text>
+<text x="730.0" y="122.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">up to 90 s</text>
+<line x1="800" y1="108" x2="820" y2="108" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="820" y="70" width="160" height="76" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="900.0" y="103.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Missed</text>
+<text x="900.0" y="122.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">page shown once</text>
+<line x1="90" y1="146" x2="90" y2="214" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="98" y="186" text-anchor="start" font-size="12" font-weight="400" fill="#22110C">tap in</text>
+<line x1="410" y1="146" x2="410" y2="214" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="418" y="186" text-anchor="start" font-size="12" font-weight="400" fill="#22110C">tap in</text>
+<line x1="730" y1="146" x2="730" y2="214" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="738" y="186" text-anchor="start" font-size="12" font-weight="400" fill="#22110C">tap in</text>
+<rect x="20" y="216" width="780" height="76" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="410.0" y="249.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Activity: speak out loud</text>
+<text x="410.0" y="268.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">10 min window, counted from your last action, plus a 10 s race buffer</text>
+<line x1="800" y1="254" x2="840" y2="254" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="842" y="216" width="138" height="76" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="911.0" y="249.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Morning done</text>
+<text x="911.0" y="268.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">alarm silenced</text>
+<text x="410" y="322" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">Stop halfway and the window runs out: that attempt fails, exactly like an unanswered ring.</text>
+<text x="410" y="342" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">The next rung follows, or after ring 3 the morning is missed.</text>
+<rect x="20" y="382" width="470" height="66" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="255.0" y="410.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">Escape 1: Close</text>
+<text x="255.0" y="428.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">leave the screen from the first ring</text>
+<rect x="510" y="382" width="470" height="66" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="745.0" y="410.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">Escape 2: press and hold "give up for today"</text>
+<text x="745.0" y="428.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22110C">once the retries are used up</text>
+<text x="500" y="466" text-anchor="middle" font-size="12" font-weight="400" fill="#22110C">Production numbers, set on the backend: 90 s ring, 5 min wait, 2 retries, 10 min window</text>
+</svg>
