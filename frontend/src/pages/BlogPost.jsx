@@ -133,6 +133,10 @@ const MARKDOWN_COMPONENTS = {
         background: "#161b22",
         color: G,
         fontFamily: "var(--font-mono)",
+        // A long identifier inline (a test name, a class name) may break
+        // anywhere rather than push the page wider than a phone. Code blocks
+        // are unaffected: inside <pre> nothing wraps, they scroll instead.
+        overflowWrap: "anywhere",
       }}
     >
       {children}

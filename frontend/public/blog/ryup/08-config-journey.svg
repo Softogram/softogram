@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" width="1000" height="430" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">How an alarm setting travels from the admin panel to the ring</title><desc id="d">An admin creates and activates a new config version. Postgres keeps every version, one active. The Go server loads it every 60 seconds, falling back to the last good copy and then to built-in defaults. The app fetches it on start and resume, keeps it with no expiry, and passes it through a Pigeon bridge to Android SharedPreferences or iOS UserDefaults, where the alarm code reads it.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="1000" height="430" rx="16" fill="#FFF3EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22110C">One number, from the admin panel to a ringing phone</text>
+<rect x="20" y="64" width="220" height="96" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="130.0" y="97.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Admin panel</text>
+<text x="130.0" y="116.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">new version, diff,</text>
+<text x="130.0" y="135.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">activate</text>
+<line x1="240" y1="112" x2="265" y2="112" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="265" y="64" width="220" height="96" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="375.0" y="97.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Postgres</text>
+<text x="375.0" y="116.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">versions never edited,</text>
+<text x="375.0" y="135.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">one active row</text>
+<line x1="485" y1="112" x2="510" y2="112" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="510" y="64" width="220" height="96" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="620.0" y="97.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Go server</text>
+<text x="620.0" y="116.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">re-reads every 60 s</text>
+<text x="620.0" y="135.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">falls back safely</text>
+<line x1="730" y1="112" x2="755" y2="112" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="755" y="64" width="220" height="96" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="865.0" y="97.9" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">GET /v1/me/pre-alarm</text>
+<text x="865.0" y="116.9" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">signed in,</text>
+<text x="865.0" y="135.9" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">no expiry</text>
+<rect x="20" y="176" width="700" height="40" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="370.0" y="200.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">Fallback: active row, then last good copy, then built-in defaults</text>
+<line x1="865" y1="160" x2="865" y2="250" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="855" y="236" text-anchor="end" font-size="12" font-weight="400" fill="#22110C">on app start and resume</text>
+<rect x="20" y="252" width="220" height="96" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="130.0" y="285.9" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Alarm code</text>
+<text x="130.0" y="304.9" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">reads the numbers</text>
+<text x="130.0" y="323.9" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">when it rings</text>
+<rect x="265" y="252" width="220" height="96" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="375.0" y="285.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Native storage</text>
+<text x="375.0" y="304.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">Android: SharedPreferences</text>
+<text x="375.0" y="323.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">iPhone: UserDefaults</text>
+<line x1="265" y1="300" x2="240" y2="300" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="510" y="252" width="220" height="96" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="620.0" y="285.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Pigeon bridge</text>
+<text x="620.0" y="304.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">AlarmRetryConfig</text>
+<text x="620.0" y="323.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">Dart to native</text>
+<line x1="510" y1="300" x2="485" y2="300" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="755" y="252" width="220" height="96" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="865.0" y="285.9" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">App's local database</text>
+<text x="865.0" y="304.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">one stored copy, kept</text>
+<text x="865.0" y="323.9" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">if a refresh fails</text>
+<line x1="755" y1="300" x2="730" y2="300" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="20" y="364" width="960" height="46" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="500.0" y="391.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">No network call at alarm time: fast test build first, then the stored backend copy, then built-in defaults</text>
+</svg>

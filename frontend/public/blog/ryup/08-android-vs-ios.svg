@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">How the next ring is booked on Android and on iPhone</title><desc id="d">On Android, a 90 second timer in the ring service ends an unanswered ring, and handleAttemptFailed books the next ring 5 minutes later with setAlarmClock, or marks the morning missed. On iPhone, only one ring is booked with AlarmKit at a time; when the user dismisses it, an App Intent calls ringDismissed, which books the next ring 5 minutes after the dismissal.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FA5E41"/></marker></defs>
+<rect width="1000" height="420" rx="16" fill="#FFF3EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22110C">Same config, two platforms, two ways to book the next ring</text>
+<text x="20" y="78" text-anchor="start" font-size="16" font-weight="700" fill="#22110C">Android</text>
+<rect x="20" y="92" width="220" height="76" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="130.0" y="125.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">Ring</text>
+<text x="130.0" y="144.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">setAlarmClock</text>
+<line x1="240" y1="130" x2="265" y2="130" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="265" y="92" width="220" height="76" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="375.0" y="125.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">90 s timer</text>
+<text x="375.0" y="144.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">runs out</text>
+<line x1="485" y1="130" x2="510" y2="130" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="510" y="92" width="220" height="76" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="620.0" y="125.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">handleAttemptFailed</text>
+<text x="620.0" y="144.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">retries left?</text>
+<line x1="730" y1="130" x2="755" y2="130" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="755" y="92" width="220" height="76" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="865.0" y="125.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Next ring</text>
+<text x="865.0" y="144.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">now + 5 min</text>
+<text x="625" y="192" text-anchor="middle" font-size="12" font-weight="400" fill="#22110C">no retries left: morning missed</text>
+<text x="20" y="238" text-anchor="start" font-size="16" font-weight="700" fill="#22110C">iPhone</text>
+<rect x="20" y="252" width="220" height="76" rx="12" fill="#FA5E41" stroke="#22110C" stroke-width="2"/>
+<text x="130.0" y="285.4" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">One ring booked</text>
+<text x="130.0" y="304.4" text-anchor="middle" font-size="14" font-weight="400" fill="#FFFFFF">AlarmKit, one at a time</text>
+<line x1="240" y1="290" x2="265" y2="290" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="265" y="252" width="220" height="76" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="375.0" y="285.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">You dismiss it</text>
+<text x="375.0" y="304.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">or iOS ends it later</text>
+<line x1="485" y1="290" x2="510" y2="290" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="510" y="252" width="220" height="76" rx="12" fill="#FFFFFF" stroke="#C9604A" stroke-width="2"/>
+<text x="620.0" y="285.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Stop intent</text>
+<text x="620.0" y="304.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">ringDismissed</text>
+<line x1="730" y1="290" x2="755" y2="290" stroke="#FA5E41" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="755" y="252" width="220" height="76" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="865.0" y="285.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22110C">Next ring</text>
+<text x="865.0" y="304.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22110C">dismissal + 5 min</text>
+<text x="625" y="352" text-anchor="middle" font-size="12" font-weight="400" fill="#22110C">last ring dismissed: morning over</text>
+<rect x="20" y="366" width="960" height="40" rx="12" fill="#FBE3D6" stroke="#C9604A" stroke-width="2"/>
+<text x="500.0" y="390.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22110C">Android controls the sound. On iPhone the system does, and alerts stack rather than queue, so only one is booked at a time.</text>
+</svg>
