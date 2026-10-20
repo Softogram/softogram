@@ -2,22 +2,31 @@
 // link previews). Content comes from backend/content/blog_packs/.
 const { test, expect } = require("@playwright/test");
 const pack = require("../../backend/content/blog_packs/2026-10-19-ryup-series.json");
+const later = [
+  ...require("../../backend/content/blog_packs/2026-10-19-ryup-series-part-2.json"),
+  ...require("../../backend/content/blog_packs/2026-10-20-ryup-retry-ladder.json"),
+];
 
 const API = process.env.BACKEND_URL || "http://localhost:8001";
 const PLAY = "https://play.google.com/store/apps/details?id=com.softogram.ryup_app";
 
 test.describe("Ryup blog series", () => {
-  test("the index lists all five, newest first, with category, date and reading time", async ({ page }) => {
+  test("the index lists all five together in series order, with category, date and reading time", async ({ page }) => {
     await page.goto("/blog");
-    // Newest first: the series (2026-10-19) is newer than every seed post, and posts
-    // sharing a date keep series order, so part 1 is the featured post.
-    await expect(page.getByTestId("blog-featured")).toContainText(pack[0].title);
-    const cardTitles = await page.getByTestId("blog-card").locator("h3").allTextContents();
-    expect(cardTitles.slice(0, 4)).toEqual(pack.slice(1).map((p) => p.title));
+    // Newest first. Posts dated after the series come before it, and posts sharing a
+    // date keep series order, so the five sit together, part 1 first.
+    const featured = await page.getByTestId("blog-featured").locator("h2").textContent();
+    const titles = [featured, ...(await page.getByTestId("blog-card").locator("h3").allTextContents())];
+    const start = titles.indexOf(pack[0].title);
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(titles.slice(start, start + pack.length)).toEqual(pack.map((p) => p.title));
 
-    const meta = page.getByTestId("blog-card-meta");
-    await expect(meta.first()).toContainText(`${pack[0].tags[0]} · ${pack[0].date} · ${pack[0].readTime} min read`);
-    await expect(meta.nth(1)).toContainText(`${pack[1].tags[0]} · ${pack[1].date} · ${pack[1].readTime} min read`);
+    const listing = page.locator('[data-testid="blog-featured"], [data-testid="blog-card"]');
+    for (const post of pack.slice(0, 2)) {
+      await expect(listing.filter({ hasText: post.title }).getByTestId("blog-card-meta")).toContainText(
+        `${post.tags[0]} · ${post.date} · ${post.readTime} min read`,
+      );
+    }
   });
 
   for (const viewport of [
@@ -72,7 +81,8 @@ test.describe("Ryup blog series", () => {
   }
 
   test("every internal link goes to a real post in the same tab", async ({ page }) => {
-    const slugs = new Set(pack.map((p) => p.slug));
+    // Part 1 also links forward to post 8 (the retry ladder), so every published Ryup post counts.
+    const slugs = new Set([...pack, ...later].map((p) => p.slug));
     for (const post of pack) {
       const targets = [...post.content.matchAll(/\]\((\/blog\/[^)]+)\)/g)].map((m) => m[1]);
       expect(targets.length).toBeGreaterThan(0);
