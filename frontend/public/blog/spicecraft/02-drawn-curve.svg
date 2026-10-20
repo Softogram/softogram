@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 380" width="1000" height="380" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">Filling a drawn difficulty curve</title><desc id="d">A pool of measured boards, each with a difficulty score, is matched slot by slot to a drawn target curve with spikes and breathers. Each slot takes the nearest unused board within a tolerance; if none fits, assembly fails loudly rather than forcing one.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B5542A"/></marker></defs>
+<rect width="1000" height="380" rx="16" fill="#FBF5EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22180F">Draw the curve first, then fill it from a measured pool</text>
+<rect x="60" y="70" width="900" height="200" rx="10" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<polyline points="75.0,242.2 97.3,237.4 119.6,232.6 141.9,227.8 164.2,223.0 186.5,218.2 208.8,217.2 231.2,205.1 253.5,180.1 275.8,209.6 298.1,197.4 320.4,172.4 342.7,201.9 365.0,189.7 387.3,164.8 409.6,194.2 431.9,182.0 454.2,157.1 476.5,186.5 498.8,174.4 521.2,149.4 543.5,178.8 565.8,166.7 588.1,141.7 610.4,171.2 632.7,159.0 655.0,134.0 677.3,163.5 699.6,151.3 721.9,126.4 744.2,155.8 766.5,143.6 788.8,118.7 811.2,148.1 833.5,136.0 855.8,111.0 878.1,140.4 900.4,128.3 922.7,103.3 945.0,132.8" fill="none" stroke="#1F3223" stroke-width="3"/>
+<circle cx="75.0" cy="245.2" r="4.5" fill="#B5542A"/>
+<circle cx="97.3" cy="240.4" r="4.5" fill="#B5542A"/>
+<circle cx="119.6" cy="235.6" r="4.5" fill="#B5542A"/>
+<circle cx="141.9" cy="230.8" r="4.5" fill="#B5542A"/>
+<circle cx="164.2" cy="226.0" r="4.5" fill="#B5542A"/>
+<circle cx="186.5" cy="221.2" r="4.5" fill="#B5542A"/>
+<circle cx="208.8" cy="220.2" r="4.5" fill="#B5542A"/>
+<circle cx="231.2" cy="208.1" r="4.5" fill="#B5542A"/>
+<circle cx="253.5" cy="183.1" r="4.5" fill="#B5542A"/>
+<circle cx="275.8" cy="212.6" r="4.5" fill="#B5542A"/>
+<circle cx="298.1" cy="200.4" r="4.5" fill="#B5542A"/>
+<circle cx="320.4" cy="175.4" r="4.5" fill="#B5542A"/>
+<circle cx="342.7" cy="204.9" r="4.5" fill="#B5542A"/>
+<circle cx="365.0" cy="192.7" r="4.5" fill="#B5542A"/>
+<circle cx="387.3" cy="167.8" r="4.5" fill="#B5542A"/>
+<circle cx="409.6" cy="197.2" r="4.5" fill="#B5542A"/>
+<circle cx="431.9" cy="185.0" r="4.5" fill="#B5542A"/>
+<circle cx="454.2" cy="160.1" r="4.5" fill="#B5542A"/>
+<circle cx="476.5" cy="189.5" r="4.5" fill="#B5542A"/>
+<circle cx="498.8" cy="177.4" r="4.5" fill="#B5542A"/>
+<circle cx="521.2" cy="152.4" r="4.5" fill="#B5542A"/>
+<circle cx="543.5" cy="181.8" r="4.5" fill="#B5542A"/>
+<circle cx="565.8" cy="169.7" r="4.5" fill="#B5542A"/>
+<circle cx="588.1" cy="144.7" r="4.5" fill="#B5542A"/>
+<circle cx="610.4" cy="174.2" r="4.5" fill="#B5542A"/>
+<circle cx="632.7" cy="162.0" r="4.5" fill="#B5542A"/>
+<circle cx="655.0" cy="137.0" r="4.5" fill="#B5542A"/>
+<circle cx="677.3" cy="166.5" r="4.5" fill="#B5542A"/>
+<circle cx="699.6" cy="154.3" r="4.5" fill="#B5542A"/>
+<circle cx="721.9" cy="129.4" r="4.5" fill="#B5542A"/>
+<circle cx="744.2" cy="158.8" r="4.5" fill="#B5542A"/>
+<circle cx="766.5" cy="146.6" r="4.5" fill="#B5542A"/>
+<circle cx="788.8" cy="121.7" r="4.5" fill="#B5542A"/>
+<circle cx="811.2" cy="151.1" r="4.5" fill="#B5542A"/>
+<circle cx="833.5" cy="139.0" r="4.5" fill="#B5542A"/>
+<circle cx="855.8" cy="114.0" r="4.5" fill="#B5542A"/>
+<circle cx="878.1" cy="143.4" r="4.5" fill="#B5542A"/>
+<circle cx="900.4" cy="131.3" r="4.5" fill="#B5542A"/>
+<circle cx="922.7" cy="106.3" r="4.5" fill="#B5542A"/>
+<circle cx="945.0" cy="135.8" r="4.5" fill="#B5542A"/>
+<text x="155" y="195" text-anchor="middle" font-size="12" font-weight="400" fill="#22180F">6 teaching levels</text>
+<text x="530" y="100" text-anchor="middle" font-size="12" font-weight="400" fill="#22180F">a spike every 2 to 4 levels, then a breather</text>
+<text x="500" y="292" text-anchor="middle" font-size="12" font-weight="400" fill="#22180F">level order (illustration, not real data)</text>
+<rect x="20" y="312" width="300" height="52" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="170.0" y="342.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Line: the drawn target score</text>
+<rect x="350" y="312" width="300" height="52" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="333.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Dots: nearest unused board</text>
+<text x="500.0" y="351.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">within a tolerance</text>
+<rect x="680" y="312" width="300" height="52" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="830.0" y="333.6" text-anchor="middle" font-size="13" font-weight="700" fill="#FAF0DC">No board close enough?</text>
+<text x="830.0" y="351.6" text-anchor="middle" font-size="13" font-weight="400" fill="#FAF0DC">Assembly fails loudly</text>
+</svg>
