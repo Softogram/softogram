@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 330" width="1000" height="330" role="img" aria-labelledby="t d" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<title id="t">One shared reading per board</title><desc id="d">The stuck check, the ring's search and the hint all write what they prove into one shared reading of the current board, and all three read from it, so the ring, the hint and the Stuck sheet always say the same thing.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B5542A"/></marker></defs>
+<rect width="1000" height="330" rx="16" fill="#FBF5EA"/>
+<text x="500.0" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#22180F">Three parts of the game, one answer about the board</text>
+<rect x="20" y="62" width="300" height="64" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="170.0" y="89.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Stuck check</text>
+<text x="170.0" y="108.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">is it still winnable?</text>
+<line x1="170" y1="126" x2="380" y2="168" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="350" y="62" width="300" height="64" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="89.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Ring search</text>
+<text x="500.0" y="108.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">how many pours needed?</text>
+<line x1="500" y1="126" x2="500" y2="168" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="680" y="62" width="300" height="64" rx="12" fill="#FFFFFF" stroke="#8A6A3A" stroke-width="2"/>
+<text x="830.0" y="89.4" text-anchor="middle" font-size="14" font-weight="700" fill="#22180F">Hint search</text>
+<text x="830.0" y="108.4" text-anchor="middle" font-size="14" font-weight="400" fill="#22180F">which pour still wins?</text>
+<line x1="830" y1="126" x2="620" y2="168" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="260" y="170" width="480" height="70" rx="12" fill="#1F3223" stroke="#22180F" stroke-width="2"/>
+<text x="500.0" y="200.2" text-anchor="middle" font-size="15" font-weight="700" fill="#FAF0DC">One shared reading of this board</text>
+<text x="500.0" y="220.2" text-anchor="middle" font-size="15" font-weight="400" fill="#FAF0DC">routes found, proven floors, proven losses</text>
+<line x1="380" y1="240" x2="170" y2="262" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="20" y="264" width="300" height="50" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="170.0" y="284.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Ring</text>
+<text x="170.0" y="302.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">room, short or lost</text>
+<line x1="500" y1="240" x2="500" y2="262" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="350" y="264" width="300" height="50" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="500.0" y="284.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Hint</text>
+<text x="500.0" y="302.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">a pour, or why not</text>
+<line x1="620" y1="240" x2="830" y2="262" stroke="#B5542A" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="680" y="264" width="300" height="50" rx="12" fill="#F1E3C4" stroke="#8A6A3A" stroke-width="2"/>
+<text x="830.0" y="284.6" text-anchor="middle" font-size="13" font-weight="700" fill="#22180F">Stuck sheet</text>
+<text x="830.0" y="302.6" text-anchor="middle" font-size="13" font-weight="400" fill="#22180F">undo only if it helps</text>
+</svg>
