@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import SeoHead from "@/components/redesign/SeoHead";
 import { metaFor } from "@/lib/routeMeta";
-import { LEGAL_ENTITY } from "@/data/site";
+import { SUPPORT_EMAIL, LEGAL_ENTITY } from "@/data/site";
 
 const SUPPORT = "support@softogram.in";
 
@@ -440,8 +440,12 @@ export function SpiceCraftPrivacyPolicy() {
   );
 }
 
-/** Green, not the cyan the older policy pages still use: the redesign retired cyan. */
-const LINK = "hover:underline";
+/**
+ * Green, not the cyan the older policy pages still use: the redesign retired
+ * cyan. Always underlined, because green against the grey body text is about
+ * 1.8:1, and colour alone does not mark a link (WCAG asks for 3:1 for that).
+ */
+const LINK = "underline";
 const LINK_STYLE = { color: "#4ade80" };
 
 /**
@@ -449,10 +453,17 @@ const LINK_STYLE = { color: "#4ade80" };
  * (softogram.in/support) as its Support URL, and Apple asks for a page a
  * player can reach with a real way to contact the developer.
  *
- * The company details come from LEGAL_ENTITY, the same constants the footer
- * prints, so the two cannot drift apart. Everything said about SpiceCraft is
- * checked against the game's code (Settings rows in SettingsScreen.cs, the
- * "LEVEL 87" label): no accounts, no purchases, nothing it does not have.
+ * The contact details come from site.js (SUPPORT_EMAIL and LEGAL_ENTITY), the
+ * same constants the footer prints, so the two cannot drift apart. Everything
+ * said about SpiceCraft is checked against the game's code (the Settings rows
+ * in SettingsScreen.cs, the level label at the top of the game screen): no
+ * accounts, no purchases, nothing it does not have. The level example reads
+ * "Level 87", as the iOS 1.0 build under Apple's review prints it; later
+ * builds print "LEVEL 87".
+ *
+ * Progress is described as kept on the phone, not "only" on it: the game does
+ * not opt out of Android's Auto Backup or iCloud backup, so the phone's own
+ * backup may hold a copy. Softogram never does.
  */
 export function SupportPage() {
   return (
@@ -464,8 +475,8 @@ export function SupportPage() {
         </p>
         <p>
           <strong className="text-white">Email:</strong>{" "}
-          <a href={`mailto:${SUPPORT}`} className={LINK} style={LINK_STYLE} data-testid="support-email">
-            {SUPPORT}
+          <a href={`mailto:${SUPPORT_EMAIL}`} className={LINK} style={LINK_STYLE} data-testid="support-email">
+            {SUPPORT_EMAIL}
           </a>
           <br />
           <strong className="text-white">Phone:</strong>{" "}
@@ -487,7 +498,7 @@ export function SupportPage() {
         <p>SpiceCraft is our spice-sorting puzzle game. If something goes wrong in it, please tell us:</p>
         <ul className="list-disc pl-6 space-y-2">
           <li>which phone you play on, and its iOS or Android version</li>
-          <li>the level number, shown at the top of the game screen (for example &quot;LEVEL 87&quot;)</li>
+          <li>the level number, shown at the top of the game screen (for example &quot;Level 87&quot;)</li>
           <li>what you did, what you expected, and what happened instead</li>
           <li>a screenshot or a short screen recording, if you can</li>
         </ul>
@@ -495,15 +506,18 @@ export function SupportPage() {
 
       <PolicySection title="Reporting an advert">
         <p data-testid="support-report-ad">
-          SpiceCraft shows adverts from Google AdMob. If an advert is offensive, misleading or broken,
-          open <strong className="text-white">Settings</strong> from the gear on the game&apos;s home
-          screen and tap <strong className="text-white">Report an ad</strong>. That opens an email to
-          us; tell us what the advert showed and roughly when you saw it.
+          SpiceCraft shows adverts from Google AdMob. If an advert is inappropriate, offensive,
+          misleading or broken, open <strong className="text-white">Settings</strong> from the gear on
+          the game&apos;s home screen and tap{" "}
+          <strong className="text-white" data-testid="support-report-ad-row">
+            Report an ad
+          </strong>
+          . That opens an email to us; tell us what the advert showed and roughly when you saw it.
         </p>
         <p>
           You can also write to us directly:{" "}
           <a
-            href={`mailto:${SUPPORT}?subject=Report%20an%20ad`}
+            href={`mailto:${SUPPORT_EMAIL}?subject=Report%20an%20ad`}
             className={LINK}
             style={LINK_STYLE}
             data-testid="support-report-ad-email"
@@ -516,8 +530,8 @@ export function SupportPage() {
 
       <PolicySection title="Your saved progress">
         <p>
-          SpiceCraft saves your progress only on your phone. There is no account, so we cannot see your
-          progress or restore it, and uninstalling the game removes it.
+          SpiceCraft keeps your progress on your phone, not on our servers. There is no account, so we
+          cannot see your progress or restore it for you.
         </p>
       </PolicySection>
 
@@ -531,9 +545,12 @@ export function SupportPage() {
         </p>
         <p>
           In the European Economic Area, the United Kingdom and Switzerland, you can change your answer
-          about personalised adverts at any time: open <strong className="text-white">Settings</strong>{" "}
-          from the gear on the home screen and tap{" "}
-          <strong className="text-white">Ad privacy choices</strong>.
+          about personalised adverts: open <strong className="text-white">Settings</strong> from the
+          gear on the game&apos;s home screen and tap{" "}
+          <strong className="text-white" data-testid="support-ad-privacy-row">
+            Ad privacy choices
+          </strong>
+          .
         </p>
       </PolicySection>
     </PolicyLayout>
