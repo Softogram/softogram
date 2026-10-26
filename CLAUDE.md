@@ -55,8 +55,9 @@ When adding UI, match the patterns already in `frontend/src/components/redesign/
 
 **Frontend**: `frontend/src/App.js` is a thin (~77 line) router only.
 Every page is lazy-loaded from `frontend/src/pages/`, and shared sections live in `frontend/src/components/redesign/`.
-Routes: `/`, `/products`, `/client-work`, `/blog`, `/blog/:slug`, `/admin`, `/privacy-policy`, `/terms-and-conditions`, `/refund-policy`, `/cookie-policy`, plus a `*` 404.
+Routes: `/`, `/products`, `/client-work`, `/blog`, `/blog/:slug`, `/admin`, `/privacy-policy`, `/terms-and-conditions`, `/refund-policy`, `/cookie-policy`, `/spicecraft/privacy`, `/support`, plus a `*` 404.
 `/case-studies` is a permanent redirect to `/client-work`.
+`/spicecraft/privacy` and `/support` are SpiceCraft's privacy policy and Support URLs in the app stores: keep both paths exactly as they are, because changing one means changing the store listing.
 
 **Backend** (`backend/server.py` for routes, `backend/cms.py` for CMS and auth data access):
 - `GET /api/` - health message (`GET /api/status` was removed in issue #6; use this for liveness)
