@@ -36,6 +36,10 @@
     "/spicecraft/privacy": {
       "title": "SpiceCraft Privacy Policy | Softogram",
       "description": "Privacy policy for SpiceCraft, the spice-sorting puzzle game by Softogram — what Google AdMob collects to show ads, and what the game does not collect."
+    },
+    "/support": {
+      "title": "Support | Softogram",
+      "description": "Contact Softogram (Opengram Labs Private Limited) by email or phone, and get help with SpiceCraft - reporting a problem, reporting an advert, and your saved progress."
     }
   }
 }
