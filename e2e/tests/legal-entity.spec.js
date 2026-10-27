@@ -25,6 +25,7 @@ const ROUTES = [
   "/privacy-policy",
   "/terms-and-conditions",
   "/spicecraft/privacy",
+  "/support",
   "/definitely-not-a-page",
 ];
 

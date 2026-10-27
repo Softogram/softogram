@@ -17,6 +17,7 @@ const STATIC_ROUTES = [
   "/refund-policy",
   "/cookie-policy",
   "/spicecraft/privacy",
+  "/support",
 ];
 
 test.describe("sitemap.xml from the CMS (issue #78)", () => {

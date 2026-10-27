@@ -33,6 +33,9 @@ const CookiePolicy = lazy(() =>
 const SpiceCraftPrivacyPolicy = lazy(() =>
   import("@/pages/policies").then((m) => ({ default: m.SpiceCraftPrivacyPolicy })),
 );
+const SupportPage = lazy(() =>
+  import("@/pages/policies").then((m) => ({ default: m.SupportPage })),
+);
 const Admin = lazy(() => import("@/pages/Admin"));
 
 function RouteFallback() {
@@ -72,6 +75,9 @@ function App() {
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />
               <Route path="/spicecraft/privacy" element={<SpiceCraftPrivacyPolicy />} />
+              {/* SpiceCraft's App Store Support URL. Keep the exact path: changing
+                  it means changing the listing on Apple's side. */}
+              <Route path="/support" element={<SupportPage />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Route>
