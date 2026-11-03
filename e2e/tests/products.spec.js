@@ -1,5 +1,6 @@
 // Products catalog (Phase 5) - static seeds + modal. Real products only (issue #73):
-// two open-source tools plus two mobile apps marked "Coming soon".
+// two open-source tools plus two mobile apps: Ryup live on Android with the
+// iPhone version coming, SpiceCraft live on both stores since 2026-11-03.
 const { test, expect } = require("@playwright/test");
 
 test.describe("products page", () => {
@@ -69,8 +70,18 @@ test.describe("products page", () => {
   });
 
   const APPS = [
-    { name: "Ryup", play: "https://play.google.com/store/apps/details?id=com.softogram.ryup_app" },
-    { name: "SpiceCraft", play: "https://play.google.com/store/apps/details?id=com.softogram.spicecraft" },
+    {
+      name: "Ryup",
+      play: "https://play.google.com/store/apps/details?id=com.softogram.ryup_app",
+      appStore: null,
+      status: "Live on Android",
+    },
+    {
+      name: "SpiceCraft",
+      play: "https://play.google.com/store/apps/details?id=com.softogram.spicecraft",
+      appStore: "https://apps.apple.com/app/spicecraft-sort-puzzle/id6818140363",
+      status: "Live",
+    },
   ];
 
   for (const viewport of [
@@ -83,7 +94,7 @@ test.describe("products page", () => {
         await page.goto("/products");
         await page.getByTestId("product-card").filter({ hasText: app.name }).click();
         const modal = page.getByTestId("product-modal");
-        await expect(modal).toContainText("Live on Android");
+        await expect(modal).toContainText(app.status);
         await expect(modal).not.toContainText("not downloadable");
 
         const play = page.getByTestId("product-modal-google-play");
@@ -98,8 +109,18 @@ test.describe("products page", () => {
         const box = await badge.boundingBox();
         expect(box.height).toBeGreaterThanOrEqual(48);
 
-        await expect(page.getByTestId("product-modal-ios-note")).toHaveText("iPhone version coming soon");
-        await expect(page.getByTestId("product-modal-app-store")).toHaveCount(0);
+        if (app.appStore) {
+          // Live on the App Store: a real link, and no "coming soon" note left behind.
+          const appStore = page.getByTestId("product-modal-app-store");
+          await expect(appStore).toHaveAttribute("href", app.appStore);
+          await expect(appStore).toHaveAttribute("target", "_blank");
+          await expect(appStore).toHaveAttribute("rel", "noopener noreferrer");
+          await expect(page.getByTestId("product-modal-ios-note")).toHaveCount(0);
+          await expect(modal).not.toContainText("coming soon");
+        } else {
+          await expect(page.getByTestId("product-modal-ios-note")).toHaveText("iPhone version coming soon");
+          await expect(page.getByTestId("product-modal-app-store")).toHaveCount(0);
+        }
       });
     }
   }
