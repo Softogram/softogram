@@ -254,15 +254,24 @@ function ProductModal({ product, onClose }) {
                 </a>
               )}
               {product.stores.appStore ? (
+                // Apple's official badge, unaltered. The SVG has no built-in
+                // margin, so it is sized to the visible black box of the Google
+                // badge (168 of its 250px, so 43px at the 64px above); the row
+                // gap and Google's margin give it the clear space Apple asks for.
                 <a
                   href={product.stores.appStore}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm underline"
-                  style={{ color: DIM, fontFamily: "var(--font-mono)" }}
+                  className="inline-block"
                   data-testid="product-modal-app-store"
                 >
-                  Get {product.name} on the App Store
+                  <img
+                    src="/badges/app-store-badge.svg"
+                    alt={`Download ${product.name} on the App Store`}
+                    width={120}
+                    height={40}
+                    style={{ height: 43, width: "auto" }}
+                  />
                 </a>
               ) : (
                 product.stores.iosNote && (
