@@ -68,3 +68,31 @@ test.describe("seo", () => {
     );
   });
 });
+
+test.describe("site icons", () => {
+  test("favicon links resolve and carry the S-mark", async ({ page, request }) => {
+    await page.goto("/");
+
+    // The SVG favicon is the single source every raster icon is rendered from.
+    const svg = await request.get("/favicon.svg");
+    expect(svg.status()).toBe(200);
+    expect(await svg.text()).toContain("M 6.83 19.14");
+
+    const hrefs = await page
+      .locator('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
+      .evaluateAll((links) => links.map((l) => l.getAttribute("href")));
+    expect(hrefs.length).toBeGreaterThanOrEqual(4);
+    for (const href of hrefs) {
+      const res = await request.get(href);
+      expect(res.status(), href).toBe(200);
+      expect(res.headers()["content-type"], href).toMatch(/image\//);
+    }
+
+    // The share banner is the size the og:image:width/height meta tags claim.
+    const banner = await request.get("/og-banner.png");
+    expect(banner.status()).toBe(200);
+    const png = await banner.body();
+    expect(png.readUInt32BE(16)).toBe(1200);
+    expect(png.readUInt32BE(20)).toBe(630);
+  });
+});
