@@ -1,28 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!--
+    Softogram S-mark on the site's card colour. Same geometry as
+    frontend/src/components/redesign/LogoMono.jsx, scaled to 74% so the
+    tips keep clear space inside square and circular (maskable) icons.
+  -->
   <rect width="100" height="100" fill="#0d1117"/>
-  <polyline
-    points="34,20 12,50 34,80"
-    fill="none"
-    stroke="#4ade80"
-    stroke-width="11"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
-  <polyline
-    points="66,20 88,50 66,80"
-    fill="none"
-    stroke="#4ade80"
-    stroke-width="11"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
-  <line
-    x1="66"
-    y1="20"
-    x2="34"
-    y2="80"
-    stroke="#4ade80"
-    stroke-width="10"
-    stroke-linecap="round"
-  />
+  <g transform="translate(50 50) scale(0.74) translate(-50 -50)">
+    <path d="M 6.83 19.14 L 51.33 12.89 L 37.38 53.07 L 4.43 28.47 A 5.2 5.2 0 0 1 6.83 19.14 Z M 13.59 29.5 L 18.88 28.75 L 40.28 44.73 L 39.0 48.48 Z M 25.39 27.81 L 47.21 24.76 L 41.93 40.16 Z" fill="#4ade80" fill-rule="evenodd"/>
+    <path d="M 6.83 19.14 L 51.33 12.89 L 37.38 53.07 L 4.43 28.47 A 5.2 5.2 0 0 1 6.83 19.14 Z M 13.59 29.5 L 18.88 28.75 L 40.28 44.73 L 39.0 48.48 Z M 25.39 27.81 L 47.21 24.76 L 41.93 40.16 Z" fill="#4ade80" fill-rule="evenodd" transform="rotate(180 50 50)"/>
+    <line x1="63.8" y1="10.2" x2="36.2" y2="89.8" stroke="#09090e" stroke-width="12.3" stroke-linecap="round"/>
+    <line x1="63.8" y1="10.2" x2="36.2" y2="89.8" stroke="#e2e8f0" stroke-width="11.3" stroke-linecap="round"/>
+  </g>
 </svg>
