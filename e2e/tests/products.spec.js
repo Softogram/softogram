@@ -89,7 +89,7 @@ test.describe("products page", () => {
     { name: "phone", width: 390, height: 844 },
   ]) {
     for (const app of APPS) {
-      test(`${app.name} shows the official Google Play badge (${viewport.name})`, async ({ page }) => {
+      test(`${app.name} shows the official store badges (${viewport.name})`, async ({ page }) => {
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
         await page.goto("/products");
         await page.getByTestId("product-card").filter({ hasText: app.name }).click();
@@ -115,6 +115,19 @@ test.describe("products page", () => {
           await expect(appStore).toHaveAttribute("href", app.appStore);
           await expect(appStore).toHaveAttribute("target", "_blank");
           await expect(appStore).toHaveAttribute("rel", "noopener noreferrer");
+          // Apple's official badge, not a text link, and it loaded.
+          const appBadge = appStore.getByRole("img", {
+            name: `Download ${app.name} on the App Store`,
+          });
+          await expect(appBadge).toBeVisible();
+          await appBadge.scrollIntoViewIfNeeded();
+          expect(await appBadge.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+          const appBox = await appBadge.boundingBox();
+          // Apple's minimum is 40px, and the two badges should read as one row:
+          // the Apple badge is as tall as the Google badge's visible black box
+          // (168 of its 250px; the rest of the PNG is transparent margin).
+          expect(appBox.height).toBeGreaterThanOrEqual(40);
+          expect(Math.abs(appBox.height - (box.height * 168) / 250)).toBeLessThanOrEqual(2);
           await expect(page.getByTestId("product-modal-ios-note")).toHaveCount(0);
           await expect(modal).not.toContainText("coming soon");
         } else {
