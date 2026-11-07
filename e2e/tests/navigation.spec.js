@@ -11,6 +11,7 @@ const routes = [
   { path: "/cookie-policy", expectText: /cookie/i },
   { path: "/spicecraft/privacy", expectText: /spicecraft privacy policy/i },
   { path: "/support", expectText: /^support$/i },
+  { path: "/classes", expectText: /crack coding interviews/i },
 ];
 
 test.describe("routes", () => {

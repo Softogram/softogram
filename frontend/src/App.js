@@ -36,6 +36,7 @@ const SpiceCraftPrivacyPolicy = lazy(() =>
 const SupportPage = lazy(() =>
   import("@/pages/policies").then((m) => ({ default: m.SupportPage })),
 );
+const Classes = lazy(() => import("@/pages/Classes"));
 const Admin = lazy(() => import("@/pages/Admin"));
 
 function RouteFallback() {
@@ -78,6 +79,8 @@ function App() {
               {/* SpiceCraft's App Store Support URL. Keep the exact path: changing
                   it means changing the listing on Apple's side. */}
               <Route path="/support" element={<SupportPage />} />
+              {/* Printed on the Softogram Classes flyers as a QR code; keep the path. */}
+              <Route path="/classes" element={<Classes />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Route>

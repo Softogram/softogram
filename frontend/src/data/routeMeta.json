@@ -40,6 +40,10 @@
     "/support": {
       "title": "Support | Softogram",
       "description": "Contact Softogram (Opengram Labs Private Limited) by email or phone, and get help with SpiceCraft - reporting a problem, reporting an advert, and your saved progress."
+    },
+    "/classes": {
+      "title": "Softogram Classes | Live online DSA batch for B.Tech students",
+      "description": "A 12-week live online DSA batch, 10 students, taught by a backend engineer and Codeforces Expert, with off-campus placement support. Free demo class, then decide."
     }
   }
 }
