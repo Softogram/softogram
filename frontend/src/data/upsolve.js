@@ -1,5 +1,5 @@
 /**
- * Content for /classes, the landing page printed on the Softogram Classes
+ * Content for /upsolve, the landing page printed on the Upsolve by Softogram
  * flyers (QR code target). The flyer copy lives outside this repo in
  * softogram-classes/docs; keep dates, fees and claims here in step with it.
  *
@@ -7,11 +7,11 @@
  * students yet, so there are no results, testimonials or placement numbers.
  */
 
-export const CLASSES_PHONE_DISPLAY = "+91 63601 58761";
-export const CLASSES_PHONE_TEL = "tel:+916360158761";
-export const CLASSES_WHATSAPP_HREF =
+export const UPSOLVE_PHONE_DISPLAY = "+91 63601 58761";
+export const UPSOLVE_PHONE_TEL = "tel:+916360158761";
+export const UPSOLVE_WHATSAPP_HREF =
   "https://wa.me/916360158761?text=Hi%20Saurabh%2C%20I%20want%20to%20join%20the%20free%20DSA%20demo%20class.";
-export const CLASSES_WHATSAPP_SCHOOL_HREF =
+export const UPSOLVE_WHATSAPP_SCHOOL_HREF =
   "https://wa.me/916360158761?text=Hi%20Saurabh%2C%20I%20want%20to%20know%20about%20the%20school%20coding%20classes.";
 
 export const BATCH = {
@@ -96,6 +96,10 @@ export const SCHOOL = {
 };
 
 export const FAQ = [
+  {
+    q: "Why is it called Upsolve?",
+    a: "In competitive programming, upsolving means going back after a contest to solve the problems you could not solve during it. That habit, finishing what you got stuck on with someone to guide you, is the whole course.",
+  },
   {
     q: "Which language do I need to know?",
     a: "Any one of C++, Java or Python, enough to write loops, functions and arrays. C++ is the default in class, and Java and Python students code in their own language.",
