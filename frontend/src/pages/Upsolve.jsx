@@ -9,6 +9,8 @@ import React, { useEffect } from "react";
 import { MessageCircle, Phone, Github, Linkedin } from "lucide-react";
 import { G, A, DIM, BORDER, CARD, Section, Reveal } from "@/components/redesign/homePrimitives";
 import SeoHead from "@/components/redesign/SeoHead";
+import LogoMono from "@/components/redesign/LogoMono";
+import UpsolveMark from "@/components/redesign/UpsolveMark";
 import { metaFor } from "@/lib/routeMeta";
 import { capture } from "@/lib/analytics";
 import {
@@ -124,7 +126,18 @@ export default function Upsolve() {
       {/* Hero */}
       <Section id="upsolve-hero" className="pt-32 pb-16 md:pb-20">
         <div className="max-w-5xl mx-auto px-4">
-          <Eyebrow>upsolve by softogram . live . online . {BATCH.seats} per batch</Eyebrow>
+          <div className="flex items-center gap-3 mb-5" data-testid="upsolve-brand">
+            <UpsolveMark size={44} />
+            <div>
+              <p className="text-2xl font-bold leading-none" style={{ color: TEXT, fontFamily: DISPLAY }}>
+                Upsolve
+              </p>
+              <p className="text-xs mt-1" style={{ color: DIM, fontFamily: MONO }}>
+                by Softogram
+              </p>
+            </div>
+          </div>
+          <Eyebrow>live . online . {BATCH.seats} per batch</Eyebrow>
           <h1
             className="text-4xl md:text-6xl font-bold leading-[1.05] mb-6"
             style={{ color: G, fontFamily: DISPLAY, letterSpacing: "-0.01em" }}
@@ -380,7 +393,12 @@ export default function Upsolve() {
             confirmed when 5 students have paid, and seats stop at {BATCH.seats}.
           </p>
           <Actions where="footer" />
-          <p className="text-xs mt-8" style={{ color: DIM, fontFamily: MONO }}>
+          <p
+            className="inline-flex items-center gap-2 text-xs mt-8"
+            style={{ color: DIM, fontFamily: MONO }}
+            data-testid="upsolve-by-softogram"
+          >
+            <LogoMono size={18} glow={false} />
             Upsolve is a Softogram initiative. Softogram is a brand of Opengram Labs Private Limited.
           </p>
         </div>

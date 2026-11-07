@@ -15,6 +15,9 @@ test.describe("upsolve landing page", () => {
     await expect(page.getByTestId("footer")).toBeVisible();
 
     await expect(page.getByTestId("upsolve-hero-title")).toContainText(/crack coding interviews/i);
+    // Upsolve has its own mark; the "by Softogram" line carries the Softogram S-mark.
+    await expect(page.getByTestId("upsolve-brand").getByTestId("upsolve-mark")).toBeVisible();
+    await expect(page.getByTestId("upsolve-by-softogram").getByTestId("site-logo")).toBeVisible();
     await expect(page.getByTestId("upsolve-facts")).toContainText("Monday 30 November 2026");
     await expect(page.getByTestId("upsolve-facts")).toContainText("7 to 9 pm");
     await expect(page.getByTestId("upsolve-fee-card")).toContainText("Rs 15,000");
