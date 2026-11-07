@@ -135,7 +135,8 @@ export default function Classes() {
             Live, online, {BATCH.seats} students per batch.
           </h1>
           <p className="text-lg md:text-xl mb-8 max-w-3xl" style={{ color: TEXT }}>
-            A 3-month DSA batch for B.Tech students, taught live by an engineer who has done it. DSA means data
+            Coding is a skill you train under a coach, not a 12-hour video course you never finish. A 3-month DSA
+            batch for B.Tech students: 150+ problems solved live, with someone checking your code. DSA means data
             structures and algorithms, the problem-solving topics every coding interview tests.
           </p>
           <Actions where="hero" />
