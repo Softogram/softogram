@@ -1,12 +1,14 @@
 /**
- * Upsolve mark: a U (the bucket of problems you got stuck on) with an arrow
- * rising out of it. Upsolve is Softogram's live DSA coaching batch, so this
- * mark appears only on /upsolve; the site chrome keeps the Softogram S-mark.
- * Source of truth for the artwork is softogram-upsolve/brand/upsolve-mark.svg.
+ * Upsolve mark: three chevrons climbing, the lower two in darker solid greens
+ * so the fade reads the same on any background. Upsolve is Softogram's live
+ * DSA coaching batch, so this mark appears only on /upsolve; the site chrome
+ * keeps the Softogram S-mark. Source artwork: softogram-upsolve/brand/upsolve-mark.svg.
  */
 import React from "react";
 
-export default function UpsolveMark({ size = 40, color = "#4ade80", cupColor = "#e2e8f0", className = "" }) {
+const CHEVRON = (y) => `M 22 ${y} L 50 ${y - 24} L 78 ${y}`;
+
+export default function UpsolveMark({ size = 40, className = "" }) {
   return (
     <svg
       width={size}
@@ -18,15 +20,13 @@ export default function UpsolveMark({ size = 40, color = "#4ade80", cupColor = "
       aria-label="Upsolve"
       data-testid="upsolve-mark"
     >
-      <path d="M 22 24 V 62 A 28 28 0 0 0 78 62 V 24" stroke={cupColor} strokeWidth="11" strokeLinecap="round" />
-      <path d="M 50 76 V 20" stroke={color} strokeWidth="11" strokeLinecap="round" />
-      <path
-        d="M 31 39 L 50 20 L 69 39"
-        stroke={color}
-        strokeWidth="11"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      {[
+        [88, "#205436"],
+        [62, "#379e5e"],
+        [36, "#fb923c"],
+      ].map(([y, color]) => (
+        <path key={y} d={CHEVRON(y)} stroke={color} strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+      ))}
     </svg>
   );
 }
