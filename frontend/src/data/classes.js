@@ -66,8 +66,8 @@ export const PLACEMENT_SUPPORT = [
 export const TEACHER = {
   name: "Saurabh Mishra",
   lines: [
-    "Schooled in Prayagraj. B.Tech from a tier-3 college in Ghaziabad. Then 4 years as a backend engineer.",
-    "Worked at Couchbase on the Java and .NET database SDKs used by companies worldwide, and at a Bangalore startup serving 10 million users.",
+    "Schooled in Prayagraj at MPVM, Teliyarganj. B.Tech from ABES Engineering College, Ghaziabad, a tier-3 college. Then 4 years as a backend engineer.",
+    "At Couchbase, on the Java and Go database SDKs used by companies worldwide. Before that at Orange Health, building the backend for India's fastest diagnostics labs.",
     "I cracked interviews from a tier-3 college with exactly this preparation. I teach the way I wish someone had taught me.",
   ],
   badges: [
