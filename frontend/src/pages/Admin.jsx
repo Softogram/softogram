@@ -18,6 +18,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import SeoHead from "@/components/redesign/SeoHead";
+import AdminUpsolve from "@/components/redesign/upsolve/AdminUpsolve";
 import {
   adminLogin,
   adminFetchBlogs,
@@ -387,6 +388,19 @@ export default function Admin() {
             }}
           >
             analytics
+          </button>
+          <button
+            type="button"
+            data-testid="admin-tab-upsolve"
+            onClick={() => setTab("upsolve")}
+            className="px-3 py-1 text-xs rounded-sm"
+            style={{
+              background: tab === "upsolve" ? `${G}22` : "transparent",
+              border: `1px solid ${BORDER}`,
+              color: tab === "upsolve" ? G : DIM,
+            }}
+          >
+            upsolve
           </button>
         </div>
         <div className="flex gap-2 items-center">
@@ -812,6 +826,8 @@ export default function Admin() {
           </div>
         </div>
       )}
+
+      {tab === "upsolve" && <AdminUpsolve />}
 
       {tab === "comments" && (
         <div className="p-6" data-testid="admin-comments">

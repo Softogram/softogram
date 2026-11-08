@@ -1,13 +1,17 @@
 /**
  * Floating WhatsApp CTA — full international number (issue #12).
  */
+import { useLocation } from "react-router-dom";
 import { WHATSAPP_HREF } from "@/data/site";
+import { WHATSAPP_DEMO_HREF } from "@/data/upsolve";
 import { capture } from "@/lib/analytics";
 
 export default function WhatsAppButton() {
+  // Students on the Upsolve pages are not asking about a software project.
+  const { pathname } = useLocation();
   return (
     <a
-      href={WHATSAPP_HREF}
+      href={pathname.startsWith("/upsolve") ? WHATSAPP_DEMO_HREF : WHATSAPP_HREF}
       target="_blank"
       rel="noopener noreferrer"
       className="whatsapp-btn"

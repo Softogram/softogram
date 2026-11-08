@@ -37,6 +37,7 @@ const SupportPage = lazy(() =>
   import("@/pages/policies").then((m) => ({ default: m.SupportPage })),
 );
 const Upsolve = lazy(() => import("@/pages/Upsolve"));
+const UpsolveEnrol = lazy(() => import("@/pages/UpsolveEnrol"));
 const Admin = lazy(() => import("@/pages/Admin"));
 
 function RouteFallback() {
@@ -81,6 +82,7 @@ function App() {
               <Route path="/support" element={<SupportPage />} />
               {/* Printed on the Upsolve by Softogram flyers as a QR code; keep the path. */}
               <Route path="/upsolve" element={<Upsolve />} />
+              <Route path="/upsolve/enrol" element={<UpsolveEnrol />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Route>

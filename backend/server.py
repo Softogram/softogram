@@ -29,6 +29,7 @@ import httpx
 from database import AsyncSessionLocal, engine
 from models import Lead, BlogPost, NewsletterSubscriber
 import cms as content_cms
+import upsolve as upsolve_module
 
 # --- Configuration & Setup ---
 ROOT_DIR = Path(__file__).parent
@@ -1088,6 +1089,24 @@ async def admin_analytics(request: Request):
 
 
 # --- App Initialization ---
+
+# Upsolve by Softogram: demo bookings, enrolments, Razorpay (issues #152, #154).
+# Its own module, wired with this file's admin guard, client key, limiter and
+# email sender so server.py does not grow another 500 lines.
+# Looser than the contact form on purpose: a hostel or college shares one IP
+# address, and a student who backs out of checkout and retries must not be blocked.
+_upsolve_limiter = ContactRateLimiter(
+    per_minute=int(os.getenv("UPSOLVE_RATE_LIMIT_PER_MINUTE", "10")),
+    per_hour=int(os.getenv("UPSOLVE_RATE_LIMIT_PER_HOUR", "60")),
+)
+api_router.include_router(
+    upsolve_module.build_router(
+        require_admin=_require_admin,
+        client_key=_client_key,
+        limiter=_upsolve_limiter,
+        send_email=_send_email,
+    )
+)
 
 app.include_router(api_router)
 app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")

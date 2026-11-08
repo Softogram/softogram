@@ -14,7 +14,7 @@
 | X-Content-Type-Options | `nosniff` |
 | X-Frame-Options | `DENY` |
 | Referrer-Policy | `strict-origin-when-cross-origin` |
-| Content-Security-Policy | Copy from `frontend/public/_headers` (adjust if you add analytics hosts) |
+| Content-Security-Policy | Copy from `frontend/public/_headers`, which already allows Razorpay's checkout (adjust if you add analytics hosts) |
 
 Optional API nginx extras (defense in depth) in the `api.softogram.in` server block:
 
