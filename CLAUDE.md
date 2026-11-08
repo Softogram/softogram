@@ -55,9 +55,11 @@ When adding UI, match the patterns already in `frontend/src/components/redesign/
 
 **Frontend**: `frontend/src/App.js` is a thin (~77 line) router only.
 Every page is lazy-loaded from `frontend/src/pages/`, and shared sections live in `frontend/src/components/redesign/`.
-Routes: `/`, `/products`, `/client-work`, `/blog`, `/blog/:slug`, `/admin`, `/privacy-policy`, `/terms-and-conditions`, `/refund-policy`, `/cookie-policy`, `/spicecraft/privacy`, `/support`, plus a `*` 404.
+Routes: `/`, `/products`, `/client-work`, `/blog`, `/blog/:slug`, `/admin`, `/privacy-policy`, `/terms-and-conditions`, `/refund-policy`, `/cookie-policy`, `/spicecraft/privacy`, `/support`, `/upsolve`, `/upsolve/enrol`, plus a `*` 404.
 `/case-studies` is a permanent redirect to `/client-work`.
 `/spicecraft/privacy` and `/support` are SpiceCraft's privacy policy and Support URLs in the app stores: keep both paths exactly as they are, because changing one means changing the store listing.
+`/upsolve` is the landing page for Upsolve by Softogram (live online DSA coaching) and is printed as a QR code on physical flyers: keep that path too.
+Its copy lives in `frontend/src/data/upsolve.js` and its dates and fees in `backend/upsolve.py`; both must match the flyers in the sibling `softogram-upsolve/` folder.
 
 **Backend** (`backend/server.py` for routes, `backend/cms.py` for CMS and auth data access):
 - `GET /api/` - health message (`GET /api/status` was removed in issue #6; use this for liveness)
@@ -68,6 +70,7 @@ Routes: `/`, `/products`, `/client-work`, `/blog`, `/blog/:slug`, `/admin`, `/pr
 - `GET /api/content/blog/{slug}/share.html` - prerendered OG HTML for crawlers
 - `GET|POST /api/content/blog/{slug}/comments` - public comment read and submit
 - `POST /api/admin/login` plus `/api/admin/*` for blog, projects, comments, leads, upload, analytics
+- `/api/upsolve/*` and `/api/admin/upsolve/*` - demo bookings, live seat counters and Razorpay enrolment, all in `backend/upsolve.py`; setup in `docs/ops/upsolve-payments.md`
 
 Contact form posts `{ name, email, phone, service, message }` plus a honeypot field (issue #5).
 Budget range is appended to `message` on the client before POST.
@@ -79,7 +82,7 @@ Leads persist to the `leads` table in Postgres; MongoDB has been removed entirel
 
 **Canonical contact email in code**: `support@softogram.in`
 
-**Database**: Postgres is the only datastore - `leads`, `admin_users`, `admin_sessions`, `blog_posts`, `blog_comments`, `projects`, `newsletter_subscribers`.
+**Database**: Postgres is the only datastore - `leads`, `admin_users`, `admin_sessions`, `blog_posts`, `blog_comments`, `projects`, `newsletter_subscribers`, `upsolve_demo_bookings`, `upsolve_enrolments`, `upsolve_payment_events`.
 Alembic migrations apply automatically on backend boot (`server.py`'s `lifespan`); there is no separate migrate step to remember.
 Local Postgres runs via `docker compose up -d` (root `docker-compose.yml`).
 Admin auth is live as of Phase 11: `admin_users` holds argon2 password hashes, and `admin_sessions` stores only `sha256(token)` for bearer sessions issued by `POST /api/admin/login`.
@@ -113,6 +116,9 @@ SITE_URL=https://softogram.in
 POSTHOG_API_KEY=                # optional; powers the admin analytics panel
 POSTHOG_PROJECT_ID=
 POSTHOG_HOST=
+RAZORPAY_KEY_ID=                # Upsolve payments; without these the page falls back to WhatsApp
+RAZORPAY_KEY_SECRET=
+RAZORPAY_WEBHOOK_SECRET=
 ```
 
 AWS SES credentials come from the standard AWS credential chain (instance role in production), not from a key in `.env`.

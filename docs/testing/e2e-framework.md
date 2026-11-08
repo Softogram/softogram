@@ -12,7 +12,7 @@ Production behavior is unchanged when the variable is unset.
 - **Email payload assertions**: because the mock captures the exact `/v3/mail/send` body, tests verify subject, reply-to, recipients, and HTML content, which is the actual deliverable of the contact pipeline.
 - **Known bugs are encoded as `test.fixme`**: open issues (#2, #4, #12, #13, #19) have failing-by-design tests checked in but skipped, so fixing an issue means flipping one word and gaining permanent regression coverage.
 The suite proved this pattern on its first run: it caught the blank-404 defect that became issue #19.
-- **Dedicated ports** (3100/8001/8025) so the suite never collides with a running dev environment.
+- **Dedicated ports** (3100/8001/8025/8026) so the suite never collides with a running dev environment.
 
 ## Relationship to existing tests
 

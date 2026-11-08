@@ -32,7 +32,8 @@ function markDismissed() {
 
 export default function LeadMagnet() {
   const { pathname } = useLocation();
-  const hideOnAdmin = pathname.startsWith("/admin");
+  // A founders' launch checklist is off-topic for students, and must never pop up during checkout.
+  const hideOnAdmin = pathname.startsWith("/admin") || pathname.startsWith("/upsolve");
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [honeypot, setHoneypot] = useState("");

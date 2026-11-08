@@ -72,7 +72,7 @@ export function setAdminToken(token) {
   }
 }
 
-function adminHeaders() {
+export function adminHeaders() {
   return { Authorization: `Bearer ${getAdminToken()}` };
 }
 

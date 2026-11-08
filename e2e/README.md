@@ -8,6 +8,7 @@ Playwright (chromium)
    -> React dev server        http://localhost:3100
    -> FastAPI backend         http://localhost:8001   (AWS_SES_ENDPOINT_URL points at the mock)
    -> SES mock                http://localhost:8025   (captures /v2/email/outbound-emails)
+   -> Razorpay mock           http://localhost:8026   (orders, payment links, signatures, checkout stand-in)
 ```
 
 All three servers are started automatically by `playwright.config.js` (`webServer`); you never start them by hand.

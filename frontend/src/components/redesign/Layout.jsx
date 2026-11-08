@@ -24,6 +24,7 @@ const NAV_LINKS = [
   { label: 'shipped',  href: '/products' },
   { label: 'clients',  href: '/client-work' },
   { label: 'blog',     href: '/blog' },
+  { label: 'upsolve',  href: '/upsolve' },
   { label: 'contact',  href: '/#contact' },
 ]
 
