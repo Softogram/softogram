@@ -6,6 +6,7 @@ admin_users / admin_sessions are wired in Phase 11 (argon2 passwords +
 Postgres-backed session tokens).
 """
 from datetime import datetime, timezone
+from typing import Optional
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -111,4 +112,75 @@ class NewsletterSubscriber(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(255), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+# --- Upsolve by Softogram: live DSA coaching (issues #152, #154) ---
+
+
+class UpsolveDemoBooking(Base):
+    """A seat booked for a free demo class from the form on /upsolve.
+
+    Status is set by the admin by hand: new, link_sent, attended, not_interested.
+    """
+
+    __tablename__ = "upsolve_demo_bookings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(100))
+    # Ten digits, no country code, so one person books once per demo date.
+    phone: Mapped[str] = mapped_column(String(15), index=True)
+    college: Mapped[str] = mapped_column(String(120), default="")
+    year: Mapped[str] = mapped_column(String(40), default="")
+    demo_date: Mapped[str] = mapped_column(String(10), index=True)
+    status: Mapped[str] = mapped_column(String(20), default="new")
+    notes: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+
+
+class UpsolveEnrolment(Base):
+    """One payment attempt for a batch seat: a Razorpay order and its outcome.
+
+    A paid row with instalment_no 1 is one seat taken. A second instalment is
+    its own row with instalment_no 2. Status: pending, paid, failed, refunded.
+    Source: site (checkout on the page), link (a Razorpay payment link sent on
+    WhatsApp), manual (a UPI transfer the admin recorded by hand).
+    """
+
+    __tablename__ = "upsolve_enrolments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(100))
+    phone: Mapped[str] = mapped_column(String(15), index=True)
+    email: Mapped[str] = mapped_column(String(255), default="")
+    college: Mapped[str] = mapped_column(String(120), default="")
+    language: Mapped[str] = mapped_column(String(20), default="C++")
+    plan: Mapped[str] = mapped_column(String(20), default="full")
+    early_bird: Mapped[bool] = mapped_column(Boolean, default=False)
+    instalment_no: Mapped[int] = mapped_column(Integer, default=1)
+    amount_paise: Mapped[int] = mapped_column(Integer)
+    currency: Mapped[str] = mapped_column(String(3), default="INR")
+    razorpay_order_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True, nullable=True)
+    razorpay_payment_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True, nullable=True)
+    # Set only for a payment link sent on WhatsApp.
+    razorpay_link_id: Mapped[Optional[str]] = mapped_column(String(64), unique=True, nullable=True)
+    payment_link_url: Mapped[str] = mapped_column(String(300), default="")
+    status: Mapped[str] = mapped_column(String(20), default="pending", index=True)
+    source: Mapped[str] = mapped_column(String(20), default="site")
+    notes: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+    paid_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class UpsolvePaymentEvent(Base):
+    """Every Razorpay webhook delivery, keyed by its event id so a redelivery is
+    applied once. The payload is kept so an unmatched payment can be sorted out
+    by hand later."""
+
+    __tablename__ = "upsolve_payment_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    event_id: Mapped[str] = mapped_column(String(64), unique=True)
+    event: Mapped[str] = mapped_column(String(60))
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)

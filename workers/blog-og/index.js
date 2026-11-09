@@ -33,6 +33,8 @@ const PRERENDERED_ROUTES = new Set([
   "/terms-and-conditions",
   "/refund-policy",
   "/cookie-policy",
+  "/upsolve",
+  "/upsolve/enrol",
 ]);
 
 const CRAWLER_UA =

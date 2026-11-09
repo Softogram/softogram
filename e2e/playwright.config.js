@@ -6,8 +6,9 @@ const path = require("path");
 /**
  * E2E stack (all started automatically by Playwright):
  *   1. SES mock        -> http://localhost:8025  (fixtures/ses-mock.js)
- *   2. FastAPI backend -> http://localhost:8001  (real server, emails go to the mock)
- *   3. React frontend  -> http://localhost:3100  (real CRA dev server)
+ *   2. Razorpay mock   -> http://localhost:8026  (fixtures/razorpay-mock.js)
+ *   3. FastAPI backend -> http://localhost:8001  (real server, emails and payments go to the mocks)
+ *   4. React frontend  -> http://localhost:3100  (real CRA dev server)
  *
  * Backend python: uses backend/.venv if present, otherwise python3 on PATH.
  * Backend needs Postgres reachable at DATABASE_URL (default: the `softogram_e2e`
@@ -20,6 +21,7 @@ const VENV_PYTHON = path.join(ROOT, "backend", ".venv", "bin", "python");
 const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : "python3";
 
 const EMAIL_MOCK_URL = "http://localhost:8025";
+const RAZORPAY_MOCK_URL = "http://localhost:8026";
 const BACKEND_URL = "http://localhost:8001";
 const FRONTEND_URL = "http://localhost:3100";
 
@@ -62,6 +64,16 @@ module.exports = defineConfig({
       timeout: 15_000,
     },
     {
+      command: "node fixtures/razorpay-mock.js",
+      url: `${RAZORPAY_MOCK_URL}/health`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 15_000,
+      env: {
+        RAZORPAY_KEY_SECRET: "e2e-razorpay-secret",
+        RAZORPAY_WEBHOOK_SECRET: "e2e-webhook-secret",
+      },
+    },
+    {
       command: `${PYTHON} -m uvicorn server:app --port 8001`,
       cwd: path.join(ROOT, "backend"),
       url: `${BACKEND_URL}/api/`,
@@ -90,6 +102,18 @@ module.exports = defineConfig({
         // the "PostHog isn't configured" test's isolation. Presence (even empty) wins.
         POSTHOG_API_KEY: "",
         POSTHOG_PROJECT_ID: "",
+        // Upsolve payments: test keys that only the Razorpay mock accepts.
+        RAZORPAY_KEY_ID: "rzp_test_e2e",
+        RAZORPAY_KEY_SECRET: "e2e-razorpay-secret",
+        RAZORPAY_WEBHOOK_SECRET: "e2e-webhook-secret",
+        RAZORPAY_API_BASE: RAZORPAY_MOCK_URL,
+        UPSOLVE_RATE_LIMIT_PER_MINUTE: "500",
+        UPSOLVE_RATE_LIMIT_PER_HOUR: "5000",
+        // Far-future demos, so these tests do not start failing after the last real demo.
+        UPSOLVE_DEMOS_JSON: JSON.stringify([
+          { date: "2099-03-01", label: "Sunday 1 March, 6 pm" },
+          { date: "2099-03-07", label: "Saturday 7 March, 6 pm" },
+        ]),
       },
     },
     {
@@ -102,10 +126,13 @@ module.exports = defineConfig({
         PORT: "3100",
         BROWSER: "none",
         REACT_APP_BACKEND_URL: BACKEND_URL,
+        // The page loads Razorpay's checkout script from here; in e2e that is a
+        // window.Razorpay stand-in served by the mock.
+        REACT_APP_RAZORPAY_CHECKOUT_URL: `${RAZORPAY_MOCK_URL}/checkout-stub.js`,
         ENABLE_HEALTH_CHECK: "false",
       },
     },
   ],
 });
 
-module.exports.urls = { EMAIL_MOCK_URL, BACKEND_URL, FRONTEND_URL };
+module.exports.urls = { EMAIL_MOCK_URL, RAZORPAY_MOCK_URL, BACKEND_URL, FRONTEND_URL };
