@@ -14,6 +14,7 @@ import ScrollToHash from "@/components/ScrollToHash";
 
 const Home = lazy(() => import("@/pages/Home"));
 const Products = lazy(() => import("@/pages/Products"));
+const Apps = lazy(() => import("@/pages/Apps"));
 const ClientWork = lazy(() => import("@/pages/ClientWork"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
@@ -68,6 +69,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/apps" element={<Apps />} />
               <Route path="/client-work" element={<ClientWork />} />
               <Route path="/case-studies" element={<Navigate to="/client-work" replace />} />
               <Route path="/blog" element={<Blog />} />
