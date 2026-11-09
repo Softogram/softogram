@@ -46,11 +46,13 @@ export function WhatsAppLink({ href, children, testId, where, onClick, solid = f
       data-testid={testId}
       data-where={where}
       onClick={onClick}
-      className="inline-flex items-center justify-center text-center gap-2 px-5 py-3 rounded-sm text-sm font-medium min-h-[46px] transition-colors duration-200"
+      className="inline-flex items-center justify-center text-center px-5 py-3 rounded-sm text-sm font-medium min-h-[46px] transition-colors duration-200"
       style={solid ? { background: G, color: INK, fontFamily: MONO } : { border: `1px solid ${G}66`, color: TEXT, fontFamily: MONO }}
     >
-      <MessageCircle size={16} aria-hidden="true" />
-      {children}
+      <span>
+        <MessageCircle size={16} aria-hidden="true" className="inline-block align-[-3px] mr-2" />
+        {children}
+      </span>
     </a>
   );
 }

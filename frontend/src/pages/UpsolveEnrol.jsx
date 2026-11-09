@@ -215,7 +215,7 @@ export default function UpsolveEnrol() {
         ) : (
           <>
             <div className="max-w-[1120px] mx-auto flex items-center gap-3 flex-wrap mb-6 text-[13px]" style={{ color: DIM, fontFamily: MONO }}>
-              <Link to="/upsolve" className="inline-flex items-center gap-2 no-underline min-h-[32px]" style={{ color: DIM }} data-testid="upsolve-enrol-back">
+              <Link to="/upsolve" className="inline-flex items-center gap-2 no-underline min-h-[44px]" style={{ color: DIM }} data-testid="upsolve-enrol-back">
                 <UpsolveMark size={20} />
                 upsolve
               </Link>

@@ -23,7 +23,7 @@ export default function DemoAnnouncement({ stats }) {
             Announcement . free demo class
           </div>
           {first ? (
-            <h2 className="text-5xl md:text-[64px] font-bold leading-[0.98] tracking-[-0.02em]" style={{ color: A, fontFamily: DISPLAY }} data-testid="upsolve-demo-date">
+            <h2 className="text-[clamp(2.25rem,12.5vw,3rem)] md:text-[64px] font-bold leading-[0.98] tracking-[-0.02em]" style={{ color: A, fontFamily: DISPLAY }} data-testid="upsolve-demo-date">
               {day}
               <br />
               {date}

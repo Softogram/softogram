@@ -27,7 +27,7 @@ function DemoPill({ stats }) {
 
 export default function Hero({ stats, onBooked }) {
   return (
-    <section className="pt-28 md:pt-32 pb-12 px-4 md:px-6" style={{ background: "#0d1117" }} data-testid="upsolve-hero">
+    <section className="pt-20 md:pt-32 pb-12 px-4 md:px-6" style={{ background: "#0d1117" }} data-testid="upsolve-hero">
       <div className="max-w-[1120px] mx-auto grid lg:grid-cols-[minmax(0,1fr)_420px] gap-10 lg:gap-12 items-start">
         <div className="min-w-0">
           <div className="flex items-center gap-3 mb-6" data-testid="upsolve-brand">
@@ -45,13 +45,13 @@ export default function Hero({ stats, onBooked }) {
           <h1 className="text-4xl md:text-[56px] font-bold leading-[1.05] tracking-[-0.01em] mb-5" style={{ color: TEXT, fontFamily: DISPLAY }} data-testid="upsolve-hero-title">
             Crack coding interviews with a coach <span style={{ color: G }}>watching your code.</span>
           </h1>
-          <p className="text-lg md:text-[19px] leading-relaxed mb-6 max-w-[540px]" style={{ color: BODY }}>
-            DSA (data structures and algorithms) is a skill, not a subject. You do not learn it from a 12-hour video you never finish. You learn it by solving 150+ problems live, with someone checking every line and asking "why".
-          </p>
-          {/* On a phone the form sits below all of this, and that is where the QR code lands. */}
+          {/* On a phone the form sits far below, so the button comes right after the headline, on the first screen a QR scan lands on. */}
           <a href="#book" className="lg:hidden inline-flex items-center justify-center w-full rounded-sm text-[15px] font-medium px-5 py-3 min-h-[48px] mb-6 no-underline" style={{ background: G, color: INK, fontFamily: MONO }} data-testid="upsolve-hero-book">
             Book my free demo seat
           </a>
+          <p className="text-lg md:text-[19px] leading-relaxed mb-6 max-w-[540px]" style={{ color: BODY }}>
+            DSA (data structures and algorithms) is a skill, not a subject. You do not learn it from a 12-hour video you never finish. You learn it by solving 150+ problems live, with someone checking every line and asking "why".
+          </p>
           <ul className="flex flex-col gap-2.5 mb-6 text-[15px] list-none p-0" style={{ color: "#d1d5db" }}>
             {HERO_POINTS.map((p) => (
               <li key={p} className="flex gap-2.5 items-start">
