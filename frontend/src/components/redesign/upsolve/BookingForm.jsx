@@ -1,5 +1,5 @@
 /** "Book a free demo seat": lands in the Upsolve bookings tab in /admin. */
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { bookDemoSeat, apiErrorMessage } from "@/lib/upsolveApi";
 import { capture } from "@/lib/analytics";
@@ -17,6 +17,13 @@ export default function BookingForm({ stats, onBooked }) {
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState("");
   const [done, setDone] = useState(null);
+  const confirmation = useRef(null);
+
+  // The form is about two screens tall on a phone and the confirmation is much shorter,
+  // so swapping one for the other leaves the student looking at a later section.
+  useEffect(() => {
+    if (done) confirmation.current?.scrollIntoView({ block: "center" });
+  }, [done]);
 
   const chosenDemo = form.demo || demos[0]?.date || "";
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -54,7 +61,7 @@ export default function BookingForm({ stats, onBooked }) {
 
   if (done) {
     return (
-      <div id="book" className={panel} style={panelStyle} data-testid="upsolve-booking-success" role="status">
+      <div id="book" ref={confirmation} className={panel} style={panelStyle} data-testid="upsolve-booking-success" role="status">
         <CheckCircle2 size={32} color={G} aria-hidden="true" />
         <h2 className="text-2xl font-bold" style={{ color: TEXT, fontFamily: "var(--font-display)" }}>
           Your seat is booked.
@@ -102,7 +109,7 @@ export default function BookingForm({ stats, onBooked }) {
       <Field id="upsolve-phone" label="WhatsApp number" required error={errors.phone} help="The demo link comes here. No calls unless you ask.">
         <input id="upsolve-phone" className={inputClass} style={fieldStyle} type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={set("phone")} data-testid="upsolve-booking-phone" aria-required="true" />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid min-[420px]:grid-cols-2 gap-3">
         <Field id="upsolve-college" label="College">
           <input id="upsolve-college" className={inputClass} style={fieldStyle} type="text" autoComplete="organization" value={form.college} onChange={set("college")} data-testid="upsolve-booking-college" />
         </Field>

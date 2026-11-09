@@ -29,11 +29,11 @@ export default function ConsentBanner() {
   return (
     <div
       data-testid="consent-banner"
-      className="fixed bottom-0 left-0 right-0 z-[1100] p-4"
+      className="fixed bottom-0 left-0 right-0 z-[1100] p-2 sm:p-4"
       style={{ pointerEvents: "none" }}
     >
       <div
-        className="max-w-3xl mx-auto flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between rounded-sm p-4"
+        className="max-w-3xl mx-auto flex flex-col sm:flex-row gap-2 sm:gap-3 items-start sm:items-center justify-between rounded-sm p-3 sm:p-4"
         style={{
           background: CARD,
           border: `1px solid ${BORDER}`,
@@ -48,11 +48,11 @@ export default function ConsentBanner() {
           </Link>
           .
         </p>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 w-full sm:w-auto">
           <button
             type="button"
             data-testid="consent-decline"
-            className="px-3 py-1.5 text-xs rounded-sm"
+            className="flex-1 sm:flex-none min-h-[44px] md:min-h-0 px-3 py-1.5 text-xs rounded-sm"
             style={{
               color: DIM,
               border: `1px solid ${BORDER}`,
@@ -69,7 +69,7 @@ export default function ConsentBanner() {
           <button
             type="button"
             data-testid="consent-accept"
-            className="px-3 py-1.5 text-xs rounded-sm font-semibold"
+            className="flex-1 sm:flex-none min-h-[44px] md:min-h-0 px-3 py-1.5 text-xs rounded-sm font-semibold"
             style={{
               background: G,
               color: "#0d1117",

@@ -1,20 +1,83 @@
 /**
  * Floating WhatsApp CTA — full international number (issue #12).
  */
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { WHATSAPP_HREF } from "@/data/site";
 import { WHATSAPP_DEMO_HREF } from "@/data/upsolve";
 import { capture } from "@/lib/analytics";
 
-export default function WhatsAppButton() {
+// Anything a finger might be aiming for when the bubble floats over it.
+const TAPPABLE = "a, button, input, select, textarea, label, summary, [role='button']";
+// The centre and four sides of the round bubble, as fractions of its box.
+const SPOTS = [[0.5, 0.5], [0.12, 0.5], [0.88, 0.5], [0.5, 0.12], [0.5, 0.88]];
+
+/**
+ * True while something tappable is underneath the bubble on a phone.
+ *
+ * Buttons there run the full width of the screen, so they pass under the bubble as
+ * the page scrolls, and a tap on the end of "Book my demo seat" opened WhatsApp
+ * instead of booking. Desktop has margins, so it never steps aside.
+ */
+function useStepAside(ref) {
+  const [away, setAway] = useState(false);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const phone = window.matchMedia("(max-width: 1023px)");
+    let timer = 0;
+    const check = () => {
+      timer = 0;
+      const bubble = ref.current;
+      if (!bubble) return;
+      if (!phone.matches) {
+        setAway(false);
+        return;
+      }
+      const box = bubble.getBoundingClientRect();
+      setAway(
+        SPOTS.some(([x, y]) =>
+          document
+            .elementsFromPoint(box.left + box.width * x, box.top + box.height * y)
+            .some((el) => !bubble.contains(el) && el.closest(TAPPABLE)),
+        ),
+      );
+    };
+    // Scroll fires constantly, so look at most about twelve times a second.
+    const schedule = () => {
+      if (!timer) timer = window.setTimeout(check, 80);
+    };
+    // Layout also moves without a scroll: live numbers arriving, the form being replaced.
+    const layout = new ResizeObserver(schedule);
+    layout.observe(document.body);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    schedule();
+    return () => {
+      window.clearTimeout(timer);
+      layout.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [ref, pathname]);
+
+  return away;
+}
+
+export default function WhatsAppButton({ hidden = false }) {
   // Students on the Upsolve pages are not asking about a software project.
   const { pathname } = useLocation();
+  const bubble = useRef(null);
+  const away = useStepAside(bubble) || hidden;
   return (
     <a
+      ref={bubble}
       href={pathname.startsWith("/upsolve") ? WHATSAPP_DEMO_HREF : WHATSAPP_HREF}
       target="_blank"
       rel="noopener noreferrer"
-      className="whatsapp-btn"
+      className={`whatsapp-btn${away ? " whatsapp-btn--away" : ""}`}
+      tabIndex={away ? -1 : undefined}
+      aria-hidden={away || undefined}
       data-testid="whatsapp-button"
       aria-label="Chat on WhatsApp"
       onClick={() => capture("whatsapp_clicked")}

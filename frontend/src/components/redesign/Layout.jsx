@@ -29,6 +29,9 @@ const NAV_LINKS = [
 ]
 
 // ── Branch dropdown ───────────────────────────────────────────────────────────
+// Footer links are one line of small text; on a phone this gives a finger room to hit them.
+const FOOTER_TAP = 'inline-flex items-center min-h-[44px] md:inline md:min-h-0'
+
 function BranchDropdown({ activeWeek }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
@@ -58,7 +61,7 @@ function BranchDropdown({ activeWeek }) {
       {/* Trigger */}
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm transition-all duration-150 select-none"
+        className="relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm transition-all duration-150 select-none after:absolute after:inset-x-0 after:-inset-y-2.5"
         style={{
           fontFamily: "'JetBrains Mono', monospace",
           fontSize: '0.72rem',
@@ -244,7 +247,7 @@ export default function Layout() {
           */}
           <Link
             to="/"
-            className="shrink-0 flex items-center"
+            className="relative shrink-0 flex items-center after:absolute after:-inset-2.5"
             style={{ lineHeight: 0 }}
             data-testid="logo-link"
             aria-label="Softogram home"
@@ -303,7 +306,7 @@ export default function Layout() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden ml-auto p-1.5"
+            className="md:hidden ml-auto -my-2 -mr-3 w-11 h-11 flex items-center justify-center"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu" data-testid="nav-mobile-toggle"
           >
@@ -325,14 +328,18 @@ export default function Layout() {
 
         {/* Mobile drawer */}
         <div
-          className="md:hidden overflow-hidden transition-all duration-300"
+          data-testid="nav-mobile-drawer"
+          className="md:hidden overflow-x-hidden overflow-y-auto transition-all duration-300"
           style={{
-            maxHeight: menuOpen ? '600px' : '0',
-            background: 'rgba(13,17,23,0.98)',
+            // Never taller than the screen below the top bar, so a short phone can
+            // scroll to the last items. Solid, so the page does not show through.
+            maxHeight: menuOpen ? 'calc(100dvh - 52px)' : '0',
+            scrollbarWidth: 'none',
+            background: '#0d1117',
             borderBottom: menuOpen ? `1px solid ${BORDER}` : 'none',
           }}
         >
-          <div className="px-6 py-5 flex flex-col gap-1">
+          <div className="px-6 py-3 flex flex-col">
             {allMobileLinks.map((l, i) => {
               if (l.label === '──') {
                 return <div key={i} className="my-2 h-px" style={{ background: BORDER }} />
@@ -341,7 +348,7 @@ export default function Layout() {
                 <a
                   key={l.label}
                   href={l.href}
-                  className="flex items-center gap-2 py-2 text-sm transition-colors duration-150"
+                  className="flex items-center gap-2 min-h-[44px] text-sm transition-colors duration-150"
                   style={{
                     color: DIM,
                     fontFamily: "'JetBrains Mono', monospace",
@@ -362,7 +369,7 @@ export default function Layout() {
               target="_blank"
               rel="noopener noreferrer"
               data-testid="nav-booking-cta-mobile"
-              className="mt-3 px-4 py-2.5 text-xs font-semibold rounded-sm text-center"
+              className="mt-3 px-4 min-h-[44px] flex items-center justify-center text-xs font-semibold rounded-sm text-center"
               style={{
                 background: 'transparent',
                 color: G,
@@ -378,7 +385,8 @@ export default function Layout() {
             </a>
             <a
               href="/#contact"
-              className="mt-2 px-4 py-2.5 text-xs font-semibold rounded-sm text-center"
+              data-testid="nav-contact-mobile"
+              className="mt-2 px-4 min-h-[44px] flex items-center justify-center text-xs font-semibold rounded-sm text-center"
               style={{ background: G, color: '#0d1117', fontFamily: "'JetBrains Mono', monospace" }}
               onClick={() => setMenuOpen(false)}
             >
@@ -401,7 +409,7 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <WhatsAppButton />
+      <WhatsAppButton hidden={menuOpen} />
 
       {/* ── Footer ── */}
       {/*
@@ -415,12 +423,12 @@ export default function Layout() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-0 mb-8">
             <div
-              className="shrink-0 text-right pr-3"
+              className="hidden sm:block shrink-0 text-right pr-3"
               style={{ width: 48, borderRight: `1px solid ${BORDER}`, fontFamily: "'JetBrains Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.12)', paddingTop: 2 }}
             >
               —
             </div>
-            <div className="flex-1 pl-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex-1 sm:pl-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div>
                 <LogoMono size={32} color={G} />
                 <p className="mt-3 text-xs max-w-xs" style={{ color: DIM, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.7 }}>
@@ -429,12 +437,12 @@ export default function Layout() {
                   Proof is in the repo, not the deck.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-x-4 sm:gap-4">
                 {NAV_LINKS.map(l => (
                   <a
                     key={l.label}
                     href={l.href}
-                    className="text-xs transition-colors duration-150"
+                    className={`text-xs transition-colors duration-150 ${FOOTER_TAP}`}
                     style={{ color: DIM, fontFamily: "'JetBrains Mono', monospace", textDecoration: 'none' }}
                     onMouseEnter={e => (e.currentTarget.style.color = G)}
                     onMouseLeave={e => (e.currentTarget.style.color = DIM)}
@@ -446,23 +454,23 @@ export default function Layout() {
               <div className="text-xs" style={{ color: DIM, fontFamily: "'JetBrains Mono', monospace" }}>
                 © 2026 Softogram
                 <br />
-                <a href={`mailto:${SUPPORT_EMAIL}`} style={{ color: DIM }} data-testid="footer-email">
+                <a href={`mailto:${SUPPORT_EMAIL}`} className={FOOTER_TAP} style={{ color: DIM }} data-testid="footer-email">
                   {SUPPORT_EMAIL}
                 </a>
                 <br />
-                <a href={PHONE_TEL} style={{ color: DIM }} data-testid="footer-phone">
+                <a href={PHONE_TEL} className={FOOTER_TAP} style={{ color: DIM }} data-testid="footer-phone">
                   {PHONE_DISPLAY}
                 </a>
                 <br />
                 <span style={{ color: 'rgba(255,255,255,0.15)' }}>dark theme · softogram.in</span>
-                <div className="flex flex-wrap gap-3 mt-3" data-testid="trust-badges">
+                <div className="flex flex-wrap gap-x-3 sm:gap-3 sm:mt-3" data-testid="trust-badges">
                   {TRUST_BADGES.map((b) => (
                     <a
                       key={b.id}
                       href={b.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline"
+                      className={`underline ${FOOTER_TAP}`}
                       style={{ color: 'rgba(255,255,255,0.35)' }}
                       data-testid={`trust-badge-${b.id}`}
                     >
@@ -485,7 +493,7 @@ export default function Layout() {
           */}
           <div className="flex gap-0" data-testid="footer-legal">
             <div
-              className="shrink-0 text-right pr-3"
+              className="hidden sm:block shrink-0 text-right pr-3"
               style={{ width: 48, borderRight: `1px solid ${BORDER}`, fontFamily: "'JetBrains Mono', monospace", fontSize: '0.6rem', color: 'rgba(255,255,255,0.12)', paddingTop: 18 }}
             >
               —
@@ -500,7 +508,7 @@ export default function Layout() {
               a wide screen instead of stretching across the whole page.
             */}
             <div
-              className="flex-1 pl-5 pt-4 text-xs"
+              className="flex-1 sm:pl-5 pt-4 text-xs"
               style={{
                 borderTop: `1px solid ${BORDER}`,
                 color: DIM,
@@ -519,11 +527,11 @@ export default function Layout() {
                   <span data-testid="footer-legal-gstin">GSTIN: {LEGAL_ENTITY.gstin}</span>
                 </div>
                 <div>
-                  <a href={`mailto:${LEGAL_ENTITY.email}`} style={{ color: DIM }} data-testid="footer-legal-email">
+                  <a href={`mailto:${LEGAL_ENTITY.email}`} className={FOOTER_TAP} style={{ color: DIM }} data-testid="footer-legal-email">
                     {LEGAL_ENTITY.email}
                   </a>
                   <span style={{ color: 'rgba(255,255,255,0.18)' }}> · </span>
-                  <a href={LEGAL_ENTITY.phoneTel} style={{ color: DIM }} data-testid="footer-legal-phone">
+                  <a href={LEGAL_ENTITY.phoneTel} className={`whitespace-nowrap ${FOOTER_TAP}`} style={{ color: DIM }} data-testid="footer-legal-phone">
                     {LEGAL_ENTITY.phoneDisplay}
                   </a>
                 </div>
