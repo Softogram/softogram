@@ -760,6 +760,7 @@ async def public_repo_stats(repo: str):
 STATIC_SITEMAP_ROUTES = [
     ("/", "weekly", "1.0"),
     ("/products", "weekly", "0.8"),
+    ("/apps", "weekly", "0.8"),
     ("/client-work", "weekly", "0.8"),
     ("/blog", "weekly", "0.8"),
     ("/privacy-policy", "yearly", "0.3"),

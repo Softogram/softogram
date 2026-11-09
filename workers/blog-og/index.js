@@ -27,6 +27,7 @@ const FETCH_TIMEOUT_MS = 3500;
 // 404 into the SPA fallback - the current behaviour, so the failure is soft.
 const PRERENDERED_ROUTES = new Set([
   "/products",
+  "/apps",
   "/client-work",
   "/blog",
   "/privacy-policy",
