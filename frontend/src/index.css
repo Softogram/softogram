@@ -302,6 +302,14 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
 }
 
+/* Steps aside on phones while a button is underneath it (see WhatsAppButton.jsx). */
+.whatsapp-btn--away {
+    opacity: 0;
+    transform: scale(0.7);
+    pointer-events: none;
+    animation: none;
+}
+
 /* Stats Counter */
 .stat-number {
     font-family: var(--font-display);

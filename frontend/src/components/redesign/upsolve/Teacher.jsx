@@ -6,7 +6,7 @@ import { G, A, DIM, TEXT, CARD, BORDER, MONO, DISPLAY, Eyebrow, Heading } from "
 
 function ProfileLink({ href, icon: Icon, children, testId }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 no-underline text-[13px] min-h-[32px]" style={{ color: G, fontFamily: MONO }} data-testid={testId}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 no-underline text-[13px] min-h-[44px] md:min-h-[32px]" style={{ color: G, fontFamily: MONO }} data-testid={testId}>
       <Icon size={14} aria-hidden="true" />
       {children}
     </a>
@@ -16,28 +16,19 @@ function ProfileLink({ href, icon: Icon, children, testId }) {
 export default function Teacher() {
   return (
     <section id="teacher" className="py-16 px-4 md:px-6 scroll-mt-20" style={{ background: "#0d1117", borderTop: `1px solid ${BORDER}` }} aria-label="About the teacher" data-testid="upsolve-teacher">
-      <div className="max-w-[1120px] mx-auto flex gap-10 flex-wrap items-start">
-        <div className="shrink-0 w-[240px] max-w-full">
-          <div className="w-[240px] h-[240px] rounded-xl flex items-center justify-center overflow-hidden" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
-            <img src={TEACHER.avatar} alt={`Cartoon portrait of ${TEACHER.name}`} width={240} height={240} loading="lazy" className="w-full h-full object-cover" data-testid="upsolve-teacher-avatar" />
-          </div>
-          <div className="mt-3.5 flex flex-col gap-1">
-            {TEACHER.codingProfiles.map((p) => (
-              <ProfileLink key={p.id} href={p.url} icon={Trophy} testId={`upsolve-teacher-${p.id}`}>
-                {p.site}, {p.handle}
-              </ProfileLink>
-            ))}
-            <ProfileLink href={TEACHER.github} icon={Github} testId="upsolve-teacher-github">
-              GitHub, CosmicSaaurabh
-            </ProfileLink>
-            <ProfileLink href={TEACHER.linkedin} icon={Linkedin} testId="upsolve-teacher-linkedin">
-              LinkedIn, 2bsaurabh
-            </ProfileLink>
-          </div>
+      {/*
+        On a phone: portrait beside the name, then the story, then the links.
+        On a wider screen: portrait with the links under it on the left, the rest on the right.
+      */}
+      <div className="max-w-[1120px] mx-auto grid grid-cols-[120px_minmax(0,1fr)] md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[auto_auto_1fr] gap-x-4 md:gap-x-10 items-center md:items-start">
+        <div className="md:col-start-1 md:row-start-1 md:row-span-2 w-[120px] h-[120px] md:w-[240px] md:h-[240px] rounded-xl flex items-center justify-center overflow-hidden" style={{ background: CARD, border: `1px solid ${BORDER}` }}>
+          <img src={TEACHER.avatar} alt={`Cartoon portrait of ${TEACHER.name}`} width={240} height={240} loading="lazy" className="w-full h-full object-cover" data-testid="upsolve-teacher-avatar" />
         </div>
-        <div className="flex-1 basis-[560px] min-w-0">
+        <div className="min-w-0 md:col-start-2 md:row-start-1" data-testid="upsolve-teacher-name">
           <Eyebrow>Your coach</Eyebrow>
-          <Heading className="text-3xl md:text-[40px] mb-1.5">{TEACHER.name}</Heading>
+          <Heading className="text-3xl md:text-[40px] mb-0 md:mb-1.5">{TEACHER.name}</Heading>
+        </div>
+        <div className="col-span-2 md:col-span-1 md:col-start-2 md:row-start-2 md:row-span-2 min-w-0 mt-4 md:mt-0">
           <p className="text-[13px] mb-5" style={{ color: DIM, fontFamily: MONO }}>
             {TEACHER.tagline}
           </p>
@@ -71,6 +62,19 @@ export default function Teacher() {
           <blockquote className="m-0 px-5 py-4 rounded-md text-base leading-normal" style={{ background: CARD, border: `1px solid ${BORDER}`, color: TEXT, fontFamily: DISPLAY }}>
             "{TEACHER.quote}"
           </blockquote>
+        </div>
+        <div className="col-span-2 md:col-span-1 md:col-start-1 md:row-start-3 mt-4 md:mt-3.5 flex flex-col md:gap-1">
+          {TEACHER.codingProfiles.map((p) => (
+            <ProfileLink key={p.id} href={p.url} icon={Trophy} testId={`upsolve-teacher-${p.id}`}>
+              {p.site}, {p.handle}
+            </ProfileLink>
+          ))}
+          <ProfileLink href={TEACHER.github} icon={Github} testId="upsolve-teacher-github">
+            GitHub, CosmicSaaurabh
+          </ProfileLink>
+          <ProfileLink href={TEACHER.linkedin} icon={Linkedin} testId="upsolve-teacher-linkedin">
+            LinkedIn, 2bsaurabh
+          </ProfileLink>
         </div>
       </div>
     </section>
