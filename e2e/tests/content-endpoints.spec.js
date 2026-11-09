@@ -10,6 +10,7 @@ const API = `${urls.BACKEND_URL}/api`;
 const STATIC_ROUTES = [
   "/",
   "/products",
+  "/apps",
   "/client-work",
   "/blog",
   "/privacy-policy",

@@ -55,9 +55,10 @@ When adding UI, match the patterns already in `frontend/src/components/redesign/
 
 **Frontend**: `frontend/src/App.js` is a thin (~77 line) router only.
 Every page is lazy-loaded from `frontend/src/pages/`, and shared sections live in `frontend/src/components/redesign/`.
-Routes: `/`, `/products`, `/client-work`, `/blog`, `/blog/:slug`, `/admin`, `/privacy-policy`, `/terms-and-conditions`, `/refund-policy`, `/cookie-policy`, `/spicecraft/privacy`, `/support`, `/upsolve`, `/upsolve/enrol`, plus a `*` 404.
+Routes: `/`, `/products`, `/apps`, `/client-work`, `/blog`, `/blog/:slug`, `/admin`, `/privacy-policy`, `/terms-and-conditions`, `/refund-policy`, `/cookie-policy`, `/spicecraft/privacy`, `/support`, `/upsolve`, `/upsolve/enrol`, plus a `*` 404.
 `/case-studies` is a permanent redirect to `/client-work`.
 `/spicecraft/privacy` and `/support` are SpiceCraft's privacy policy and Support URLs in the app stores: keep both paths exactly as they are, because changing one means changing the store listing.
+`/apps` holds every store link on one page, and Softogram's X and LinkedIn profiles link to it: keep that path too.
 `/upsolve` is the landing page for Upsolve by Softogram (live online DSA coaching) and is printed as a QR code on physical flyers: keep that path too.
 Its copy lives in `frontend/src/data/upsolve.js` and its dates and fees in `backend/upsolve.py`; both must match the flyers in the sibling `softogram-upsolve/` folder.
 

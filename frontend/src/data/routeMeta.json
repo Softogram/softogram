@@ -9,6 +9,10 @@
       "title": "Products | Softogram",
       "description": "Open-source developer tools and mobile apps Softogram builds itself - every status shown is true today."
     },
+    "/apps": {
+      "title": "Get our apps | Softogram",
+      "description": "Store links for Softogram's mobile apps: SpiceCraft on Google Play and the App Store, and Ryup on Google Play."
+    },
     "/client-work": {
       "title": "Client Work | Softogram",
       "description": "Real client work, open-source tools, and in-house products from Softogram — every project links to a live site or a GitHub release."
