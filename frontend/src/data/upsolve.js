@@ -39,6 +39,15 @@ export const COLLECTED_BY =
 export const GUARANTEE =
   "I cannot promise you a job. I promise the work: 150 problems checked, 12 contests, 2 recorded mock interviews, a job list every Friday. Attend and do the sheet, and if you do not get all of it, you get your money back.";
 
+/**
+ * The page's one-line pitch. It sits under the Upsolve name in the hero and also
+ * opens the /upsolve description in routeMeta.json, which is what Google and
+ * WhatsApp show; the e2e suite checks the two still match.
+ * The contrast is with passively watching videos, not with studying alone: the
+ * demo agenda openly says disciplined people can do it by themselves.
+ */
+export const TAGLINE = "DSA is a skill you master under a mentor, not a video you watch.";
+
 export const HERO_POINTS = [
   "12-week live batch for 2nd to 4th year B.Tech, Monday to Friday 7 to 9 pm, from 30 November",
   "Weekly contest, topic tests, your own progress sheet, doubts answered the same day",
