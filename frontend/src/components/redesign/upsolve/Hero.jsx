@@ -2,7 +2,7 @@
 import React from "react";
 import { ChevronRight, MapPin } from "lucide-react";
 import UpsolveMark from "@/components/redesign/UpsolveMark";
-import { HERO_CHIPS, HERO_POINTS } from "@/data/upsolve";
+import { HERO_CHIPS, HERO_POINTS, TAGLINE } from "@/data/upsolve";
 import BookingForm from "./BookingForm";
 import { G, A, DIM, TEXT, BODY, INK, MONO, DISPLAY, Tick, daysPhrase } from "./shared";
 
@@ -30,7 +30,7 @@ export default function Hero({ stats, onBooked }) {
     <section className="pt-20 md:pt-32 pb-12 px-4 md:px-6" style={{ background: "#0d1117" }} data-testid="upsolve-hero">
       <div className="max-w-[1120px] mx-auto grid lg:grid-cols-[minmax(0,1fr)_420px] gap-10 lg:gap-12 items-start">
         <div className="min-w-0">
-          <div className="flex items-center gap-3 mb-6" data-testid="upsolve-brand">
+          <div className="flex items-center gap-3 mb-3" data-testid="upsolve-brand">
             <UpsolveMark size={44} />
             <div>
               <p className="text-2xl font-bold leading-none" style={{ color: TEXT, fontFamily: DISPLAY }}>
@@ -41,6 +41,9 @@ export default function Hero({ stats, onBooked }) {
               </p>
             </div>
           </div>
+          <p className="text-base md:text-[19px] font-semibold leading-snug mb-5 pl-3 text-balance" style={{ color: TEXT, fontFamily: DISPLAY, borderLeft: `3px solid ${G}` }} data-testid="upsolve-tagline">
+            {TAGLINE}
+          </p>
           <DemoPill stats={stats} />
           <h1 className="text-4xl md:text-[56px] font-bold leading-[1.05] tracking-[-0.01em] mb-5" style={{ color: TEXT, fontFamily: DISPLAY }} data-testid="upsolve-hero-title">
             Crack coding interviews with a coach <span style={{ color: G }}>watching your code.</span>

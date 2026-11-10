@@ -62,6 +62,27 @@ test.describe("upsolve landing page", () => {
     await expect(page.getByTestId("upsolve-by-softogram").getByTestId("site-logo")).toBeVisible();
   });
 
+  test("the tagline sits under the Upsolve name and opens the page's preview text", async ({ page }) => {
+    await page.goto("/upsolve");
+    const tagline = page.getByTestId("upsolve-tagline");
+    await expect(tagline).toHaveText("DSA is a skill you master under a mentor, not a video you watch.");
+    const brand = await page.getByTestId("upsolve-brand").boundingBox();
+    const line = await tagline.boundingBox();
+    const pill = await page.getByTestId("upsolve-demo-pill").boundingBox();
+    expect(line.y).toBeGreaterThanOrEqual(brand.y + brand.height);
+    expect(line.y + line.height).toBeLessThanOrEqual(pill.y);
+    // At desktop width it fits on one line, with no single word left over on a second.
+    const lines = await tagline.evaluate((el) => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)));
+    expect(lines).toBe(1);
+    // Google and WhatsApp show this text. It must open with the same words as the hero,
+    // and fit in the roughly 160 characters Google shows before cutting it off.
+    const words = (await tagline.textContent()).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+      await expect(page.locator(selector)).toHaveAttribute("content", new RegExp(`^${words} `));
+    }
+    expect((await page.locator('meta[name="description"]').getAttribute("content")).length).toBeLessThanOrEqual(160);
+  });
+
   test("counters start honest at zero", async ({ page }) => {
     await page.goto("/upsolve");
     await expect(page.getByTestId("upsolve-counter-bookings")).toContainText("be the first");
